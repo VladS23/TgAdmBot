@@ -63,97 +63,52 @@ namespace TgAdmBot
 
         private static bool isVoiceMessengeBlocked(Telegram.Bot.Types.Message message)
         {
-            string sql = "SELECT * FROM chats WHERE ID =" + message.Chat.Id;
+            string sql = "SELECT voiceMessangeBlock FROM chats WHERE ID =" + message.Chat.Id;
             Console.WriteLine(message.Chat.Id);
             MySqlCommand cmd = new MySqlCommand(sql, conn);
-            MySqlDataReader reader = cmd.ExecuteReader();
-            string isVoiseBlock = "false";
-            while (reader.Read())
-            {
-                isVoiseBlock = reader[3].ToString();
-            }
-            reader.Close();
-            if (isVoiseBlock == "true")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            bool isVoiseBlock =(bool)cmd.ExecuteScalar();
+            return isVoiseBlock;
 
         }
 
         private static void CreateThisChatInDb(Telegram.Bot.Types.Message message)
         {
-            string sql = "Insert chats (ID, IsVIP, voiceMessangeBlock) "
-                                              + " values (@ID, @IsVIP, @voiceMessangeBlock) ";
-
-            MySqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = sql;
-
-            // Создать объект Parameter.
-            MySqlParameter gradeParam = new MySqlParameter();
-            cmd.Parameters.Add("@ID", MySqlDbType.VarChar).Value = message.Chat.Id;
-            cmd.Parameters.Add("@IsVIP", MySqlDbType.VarChar).Value = "false";
-            cmd.Parameters.Add("@voiceMessangeBlock", MySqlDbType.VarChar).Value = "false";
-
-            // Выполнить Command (Используется для delete, insert, update).
+            string sql = $"INSERT INTO `chats` (`Number`, `ID`, `IsVIP`, `voiceMessangeBlock`) VALUES (NULL, {message.Chat.Id}, '0', '0');";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
             int rowCount = cmd.ExecuteNonQuery();
-
             Console.WriteLine("Row Count affected = " + rowCount);
         }
 
         private static bool isThisChatInDB(Telegram.Bot.Types.Message message)
         {
             string sql = "SELECT Count(id) FROM chats WHERE id = " + message.Chat.Id;
-            bool isThisChatInDB = false;
-            string req = "";
-            Console.WriteLine(message.Chat.Id);
             MySqlCommand cmd = new MySqlCommand(sql, conn);
-            MySqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                req = reader[0].ToString();
-            }
-            if (req == "1")
+            bool isThisChatInDB = false;
+            long req = (Int64)cmd.ExecuteScalar();
+            if (req == 1)
             {
                 isThisChatInDB = true;
             }
-            Console.WriteLine(req);
-            reader.Close();
             return isThisChatInDB;
 
         }
 
         private async static void voiceMessangeCommand(Telegram.Bot.Types.Message message)
         {
-            string sql = "SELECT * FROM chats WHERE ID =" + message.Chat.Id;
+            string sql = "SELECT voiceMessangeBlock FROM chats WHERE ID =" + message.Chat.Id;
             Console.WriteLine(message.Chat.Id);
             MySqlCommand cmd = new MySqlCommand(sql, conn);
-            MySqlDataReader reader = cmd.ExecuteReader();
-            string isVoiseBlock = "false";
-            while (reader.Read())
+            bool isVoiseBlock = (bool)cmd.ExecuteScalar();
+            if (isVoiseBlock)
             {
-                isVoiseBlock = reader[3].ToString();
+                sql = $"Update chats set voiceMessangeBlock	 = 0 where ID = {message.Chat.Id}";
             }
-            reader.Close();
-            sql = "Update chats set voiceMessangeBlock	 = @voiceMessangeBlock	 where ID = @ID	";
-            cmd.Connection = conn;
-            cmd.CommandText = sql;
-            if (isVoiseBlock == "true")
+            else
             {
-                cmd.Parameters.Add("@voiceMessangeBlock", MySqlDbType.VarChar).Value = "false";
-                cmd.Parameters.Add("@ID", MySqlDbType.VarChar).Value = message.Chat.Id;
-                int rowCount = cmd.ExecuteNonQuery();
+                sql = $"Update chats set voiceMessangeBlock	 = 1 where ID = {message.Chat.Id}";
             }
-            if (isVoiseBlock == "false")
-            {
-                cmd.Parameters.Add("@voiceMessangeBlock", MySqlDbType.VarChar).Value = "true";
-                cmd.Parameters.Add("@ID", MySqlDbType.VarChar).Value = message.Chat.Id;
-                int rowCount = cmd.ExecuteNonQuery();
-
-            }
+            cmd = new MySqlCommand(sql, conn);
+            int rowCount = cmd.ExecuteNonQuery();
             return;
         }
 
@@ -179,7 +134,7 @@ namespace TgAdmBot
             var cancellationToken = cts.Token;
             var receiverOptions = new ReceiverOptions
             {
-                AllowedUpdates = { }, // receive all update types
+                AllowedUpdates = { },
             };
             bot.StartReceiving(
                 HandleUpdateAsync,
