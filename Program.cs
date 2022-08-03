@@ -20,45 +20,65 @@ namespace TgAdmBot
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
                 var message = update.Message;
-                if (isThisChatInDB(message))
-                {
-                    Console.WriteLine(1);
-                    if (message.Text != null)
-                    {
-                        Console.WriteLine(message.From.Id);
-                        if (message.Text.ToLower()[0] == '/')
-                        {
-                            if (message.Text.ToLower().Trim() == "/voicemessange")
-                            {
-                                voiceMessangeCommand(message);
-                                if (isVoiceMessengeBlocked(message)==true)
-                                {
-                                    await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе запрещены голосовые сообщения");
-                                }
-                                else
-                                {
-                                    await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе разрешены голосовые сообщения");
-                                }
-                                return;
-                            }
-                            else
-                            {
-                                await botClient.SendTextMessageAsync(message.Chat, "Неизвестная комманда");
-                                return;
-                            }
-                        }
-                    }
-                    if ((message.Voice != null || message.VideoNote != null) & isVoiceMessengeBlocked(message))
-                    {
-                        await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
-                        return;
-                    }
-                }
-                else
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(message.Chat));
+                if (!isThisChatInDB(message))
                 {
                     CreateThisChatInDb(message);
                 }
+                if (!isThisUserInDB(message))
+                {
+                    CreateThisUserInDB(message);
+                }
+                if (message.Text != null)
+                {
+                    Console.WriteLine(message.From.Id);
+                    if (message.Text.ToLower()[0] == '/')
+                    {
+                        if (message.Text.ToLower().Trim() == "/voicemessange")
+                        {
+                            voiceMessangeCommand(message);
+                            if (isVoiceMessengeBlocked(message) == true)
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе запрещены голосовые сообщения");
+                            }
+                            else
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе разрешены голосовые сообщения");
+                            }
+                            return;
+                        }
+                        else
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, "Неизвестная комманда");
+                            return;
+                        }
+                    }
+                }
+                if ((message.Voice != null || message.VideoNote != null) & isVoiceMessengeBlocked(message))
+                {
+                    await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
+                    return;
+                }  
             }
+        }
+
+        private static void CreateThisUserInDB(Message message)
+        {
+            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int rowCount = cmd.ExecuteNonQuery();
+        }
+        private static bool isThisUserInDB(Message message)
+        {
+            string sql = $"SELECT COUNT({message.Chat.Id.ToString() + message.From.Id.ToString()}) FROM `users` WHERE 1";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            bool isThisUserInDB = false;
+            long req = (Int64)cmd.ExecuteScalar();
+            if (req == 1)
+            {
+                isThisUserInDB = true;
+            }
+            return isThisUserInDB;
         }
 
         private static bool isVoiceMessengeBlocked(Telegram.Bot.Types.Message message)
