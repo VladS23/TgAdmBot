@@ -36,6 +36,10 @@ namespace TgAdmBot
                 }
                 if (message.Text != null)
                 {
+                    if (message.Text.ToLower() == "setdefaultadmins")
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, SetDefaultAdmins(message.Chat.Id, message.From.Id));
+                    }
                     //Console.WriteLine(message.From.Id);
                     if (message.Text.ToLower()[0] == '/')
                     {
@@ -60,6 +64,11 @@ namespace TgAdmBot
                                 return;
                             }
                         }
+                        else
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав для выполнения данной команды");
+                            return;
+                        }
                     }
                 }
                 if ((message.Voice != null || message.VideoNote != null) & isVoiceMessengeBlocked(message))
@@ -67,6 +76,57 @@ namespace TgAdmBot
                     await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
                     return;
                 }  
+            }
+        }
+
+        private static string SetDefaultAdmins(long chatid, long userid)
+        {
+            using (HttpClientHandler hld = new HttpClientHandler())
+            {
+                using (HttpClient cln = new HttpClient())
+                {
+                    using (var resp = cln.GetAsync($"https://api.telegram.org/bot" + botToken + $"/getChatAdministrators?chat_id=" + chatid.ToString()).Result)
+                    {
+                        var json = resp.Content.ReadAsStringAsync().Result;
+                        if (!string.IsNullOrEmpty(json))
+                        {
+                            ChatAdministrators admins = Newtonsoft.Json.JsonConvert.DeserializeObject<ChatAdministrators>(json);
+                            if (admins.result != null)
+                            {
+                                long creatorId = 0;
+                                foreach (var admin in admins.result)
+                                {
+                                    if (admin.status == "creator")
+                                    {
+                                        creatorId = admin.user.id;
+                                    }
+                                }
+                                if (userid == creatorId)
+                                {
+                                    foreach (var admin in admins.result)
+                                    {
+                                        string sql = $"UPDATE `users` SET `Admin` = '{admin.status}' WHERE `users`.`ID` = {chatid.ToString() + admin.user.id.ToString()};";
+                                        MySqlCommand cmd = new MySqlCommand(sql, conn);
+                                        int rowCount = cmd.ExecuteNonQuery();
+                                    }
+                                    return "Адмнистраторы успешно обновлены";
+                                }
+                                else
+                                {
+                                    return "Команда доступна только создателю чата";
+                                }
+                            }
+                            else
+                            {
+                                return "Неизвестная ошибка, попробуйте немного позднее";
+                            }
+                        }
+                        else
+                        {
+                            return "Неизвестная ошибка, попробуйте немного позднее";
+                        }
+                    }
+                }
             }
         }
 
@@ -128,7 +188,7 @@ namespace TgAdmBot
             }
         }
 
-        private static void CreateThisUserInDB(Message message)
+        private async static void CreateThisUserInDB(Message message)
         {
             string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
