@@ -47,24 +47,24 @@ namespace TgAdmBot
                     {
                         if (message.Text.ToLower().Trim() == "/admin")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("administrator", message, update));
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("administrator", update));
                             return;
                         }
                         if (message.Text.ToLower().Trim() == "/moder")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("moderator", message, update));
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("moderator", update));
                             return;
 
                         }
                         if (message.Text.ToLower().Trim() == "/helper")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("helper", message, update));
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("helper", update));
                             return;
 
                         }
                         if (message.Text.ToLower().Trim() == "/normal")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("normal", message, update));
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("normal", update));
                             return;
 
                         }
@@ -102,23 +102,23 @@ namespace TgAdmBot
             }
         }
 
-        private static string SetAdminStatus(string admlvl, Telegram.Bot.Types.Message message, Update update)
+        private static string SetAdminStatus(string admlvl, Update update)
         {
             string strupdate = Newtonsoft.Json.JsonConvert.SerializeObject(update);
             MyMessage mymessage = Newtonsoft.Json.JsonConvert.DeserializeObject<MyMessage>(strupdate);
             if (mymessage.message.reply_to_message.from != null)
             {
-                if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, mymessage.message.reply_to_message.from.id)))
+                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
                 {
-                    if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, mymessage.message.from.id)) > Array.IndexOf(AdmRangs, admlvl))
+                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, admlvl))
                     {
                         try
                         {
 
-                            string sql = $"UPDATE `users` SET `Admin` = '{admlvl}' WHERE `users`.`ID` = {message.Chat.Id.ToString() + mymessage.message.reply_to_message.from.id.ToString()};";
+                            string sql = $"UPDATE `users` SET `Admin` = '{admlvl}' WHERE `users`.`ID` = {mymessage.message.chat.id.ToString() + mymessage.message.reply_to_message.from.id.ToString()};";
                             MySqlCommand cmd = new MySqlCommand(sql, conn);
                             int rowCount = cmd.ExecuteNonQuery();
-                            return $"Пользователь {message.From.Username} назначил пользователю {mymessage.message.reply_to_message.from.username} ранг {admlvl}";
+                            return $"Пользователь {mymessage.message.from.username} назначил пользователю {mymessage.message.reply_to_message.from.username} ранг {admlvl}";
                         }
                         catch
                         {
@@ -127,7 +127,7 @@ namespace TgAdmBot
                     }
                     else
                     {
-                        return "Недостаточно прав для выполнения этого дествия";
+                        return "Невозможно установить ранг выше или равный собственному";
                     }
                 }
                 else
@@ -171,7 +171,7 @@ namespace TgAdmBot
                                         MySqlCommand cmd = new MySqlCommand(sql, conn);
                                         int rowCount = cmd.ExecuteNonQuery();
                                     }
-                                    return "Адмнистраторы успешно обновлены";
+                                    return "Администраторы успешно обновлены";
                                 }
                                 else
                                 {
