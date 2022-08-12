@@ -12,16 +12,17 @@ namespace TgAdmBot
 {
     class Program
     {
+        private static string[] AdmRangs = { "creator", "administrator", "moderator", "helper", "normal" };
         private static string botToken = "5328960378:AAH1fskxZcH3GEXMVKHROuhfnNJQsSj8gvU";
         private static ITelegramBotClient bot = new TelegramBotClient(botToken);
         private static MySqlConnection conn = new MySqlConnection("server=localhost; port=3306; username=root; password=root; database=tgadmbot");
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             // Некоторые действия
-            //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
+            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
-                var message = update.Message;
+                Telegram.Bot.Types.Message message = update.Message;
                 //Console.WriteLine(message.From.);
                 //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(message.Chat));
                 if (!isThisChatInDB(message))
@@ -39,14 +40,41 @@ namespace TgAdmBot
                     if (message.Text.ToLower() == "setdefaultadmins")
                     {
                         await botClient.SendTextMessageAsync(message.Chat, SetDefaultAdmins(message.Chat.Id, message.From.Id));
+                        return;
                     }
                     //Console.WriteLine(message.From.Id);
                     if (message.Text.ToLower()[0] == '/')
                     {
-                        if (AdminStatus(message.Chat.Id, message.From.Id)== "creator" || AdminStatus(message.Chat.Id, message.From.Id)== "administrator")
+                        if (message.Text.ToLower().Trim() == "/admin")
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("administrator", message, update));
+                            return;
+                        }
+                        if (message.Text.ToLower().Trim() == "/moder")
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("moderator", message, update));
+                            return;
+
+                        }
+                        if (message.Text.ToLower().Trim() == "/helper")
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("helper", message, update));
+                            return;
+
+                        }
+                        if (message.Text.ToLower().Trim() == "/normal")
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("normal", message, update));
+                            return;
+
+                        }
+
+
+                        if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, message.From.Id))<=1)
                         {
                             if (message.Text.ToLower().Trim() == "/voicemessange")
                             {
+                                
                                 voiceMessangeCommand(message);
                                 if (isVoiceMessengeBlocked(message) == true)
                                 {
@@ -56,11 +84,6 @@ namespace TgAdmBot
                                 {
                                     await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе разрешены голосовые сообщения");
                                 }
-                                return;
-                            }
-                            else
-                            {
-                                await botClient.SendTextMessageAsync(message.Chat, "Неизвестная комманда");
                                 return;
                             }
                         }
@@ -76,6 +99,39 @@ namespace TgAdmBot
                     await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
                     return;
                 }  
+            }
+        }
+
+        private static string SetAdminStatus(string admlvl, Telegram.Bot.Types.Message message, Update update)
+        {
+            string strupdate = Newtonsoft.Json.JsonConvert.SerializeObject(update);
+            MyMessage mymessage = Newtonsoft.Json.JsonConvert.DeserializeObject<MyMessage>(strupdate);
+            if (mymessage.message.reply_to_message.from != null)
+            {
+                if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, mymessage.message.reply_to_message.from.id)))
+                {
+                    try
+                    {
+
+                        string sql = $"UPDATE `users` SET `Admin` = '{admlvl}' WHERE `users`.`ID` = {message.Chat.Id.ToString() + mymessage.message.reply_to_message.from.id.ToString()};";
+                        MySqlCommand cmd = new MySqlCommand(sql, conn);
+                        int rowCount = cmd.ExecuteNonQuery();
+                        return $"Пользователь {message.From.Username} назначил пользователю {mymessage.message.reply_to_message.from.username} ранг {admlvl}";
+                    }
+                    catch
+                    {
+                        return "Произошла неизвестная ошибка";
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(AdminStatus(message.Chat.Id, mymessage.message.from.id));
+                    return "Недостаточно прав для выполнения этого дествия";
+                }
+            }
+            else
+            {
+                return "Ошибка. Ответьте этим сообщением на сообщения пользователя ранг, которого надо изменить";
             }
         }
 
@@ -188,13 +244,14 @@ namespace TgAdmBot
             }
         }
 
-        private async static void CreateThisUserInDB(Message message)
+        private async static void CreateThisUserInDB(Telegram.Bot.Types.Message message)
         {
             string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int rowCount = cmd.ExecuteNonQuery();
         }
-        private static bool isThisUserInDB(Message message)
+
+        private static bool isThisUserInDB(Telegram.Bot.Types.Message message)
         {
             Console.WriteLine("working");
             //string sql = "SELECT Count(id) FROM chats WHERE id = " + message.Chat.Id;
