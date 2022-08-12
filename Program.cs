@@ -110,22 +110,28 @@ namespace TgAdmBot
             {
                 if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, mymessage.message.reply_to_message.from.id)))
                 {
-                    try
+                    if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, mymessage.message.from.id)) > Array.IndexOf(AdmRangs, admlvl))
                     {
+                        try
+                        {
 
-                        string sql = $"UPDATE `users` SET `Admin` = '{admlvl}' WHERE `users`.`ID` = {message.Chat.Id.ToString() + mymessage.message.reply_to_message.from.id.ToString()};";
-                        MySqlCommand cmd = new MySqlCommand(sql, conn);
-                        int rowCount = cmd.ExecuteNonQuery();
-                        return $"Пользователь {message.From.Username} назначил пользователю {mymessage.message.reply_to_message.from.username} ранг {admlvl}";
+                            string sql = $"UPDATE `users` SET `Admin` = '{admlvl}' WHERE `users`.`ID` = {message.Chat.Id.ToString() + mymessage.message.reply_to_message.from.id.ToString()};";
+                            MySqlCommand cmd = new MySqlCommand(sql, conn);
+                            int rowCount = cmd.ExecuteNonQuery();
+                            return $"Пользователь {message.From.Username} назначил пользователю {mymessage.message.reply_to_message.from.username} ранг {admlvl}";
+                        }
+                        catch
+                        {
+                            return "Произошла неизвестная ошибка";
+                        }
                     }
-                    catch
+                    else
                     {
-                        return "Произошла неизвестная ошибка";
+                        return "Недостаточно прав для выполнения этого дествия";
                     }
                 }
                 else
                 {
-                    Console.WriteLine(AdminStatus(message.Chat.Id, mymessage.message.from.id));
                     return "Недостаточно прав для выполнения этого дествия";
                 }
             }
