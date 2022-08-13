@@ -18,10 +18,12 @@ namespace TgAdmBot
         private static MySqlConnection conn = new MySqlConnection("server=localhost; port=3306; username=root; password=root; database=tgadmbot");
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            // Некоторые действия
+           
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
+                string strupdate = Newtonsoft.Json.JsonConvert.SerializeObject(update);
+                MyMessage mymessage = Newtonsoft.Json.JsonConvert.DeserializeObject<MyMessage>(strupdate);
                 Telegram.Bot.Types.Message message = update.Message;
                 //Console.WriteLine(message.From.);
                 //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(message.Chat));
@@ -30,10 +32,16 @@ namespace TgAdmBot
                     CreateThisChatInDb(message);
                 }
                // Console.WriteLine(isThisUserInDB(message));
-                if (!isThisUserInDB(message))
+                if (!isThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id))
                 {
-                    Console.WriteLine("not in db");
-                    CreateThisUserInDB(message);
+                    CreateThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id, mymessage.message.from.first_name);
+                }
+                if (mymessage.message.reply_to_message != null)
+                {
+                    if (!isThisUserInDB(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
+                    {
+                        CreateThisUserInDB(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id, mymessage.message.reply_to_message.from.first_name);
+                    }
                 }
                 if (message.Text != null)
                 {
@@ -47,24 +55,24 @@ namespace TgAdmBot
                     {
                         if (message.Text.ToLower().Trim() == "/admin")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("administrator", update));
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("administrator", mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             return;
                         }
                         if (message.Text.ToLower().Trim() == "/moder")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("moderator", update));
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("moderator", mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             return;
 
                         }
                         if (message.Text.ToLower().Trim() == "/helper")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("helper", update));
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("helper", mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             return;
 
                         }
                         if (message.Text.ToLower().Trim() == "/normal")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("normal", update));
+                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus("normal", mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             return;
 
                         }
@@ -102,11 +110,9 @@ namespace TgAdmBot
             }
         }
 
-        private static string SetAdminStatus(string admlvl, Update update)
+        private static string SetAdminStatus(string admlvl, MyMessage mymessage) 
         {
-            string strupdate = Newtonsoft.Json.JsonConvert.SerializeObject(update);
-            MyMessage mymessage = Newtonsoft.Json.JsonConvert.DeserializeObject<MyMessage>(strupdate);
-            if (mymessage.message.reply_to_message.from != null)
+            if (mymessage.message.reply_to_message != null)
             {
                 if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
                 {
@@ -118,7 +124,7 @@ namespace TgAdmBot
                             string sql = $"UPDATE `users` SET `Admin` = '{admlvl}' WHERE `users`.`ID` = {mymessage.message.chat.id.ToString() + mymessage.message.reply_to_message.from.id.ToString()};";
                             MySqlCommand cmd = new MySqlCommand(sql, conn);
                             int rowCount = cmd.ExecuteNonQuery();
-                            return $"Пользователь {mymessage.message.from.username} назначил пользователю {mymessage.message.reply_to_message.from.username} ранг {admlvl}";
+                            return $"Пользователь [Lord](tg://user?id={mymessage.message.from.id}) назначил пользователю @{mymessage.message.reply_to_message.from.username} ранг {admlvl}";
                         }
                         catch
                         {
@@ -250,19 +256,20 @@ namespace TgAdmBot
             }
         }
 
-        private async static void CreateThisUserInDB(Telegram.Bot.Types.Message message)
+        private async static void CreateThisUserInDB(long chatid, long userid, string firstName)
         {
-            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
+            //string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
+            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int rowCount = cmd.ExecuteNonQuery();
         }
 
-        private static bool isThisUserInDB(Telegram.Bot.Types.Message message)
+        private static bool isThisUserInDB(long chatid, long userid)
         {
             Console.WriteLine("working");
             //string sql = "SELECT Count(id) FROM chats WHERE id = " + message.Chat.Id;
 
-            string sql = $"SELECT COUNT(id) FROM `users` WHERE id="+message.Chat.Id.ToString() + message.From.Id.ToString();
+            string sql = $"SELECT COUNT(id) FROM `users` WHERE id="+chatid.ToString() + userid.ToString();
             Console.WriteLine(sql);
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             bool isThisUserInDB = false;
