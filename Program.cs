@@ -7,6 +7,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Exceptions;
 using MySql.Data.MySqlClient;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace TgAdmBot
 {
@@ -57,6 +58,14 @@ namespace TgAdmBot
                             return;
                         }
                     }
+                    if (message.Text.Length == 4)
+                    {
+                        if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == 'и')
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, GetChatNicknames(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            return;
+                        }
+                    }
                     //Console.WriteLine(message.From.Id);
                     if (message.Text.ToLower()[0] == '/')
                     {
@@ -83,13 +92,42 @@ namespace TgAdmBot
                             return;
 
                         }
-
-
-                        if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, message.From.Id))<=1)
+                        if (mymessage.message.text.ToLower().Trim() == "/mute")
                         {
-                            if (message.Text.ToLower().Trim() == "/voicemessange")
+                            if (mymessage.message.reply_to_message != null)
                             {
-                                
+                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                {
+                                    if (isThisUserMute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
+                                    {
+                                        Unmute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                        await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) разрешил пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) писать сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+
+                                    }
+                                    else
+                                    {
+                                        Mute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                        await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) запретил пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) писать сообщения, чтобы вновь разрешить данному пользователю писать введите " + "\"/mute\" в ответ на его сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                            if (message.Text.ToLower().Trim() == "/voicemessange")
+                        {
+                            if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, message.From.Id)) <= 1)
+                            {
                                 voiceMessangeCommand(message);
                                 if (isVoiceMessengeBlocked(message) == true)
                                 {
@@ -101,11 +139,12 @@ namespace TgAdmBot
                                 }
                                 return;
                             }
-                        }
-                        else
-                        {
-                            await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав для выполнения данной команды");
-                            return;
+                            else
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав для выполнения данной команды");
+                                return;
+                            }
+
                         }
                     }
                 }
@@ -117,6 +156,82 @@ namespace TgAdmBot
             }
         }
 
+        private static void Mute(long chatid, long userid)
+        {
+            try
+            {
+                using (HttpClientHandler hndl = new HttpClientHandler())
+                {
+                    using (HttpClient cln = new HttpClient())
+                    {
+                        string restext = $"https://api.telegram.org/bot{botToken}/restrictChatMember?user_id={userid}&chat_id={chatid}";
+                        using (var request = cln.GetAsync(restext).Result)
+                        {
+
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+            string sql = $"Update users set IsMute = 1 where ID = {chatid.ToString()+userid.ToString()}";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int rowCount = cmd.ExecuteNonQuery();
+
+        }
+
+        private static void Unmute(long chatid, long userid)
+        {
+            try
+            {
+                using (HttpClientHandler hndl = new HttpClientHandler())
+                {
+                    using (HttpClient cln = new HttpClient())
+                    {
+                        string restext = $"https://api.telegram.org/bot{botToken}/restrictChatMember?user_id={userid}&chat_id={chatid}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds()+30}";
+                        using (var request = cln.GetAsync(restext).Result)
+                        {
+
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+            string sql = $"Update users set IsMute = 0 where ID = {chatid.ToString() + userid.ToString()}";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int rowCount = cmd.ExecuteNonQuery();
+        }
+
+        private static bool isThisUserMute(long chatid, long userid)
+        {
+            string sql = "SELECT IsMute FROM users WHERE ID =" + chatid.ToString() + userid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            bool nickName = (bool)cmd.ExecuteScalar();
+            return nickName;
+        }
+
+        private static string GetChatNicknames(long chatid)
+        {
+            Console.WriteLine(1);
+            string sql = $"SELECT `Nickname`, `User_ID` FROM `users` WHERE `Chat_id`={chatid}";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            string result = "Ники беседы: \n";
+            int cnt = 1;
+            while (reader.Read())
+            {
+                result = result + $"{cnt}. [{reader[0].ToString()}](tg://user?id={reader[1].ToString()})"+"\n";
+                cnt=cnt + 1;
+            }
+            reader.Close();
+            return result;
+        }
+
         private static string SetNickName(long chatid, long userid, string messagetext)
         {
             Console.WriteLine(messagetext.Length<5);
@@ -125,11 +240,25 @@ namespace TgAdmBot
             {
                 if (messagetext.Length < 25)
                 {
-                    string nickname = messagetext.Substring(4);
-                    string sql = $"UPDATE `users` SET `Nickname` = '{nickname}' WHERE `users`.`Id` = {chatid.ToString() + userid.ToString()};";
-                    MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    int rowCount = cmd.ExecuteNonQuery();
-                    return $"Вам установлен ник \"[{nickname}](tg://user?id={userid})\", теперь бот будет использовать его при взаимодействии с вами";
+                    try
+                    {
+                        if (!messagetext.ToLower().Contains("drop"))
+                        {
+                            string nickname = messagetext.Substring(4);
+                            string sql = $"UPDATE `users` SET `Nickname` = '{Regex.Escape(nickname)}' WHERE `users`.`Id` = {chatid.ToString() + userid.ToString()};";
+                            MySqlCommand cmd = new MySqlCommand(sql, conn);
+                            int rowCount = cmd.ExecuteNonQuery();
+                            return $"Вам установлен ник \"[{nickname}](tg://user?id={userid})\", теперь бот будет использовать его при взаимодействии с вами";
+                        }
+                        else
+                        {
+                            return "использованы недопустимые символы";
+                        }
+                    }
+                    catch
+                    {
+                        return "использованы недопустимые символы";
+                    }
                 }
                 else
                 {
@@ -299,7 +428,7 @@ namespace TgAdmBot
         private async static void CreateThisUserInDB(long chatid, long userid, string firstName)
         {
             //string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
-            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}')";
+            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`, `User_ID`) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}', '{userid}')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int rowCount = cmd.ExecuteNonQuery();
         }
