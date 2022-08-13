@@ -18,7 +18,6 @@ namespace TgAdmBot
         private static MySqlConnection conn = new MySqlConnection("server=localhost; port=3306; username=root; password=root; database=tgadmbot");
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-           
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
@@ -49,6 +48,14 @@ namespace TgAdmBot
                     {
                         await botClient.SendTextMessageAsync(message.Chat, SetDefaultAdmins(message.Chat.Id, message.From.Id));
                         return;
+                    }
+                    if (message.Text.Length > 3)
+                    {
+                        if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == ' ')
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, SetNickName(mymessage.message.chat.id, mymessage.message.from.id, mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            return;
+                        }
                     }
                     //Console.WriteLine(message.From.Id);
                     if (message.Text.ToLower()[0] == '/')
@@ -110,6 +117,31 @@ namespace TgAdmBot
             }
         }
 
+        private static string SetNickName(long chatid, long userid, string messagetext)
+        {
+            Console.WriteLine(messagetext.Length<5);
+            Console.WriteLine(messagetext.Length);
+            if (messagetext.Length > 5)
+            {
+                if (messagetext.Length < 25)
+                {
+                    string nickname = messagetext.Substring(4);
+                    string sql = $"UPDATE `users` SET `Nickname` = '{nickname}' WHERE `users`.`Id` = {chatid.ToString() + userid.ToString()};";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int rowCount = cmd.ExecuteNonQuery();
+                    return $"Вам установлен ник \"[{nickname}](tg://user?id={userid})\", теперь бот будет использовать его при взаимодействии с вами";
+                }
+                else
+                {
+                    return "Ник слишком длинный";
+                }
+            }
+            else
+            {
+                return "Ник слишком короткий";
+            }
+        }
+
         private static string SetAdminStatus(string admlvl, MyMessage mymessage) 
         {
             if (mymessage.message.reply_to_message != null)
@@ -124,7 +156,7 @@ namespace TgAdmBot
                             string sql = $"UPDATE `users` SET `Admin` = '{admlvl}' WHERE `users`.`ID` = {mymessage.message.chat.id.ToString() + mymessage.message.reply_to_message.from.id.ToString()};";
                             MySqlCommand cmd = new MySqlCommand(sql, conn);
                             int rowCount = cmd.ExecuteNonQuery();
-                            return $"Пользователь [Lord](tg://user?id={mymessage.message.from.id}) назначил пользователю @{mymessage.message.reply_to_message.from.username} ранг {admlvl}";
+                            return $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) назначил пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) ранг {admlvl}";
                         }
                         catch
                         {
@@ -145,6 +177,14 @@ namespace TgAdmBot
             {
                 return "Ошибка. Ответьте этим сообщением на сообщения пользователя ранг, которого надо изменить";
             }
+        }
+
+        private static object GetNickname(long chatid, long userid)
+        {
+            string sql = "SELECT Nickname FROM users WHERE ID =" + chatid.ToString()+userid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            string nickName = (string)cmd.ExecuteScalar();
+            return nickName;
         }
 
         private static string SetDefaultAdmins(long chatid, long userid)
