@@ -124,7 +124,59 @@ namespace TgAdmBot
                                 return;
                             }
                         }
-                            if (message.Text.ToLower().Trim() == "/voicemessange")
+                        if (mymessage.message.text.ToLower().Trim() == "/muted")
+                        {
+                            if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2)
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, GetMutedUsers(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (mymessage.message.text.ToLower().Trim() == "/ban")
+                        {
+                            if (mymessage.message.reply_to_message != null)
+                            {
+                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                {
+                                    Ban(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                    await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) забанил [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) чтобы вернуть данного пользователя обратно администратор или создатель должен написать /unban в ответ на любое сообщение пользователя, а затем пригласить его в чат или вручную удалить его из черного списка чата, а затем пригласить ", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (mymessage.message.text.ToLower().Trim() == "/unban")
+                        {
+                            if (mymessage.message.reply_to_message != null)
+                            {
+                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                {
+                                    UnBan(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                    await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) разбанил [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) теперь он вновь может быть приглашен в чат", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (message.Text.ToLower().Trim() == "/voicemessange")
                         {
                             if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, message.From.Id)) <= 1)
                             {
@@ -153,6 +205,73 @@ namespace TgAdmBot
                     await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
                     return;
                 }  
+            }
+        }
+
+        private static string GetMutedUsers(long chatid)
+        {
+            string sql = $"SELECT `Nickname`, `User_ID` FROM `users` WHERE `Chat_id`=-1001409235785 AND `IsMute`=1";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            string result = "Пользователи, которым запрещено писать: \n";
+            int cnt = 1;
+            while (reader.Read())
+            {
+                result = result + $"{cnt}. [{reader[0].ToString()}](tg://user?id={reader[1].ToString()})" + "\n";
+                cnt = cnt + 1;
+            }
+            reader.Close();
+            if (cnt >  1)
+            {
+                return result;
+            }
+            else
+            {
+                return "все пользователи чата могут писать";
+            }
+        }
+
+        private static void UnBan(long chatid, long userid)
+        {
+            try
+            {
+                using (HttpClientHandler hndl = new HttpClientHandler())
+                {
+                    using (HttpClient cln = new HttpClient())
+                    {
+                        string restext = $"https://api.telegram.org/bot{botToken}/unbanChatMember?user_id={userid}&chat_id={chatid}&only_if_banned=true";
+                        using (var request = cln.GetAsync(restext).Result)
+                        {
+
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        private static void Ban(long chatid, long userid)
+        {
+            try
+            {
+                using (HttpClientHandler hndl = new HttpClientHandler())
+                {
+                    using (HttpClient cln = new HttpClient())
+                    {
+                        string restext = $"https://api.telegram.org/bot{botToken}/banChatMember?user_id={userid}&chat_id={chatid}";
+                        using (var request = cln.GetAsync(restext).Result)
+                        {
+
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
             }
         }
 
@@ -190,7 +309,7 @@ namespace TgAdmBot
                 {
                     using (HttpClient cln = new HttpClient())
                     {
-                        string restext = $"https://api.telegram.org/bot{botToken}/restrictChatMember?user_id={userid}&chat_id={chatid}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds()+30}";
+                        string restext = $"https://api.telegram.org/bot{botToken}/restrictChatMember?user_id={userid}&chat_id={chatid}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds()+35}";
                         using (var request = cln.GetAsync(restext).Result)
                         {
 
@@ -217,7 +336,6 @@ namespace TgAdmBot
 
         private static string GetChatNicknames(long chatid)
         {
-            Console.WriteLine(1);
             string sql = $"SELECT `Nickname`, `User_ID` FROM `users` WHERE `Chat_id`={chatid}";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader reader = cmd.ExecuteReader();
