@@ -74,6 +74,14 @@ namespace TgAdmBot
                             return;
                         }
                     }
+                    if (message.Text.Length > 10)
+                    {
+                        if (message.Text.ToLower()[0] == 'в' && message.Text.ToLower()[1] == 'б' && message.Text.ToLower()[2] == 'р' && message.Text.ToLower()[3] == ' ')
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, Chose(mymessage.message.chat.id, mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            return;
+                        }
+                    }
                     //Console.WriteLine(message.From.Id);
                     if (message.Text.ToLower()[0] == '/')
                     {
@@ -276,6 +284,22 @@ namespace TgAdmBot
                     await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
                     return;
                 }  
+            }
+        }
+
+        private static string Chose(long chatid, string messagetext)
+        {
+            try
+            {
+                string mes = messagetext.Substring(4);
+                string[] separator = { " или " };
+                string[] variables = mes.Split(separator, System.StringSplitOptions.RemoveEmptyEntries);
+                Random rnd = new Random();
+                return "✨✨ Я выбираю " + variables[rnd.Next(0, 2)];
+            }
+            catch
+            {
+                return "Неправильный синтаксис команды. Пример правильной команды 'вбр вариант 1 или вариант 2'";
             }
         }
 
