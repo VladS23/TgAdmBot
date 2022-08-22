@@ -176,6 +176,69 @@ namespace TgAdmBot
                                 return;
                             }
                         }
+                        if (message.Text.ToLower().Trim() == "/warn")
+                        {
+                            if (mymessage.message.reply_to_message != null)
+                            {
+                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                {
+                                    if (GetWarnsCount(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id) + 1 < 3)
+                                    {
+                                        Warn(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                        await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) выдал предупреждение пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) предупреждений до исключения {GetWarnsCount(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)}/3", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) был исключен за превышение количества предупреждений", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        Ban(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                        return;
+                                    }
+
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (message.Text.ToLower().Trim() == "/unwarn")
+                        {
+                            if (mymessage.message.reply_to_message != null)
+                            {
+                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                {
+                                    Unwarn(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                    await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) снял все предупреждения с пользователя [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (mymessage.message.text.ToLower().Trim() == "/warns")
+                        {
+                            if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2)
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, GetWarnedUsers(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
                         if (message.Text.ToLower().Trim() == "/voicemessange")
                         {
                             if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, message.From.Id)) <= 1)
@@ -208,9 +271,54 @@ namespace TgAdmBot
             }
         }
 
+        private static string GetWarnedUsers(long chatid)
+        {
+            string sql = $"SELECT `Nickname`, `User_ID`,`Warns`  FROM `users` WHERE `Chat_id`={chatid} AND `Warns`!=0";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            string result = "Предупрежденные пользователи: \n";
+            int cnt = 1;
+            while (reader.Read())
+            {
+                result = result + $"{cnt}. [{reader[0].ToString()}](tg://user?id={reader[1].ToString()}) " +reader[2].ToString() +"/3"+ "\n";
+                cnt = cnt + 1;
+            }
+            reader.Close();
+            if (cnt > 1)
+            {
+                return result;
+            }
+            else
+            {
+                return "нет предупрежденных пользователей";
+            }
+        }
+
+        private static void Unwarn(long chatid, long userid)
+        {
+            string sql = $"UPDATE `users` SET `Warns` = '{0}' WHERE `users`.`Id` = {chatid.ToString() + userid.ToString()};";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int rowCount = cmd.ExecuteNonQuery();
+        }
+
+        private static int GetWarnsCount(long chatid, long userid)
+        {
+            string sql = "SELECT Warns FROM users WHERE ID =" + chatid.ToString() + userid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int nickName = (int)cmd.ExecuteScalar();
+            return nickName;
+        }
+
+        private static void Warn(long chatid, long userid)
+        {
+            string sql = $"UPDATE `users` SET `Warns` = '{GetWarnsCount(chatid, userid)+1}' WHERE `users`.`Id` = {chatid.ToString() + userid.ToString()};";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int rowCount = cmd.ExecuteNonQuery();
+        }
+
         private static string GetMutedUsers(long chatid)
         {
-            string sql = $"SELECT `Nickname`, `User_ID` FROM `users` WHERE `Chat_id`=-1001409235785 AND `IsMute`=1";
+            string sql = $"SELECT `Nickname`, `User_ID` FROM `users` WHERE `Chat_id`={chatid} AND `IsMute`=1";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader reader = cmd.ExecuteReader();
             string result = "Пользователи, которым запрещено писать: \n";
@@ -546,7 +654,7 @@ namespace TgAdmBot
         private async static void CreateThisUserInDB(long chatid, long userid, string firstName)
         {
             //string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
-            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`, `User_ID`) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}', '{userid}')";
+            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`, `User_ID`,`IsMute`, `Warns`) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}', '{userid}', '0', '0')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int rowCount = cmd.ExecuteNonQuery();
         }
