@@ -50,7 +50,7 @@ namespace TgAdmBot
                         await botClient.SendTextMessageAsync(message.Chat, SetDefaultAdmins(message.Chat.Id, message.From.Id));
                         return;
                     }
-                    if (message.Text.Length > 3)
+                    if (message.Text.Length > 4)
                     {
                         if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == ' ')
                         {
@@ -63,6 +63,14 @@ namespace TgAdmBot
                         if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == 'и')
                         {
                             await botClient.SendTextMessageAsync(message.Chat, GetChatNicknames(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            return;
+                        }
+                    }
+                    if (message.Text.Length > 6)
+                    {
+                        if (message.Text.ToLower()[0] == 'р' && message.Text.ToLower()[1] == 'н' && message.Text.ToLower()[2] == 'д' && message.Text.ToLower()[3] == ' ')
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, GetRandomNumber(mymessage.message.chat.id, mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             return;
                         }
                     }
@@ -268,6 +276,21 @@ namespace TgAdmBot
                     await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
                     return;
                 }  
+            }
+        }
+
+        private static string GetRandomNumber(long id, string messagetext)
+        {
+            try
+            {
+                string mes = messagetext.Substring(4);
+                string[] nums = mes.Split('-');
+                Random rnd =new Random();
+                return "🎲🎲 Я бросил кости и выпало " + rnd.Next(Convert.ToInt32(nums[0]), Convert.ToInt32(nums[1]));
+            }
+            catch
+            {
+                return "Неправильный синтаксис команды. Пример правильной команды 'рнд 1-12'";
             }
         }
 
