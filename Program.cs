@@ -36,6 +36,7 @@ namespace TgAdmBot
                 {
                     CreateThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id, mymessage.message.from.first_name);
                 }
+                Analyzer(mymessage, message);
                 if (mymessage.message.reply_to_message != null)
                 {
                     if (!isThisUserInDB(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
@@ -60,26 +61,83 @@ namespace TgAdmBot
                     }
                     if (message.Text.Length == 4)
                     {
-                        if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == 'и')
+                        if (message.Text.ToLower()=="ники")
                         {
                             await botClient.SendTextMessageAsync(message.Chat, GetChatNicknames(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             return;
                         }
                     }
-                    if (message.Text.Length > 6)
+                    if (message.Text.Length == 5)
                     {
-                        if (message.Text.ToLower()[0] == 'р' && message.Text.ToLower()[1] == 'н' && message.Text.ToLower()[2] == 'д' && message.Text.ToLower()[3] == ' ')
+                        if (message.Text.ToLower()=="стата")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, GetRandomNumber(mymessage.message.chat.id, mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            return;
+                            if (mymessage.message.reply_to_message == null)
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat.Id, GetStatistics(mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                            else
+                            {
+                                if(Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat.Id, GetStatistics(mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat.Id, "Недостаточно прав на выполнение этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+
                         }
                     }
-                    if (message.Text.Length > 10)
+                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 3)
                     {
-                        if (message.Text.ToLower()[0] == 'в' && message.Text.ToLower()[1] == 'б' && message.Text.ToLower()[2] == 'р' && message.Text.ToLower()[3] == ' ')
+                        if (message.Text.Length > 6)
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, Chose(mymessage.message.chat.id, mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            return;
+                            if (message.Text.ToLower()[0] == 'р' && message.Text.ToLower()[1] == 'н' && message.Text.ToLower()[2] == 'д' && message.Text.ToLower()[3] == ' ')
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, GetRandomNumber(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (message.Text.Length > 10)
+                        {
+                            if (message.Text.ToLower()[0] == 'в' && message.Text.ToLower()[1] == 'б' && message.Text.ToLower()[2] == 'р' && message.Text.ToLower()[3] == ' ')
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, Chose(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (message.Text.Length > 3)
+                        {
+                            if (message.Text.ToLower()[0] == 'm' && message.Text.ToLower()[1] == 'e' && message.Text.ToLower()[2] == ' ')
+                            {
+                                if (mymessage.message.reply_to_message != null)
+                                {
+                                    string mestext = mymessage.message.text.Substring(3);
+                                    await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) " + mestext + $" [{GetNickname(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                                    return;
+                                }
+                            }
+                        }
+                        if (message.Text.Length > 3)
+                        {
+                            if (message.Text.ToLower()[0] == 'к' && message.Text.ToLower()[1] == 'т' && message.Text.ToLower()[2] == ' ')
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, GetRandomNumber(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (message.Text.Length > 5)
+                        {
+                            if (message.Text.ToLower()[0] == 'в' && message.Text.ToLower()[1] == 'р' && message.Text.ToLower()[2] == 'т' && message.Text.ToLower()[3] == 'н' && message.Text.ToLower()[4] == ' ')
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, Probability(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
                         }
                     }
                     //Console.WriteLine(message.From.Id);
@@ -114,7 +172,7 @@ namespace TgAdmBot
                             {
                                 if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
                                 {
-                                    if (isThisUserMute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
+                                    if (IsThisUserMute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
                                     {
                                         Unmute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
                                         await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) разрешил пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) писать сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
@@ -136,7 +194,7 @@ namespace TgAdmBot
                             }
                             else
                             {
-                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщением на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                 return;
                             }
                         }
@@ -287,7 +345,126 @@ namespace TgAdmBot
             }
         }
 
-        private static string Chose(long chatid, string messagetext)
+        private static string GetStatistics(MyMessage mymessage)
+        {
+            long chatid = 0;
+            long userid = 0;
+            string username = "";
+            string tgusername = "";
+            if (mymessage.message.reply_to_message == null)
+            {
+                chatid = mymessage.message.chat.id;
+                userid = mymessage.message.from.id;
+                username = mymessage.message.from.first_name;
+                tgusername = mymessage.message.from.username;
+            }
+            else
+            {
+                chatid = mymessage.message.reply_to_message.chat.id;
+                userid = mymessage.message.reply_to_message.from.id;
+                username = mymessage.message.reply_to_message.from.first_name;
+                tgusername = mymessage.message.reply_to_message.from.username;
+            }
+            string info = "";
+            try
+            {
+                info = "📈 Информация о " + username + "\n";
+                try
+                {
+                    info = info + "👤 Имя: " + tgusername+"\n";
+                }
+                catch
+                {
+
+                }
+                info = info + $"👥 Ник : [{GetNickname(chatid, userid)}](tg://user?id={userid})" + "\n";
+                info = info + "👑 Ранг: " + AdminStatus(chatid, userid)+"\n";
+                if (IsThisUserMute(chatid, userid))
+                {
+                    info = info + "🚫 Запрещено писать сообщения\n";
+                }
+                else
+                {
+                    info = info + "👨‍💻 Разрешено писать сообщения\n";
+                }
+                info = info + "⛔️ Количество предупреждений " + GetWarnsCount(chatid, userid) + "/3\n";
+                info = info + "✉️ Отправлено сообщений: " + GetMessageCount(chatid, userid) + "\n";
+                info = info + "🎤 Отправлено голосовых сообщений: " + GetVoiceMessageCount(chatid, userid) + "\n";
+                info = info + "😄 Отправлено отправленых стикеров: " + GetStickerCount(chatid, userid) + "\n";
+            }
+            catch
+            {
+                info = "Возникла неожиданная ошибка";
+            }
+            return info;
+        }
+
+        private static long GetStickerCount(long chatid, long userid)
+        {
+            string sql = "SELECT StikerCount FROM users WHERE ID =" + chatid.ToString() + userid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int StikerCount = (int)cmd.ExecuteScalar();
+            return StikerCount;
+        }
+
+        private static long GetVoiceMessageCount(long chatid, long userid)
+        {
+            string sql = "SELECT VoiceMessageCount FROM users WHERE ID =" + chatid.ToString() + userid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int VoiceMessageCount = (int)cmd.ExecuteScalar();
+            return VoiceMessageCount;
+        }
+
+        private static int GetMessageCount(long chatid, long userid)
+        {
+            string sql = "SELECT MessageCount FROM users WHERE ID =" + chatid.ToString() + userid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int MessageCount = (int)cmd.ExecuteScalar();
+            return MessageCount;
+        }
+
+        private static void Analyzer(MyMessage mymessage, Telegram.Bot.Types.Message dmessage)
+        {
+            if (mymessage.message != null)
+            {
+                if (dmessage.Text != null)
+                {
+                    string sql = "SELECT MessageCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int messangecount = (int)cmd.ExecuteScalar();
+                    sql = $"UPDATE `users` SET `MessageCount` = '{messangecount + 1}' WHERE `users`.`Id` = {dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString()};";
+                    cmd = new MySqlCommand(sql, conn);
+                    int rowCount = cmd.ExecuteNonQuery();
+                }
+                if (dmessage.Voice!= null || dmessage.VideoNote != null)
+                {
+                    string sql = "SELECT VoiceMessageCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int voicemessangecount = (int)cmd.ExecuteScalar();
+                    sql = $"UPDATE `users` SET `VoiceMessageCount` = '{voicemessangecount + 1}' WHERE `users`.`Id` = {dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString()};";
+                    cmd = new MySqlCommand(sql, conn);
+                    int rowCount = cmd.ExecuteNonQuery();
+                }
+                if (dmessage.Sticker != null)
+                {
+                    string sql = "SELECT StikerCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int StikerCount = (int)cmd.ExecuteScalar();
+                    sql = $"UPDATE `users` SET `StikerCount` = '{StikerCount + 1}' WHERE `users`.`Id` = {dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString()};";
+                    cmd = new MySqlCommand(sql, conn);
+                    int rowCount = cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private static string Probability(string messagetext)
+        {
+            string mes = messagetext.Substring(4);
+            Random rnd = new Random();
+            return "Вероятность" + mes + $" {rnd.Next(0, 101)}%";
+        }
+
+        private static string Chose(string messagetext)
         {
             try
             {
@@ -303,7 +480,7 @@ namespace TgAdmBot
             }
         }
 
-        private static string GetRandomNumber(long id, string messagetext)
+        private static string GetRandomNumber(string messagetext)
         {
             try
             {
@@ -481,7 +658,7 @@ namespace TgAdmBot
             int rowCount = cmd.ExecuteNonQuery();
         }
 
-        private static bool isThisUserMute(long chatid, long userid)
+        private static bool IsThisUserMute(long chatid, long userid)
         {
             string sql = "SELECT IsMute FROM users WHERE ID =" + chatid.ToString() + userid.ToString();
             MySqlCommand cmd = new MySqlCommand(sql, conn);
