@@ -390,7 +390,7 @@ namespace TgAdmBot
                 info = info + "⛔️ Количество предупреждений " + GetWarnsCount(chatid, userid) + "/3\n";
                 info = info + "✉️ Отправлено сообщений: " + GetMessageCount(chatid, userid) + "\n";
                 info = info + "🎤 Отправлено голосовых сообщений: " + GetVoiceMessageCount(chatid, userid) + "\n";
-                info = info + "😄 Отправлено отправленых стикеров: " + GetStickerCount(chatid, userid) + "\n";
+                info = info + "😄 Отправлено стикеров: " + GetStickerCount(chatid, userid) + "\n";
             }
             catch
             {
@@ -878,7 +878,7 @@ namespace TgAdmBot
         private async static void CreateThisUserInDB(long chatid, long userid, string firstName)
         {
             //string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
-            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`, `User_ID`,`IsMute`, `Warns`) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}', '{userid}', '0', '0')";
+            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`, `User_ID`,`IsMute`, `Warns`,`MessageCount`,`VoiceMessageCount`,`StikerCount` ) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}', '{userid}', '0', '0', '0', '0', '0')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int rowCount = cmd.ExecuteNonQuery();
         }
