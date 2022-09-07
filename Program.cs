@@ -387,7 +387,8 @@ namespace TgAdmBot
                 {
                     info = info + "👨‍💻 Разрешено писать сообщения\n";
                 }
-                info = info + "⛔️ Количество предупреждений " + GetWarnsCount(chatid, userid) + "/3\n";
+                info = info + "🕒 Время последней активности: " + GetLastActivity(chatid, userid)+"\n";
+                 info = info + "⛔️ Количество предупреждений " + GetWarnsCount(chatid, userid) + "/3\n";
                 info = info + "✉️ Отправлено сообщений: " + GetMessageCount(chatid, userid) + "\n";
                 info = info + "🎤 Отправлено голосовых сообщений: " + GetVoiceMessageCount(chatid, userid) + "\n";
                 info = info + "😄 Отправлено стикеров: " + GetStickerCount(chatid, userid) + "\n";
@@ -397,6 +398,14 @@ namespace TgAdmBot
                 info = "Возникла неожиданная ошибка";
             }
             return info;
+        }
+
+        private static string GetLastActivity(long chatid, long userid)
+        {
+            string sql = "SELECT LastActivity FROM users WHERE ID =" + chatid.ToString() + userid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            string LastActivity = (string)cmd.ExecuteScalar();
+            return LastActivity;
         }
 
         private static long GetStickerCount(long chatid, long userid)
@@ -427,33 +436,37 @@ namespace TgAdmBot
         {
             if (mymessage.message != null)
             {
+                string sql = $"UPDATE `users` SET `LastActivity` = '{DateTime.Now.ToString()}' WHERE `users`.`Id` = {dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString()};";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                int rowCount = cmd.ExecuteNonQuery();
                 if (dmessage.Text != null)
                 {
-                    string sql = "SELECT MessageCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
-                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    sql = "SELECT MessageCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
+                    cmd = new MySqlCommand(sql, conn);
                     int messangecount = (int)cmd.ExecuteScalar();
                     sql = $"UPDATE `users` SET `MessageCount` = '{messangecount + 1}' WHERE `users`.`Id` = {dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString()};";
                     cmd = new MySqlCommand(sql, conn);
-                    int rowCount = cmd.ExecuteNonQuery();
+                    rowCount = cmd.ExecuteNonQuery();
                 }
                 if (dmessage.Voice!= null || dmessage.VideoNote != null)
                 {
-                    string sql = "SELECT VoiceMessageCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
-                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    sql = "SELECT VoiceMessageCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
+                    cmd = new MySqlCommand(sql, conn);
                     int voicemessangecount = (int)cmd.ExecuteScalar();
                     sql = $"UPDATE `users` SET `VoiceMessageCount` = '{voicemessangecount + 1}' WHERE `users`.`Id` = {dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString()};";
                     cmd = new MySqlCommand(sql, conn);
-                    int rowCount = cmd.ExecuteNonQuery();
+                    rowCount = cmd.ExecuteNonQuery();
                 }
                 if (dmessage.Sticker != null)
                 {
-                    string sql = "SELECT StikerCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
-                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    sql = "SELECT StikerCount FROM users WHERE ID =" + dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString();
+                    cmd = new MySqlCommand(sql, conn);
                     int StikerCount = (int)cmd.ExecuteScalar();
                     sql = $"UPDATE `users` SET `StikerCount` = '{StikerCount + 1}' WHERE `users`.`Id` = {dmessage.Chat.Id.ToString() + dmessage.From.Id.ToString()};";
                     cmd = new MySqlCommand(sql, conn);
-                    int rowCount = cmd.ExecuteNonQuery();
+                    rowCount = cmd.ExecuteNonQuery();
                 }
+
             }
         }
 
@@ -878,7 +891,7 @@ namespace TgAdmBot
         private async static void CreateThisUserInDB(long chatid, long userid, string firstName)
         {
             //string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`) VALUES (NULL, {message.Chat.Id.ToString()+message.From.Id.ToString()}, '0');";
-            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`, `User_ID`,`IsMute`, `Warns`,`MessageCount`,`VoiceMessageCount`,`StikerCount` ) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}', '{userid}', '0', '0', '0', '0', '0')";
+            string sql = $"INSERT INTO `users` (`Number`, `ID`, `Admin`, `Chat_id`, `Nickname`, `User_ID`,`IsMute`, `Warns`,`MessageCount`,`VoiceMessageCount`,`StikerCount`, `LastActivity` ) VALUES (NULL, '{chatid.ToString() + userid.ToString()}', '0', '{chatid}', '{firstName}', '{userid}', '0', '0', '0', '0', '0', '{DateTime.Now.ToString()}')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int rowCount = cmd.ExecuteNonQuery();
         }
