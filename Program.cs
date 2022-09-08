@@ -25,13 +25,12 @@ namespace TgAdmBot
                 string strupdate = Newtonsoft.Json.JsonConvert.SerializeObject(update);
                 MyMessage mymessage = Newtonsoft.Json.JsonConvert.DeserializeObject<MyMessage>(strupdate);
                 Telegram.Bot.Types.Message message = update.Message;
-                //Console.WriteLine(message.From.);
-                //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(message.Chat));
                 if (!isThisChatInDB(message))
                 {
                     CreateThisChatInDb(message);
+                    await botClient.SendTextMessageAsync(message.Chat, "Вас приветсвует бот администратор !help для получения списка команд");
+
                 }
-               // Console.WriteLine(isThisUserInDB(message));
                 if (!isThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id))
                 {
                     CreateThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id, mymessage.message.from.first_name);
@@ -46,9 +45,34 @@ namespace TgAdmBot
                 }
                 if (message.Text != null)
                 {
+                    if (message.Text.ToLower() == "!help")
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, "Выберите какой раздел команд вас интересует \n 1. Развлечения \n 2. Настройка беседы \n 3. Администрирование");
+                        return;
+                    }
+                    if (message.Text.ToLower() == "развлечения")
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, "Список развлекательных команд\n1. Ник + имя - установит вам в качестве ника \"имя\"\n2. Ники - выведет список всех ников беседы \n3. Стата - выведет вашу статистику, пользователи с рангом модератор и выше могут посмотреть статистику пользователей с рангом меньше, чем у них, если напишут это сообщение в ответ на сообщение пользователя, статистику которого необходимо просмотреть\n4. Рнд число1-число2 - сгенерирует случайное число из указанного промежутка\n5. Вбр вариант1 или вариант2 - выберет один из указанных вариантов\n6. Me действие - выведет сообщение вида: \"пользователь1 действие пользователь2\" (пользователь2 указывается путем ответа на его сообщение)\n 7. кт + действие - выведет: *Случайный участник беседы* действие\n 8. Вртн + событие - предположит вероятность какого-то события");
+                        return;
+                    }
+                    if (message.Text.ToLower() == "настройки беседы")
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, "Список доступных настроек беседы\n1. setdefaultadmins - назначит администраторов беседы в соответсвтвие с тем, как расставлены права в телеграм, может использоваться только создателем беседы\n 2. /voicemessange заблокирует или разблокирует голосовые и видеосообщения, по умолчанию разблокировано, может применяться администраторами или создателем");
+                        return;
+                    }
+                    if (message.Text.ToLower() == "администрирование")
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, "Список доступных административных действий:\n 1. Назначения ранга пользователям. Ранг создателя сразу выдается создателем беседы, остальные ранги могут быть назначены пользователем с рангом выше. Чтобы назначить ранг необходимо написать одну из следующих команд в ответ на сообщение пользователя, которому необходимо назначить ранг\n   /admin\n    /moder\n    /helper\n    /normal\n 2. /mute Если ваш ранг выше или равен модератору и выше, чем у пользователя, на сообщение, которого вы ответили, то вы запретите или разрешите ему писать сообщения, не работает на пользователей, которым в настройках беседы телеграм установлен ранг администратор\n 3. /muted Выведет список всех, кому запрещено писать сообщения\n 4. /ban Исключит пользователя из беседы и добавит его в черный список чата, данная команда доступна только создателю и администратора, не работает на пользователей, котрым в настройках беседы в телеграм установлен ранг администратора\n 5. /unban  Исключит пользователя из черного списка чата, команда доступна администраторам и создателям\n 6. /warn Выдаст пользователю предупреждение, по достижению трех предупреждений он будет исключен из беседы, команда доступна создателю или администраторам\n 7. /warns выведет список предупрежденных пользователей беселы, доступна создателю или администраторам");
+                        return;
+                    }
                     if (message.Text.ToLower() == "setdefaultadmins")
                     {
                         await botClient.SendTextMessageAsync(message.Chat, SetDefaultAdmins(message.Chat.Id, message.From.Id));
+                        return;
+                    }
+                    if (message.Text.ToLower() == "актив")
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, GetUsersActivity(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         return;
                     }
                     if (message.Text.Length > 4)
@@ -127,7 +151,7 @@ namespace TgAdmBot
                         {
                             if (message.Text.ToLower()[0] == 'к' && message.Text.ToLower()[1] == 'т' && message.Text.ToLower()[2] == ' ')
                             {
-                                await botClient.SendTextMessageAsync(message.Chat, GetRandomNumber(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                await botClient.SendTextMessageAsync(message.Chat, Who(mymessage.message.text, message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                 return;
                             }
                         }
@@ -345,6 +369,57 @@ namespace TgAdmBot
             }
         }
 
+        private static string Who(string text, long chatid)
+        {
+            string sql = "SELECT COUNT(*) FROM users WHERE Chat_id =" + chatid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            string sreaderLen = "";
+            while (reader.Read())
+            {
+                sreaderLen = "";
+                sreaderLen = reader.GetString(0);
+            }
+            int readerLen = Convert.ToInt32(sreaderLen);
+            reader.Close();
+            sql = $"SELECT `Nickname`, `User_ID`  FROM `users` WHERE `Chat_id`={chatid}";
+            cmd = new MySqlCommand(sql, conn);
+            reader = cmd.ExecuteReader();
+            string[][] users = new string[readerLen][];
+            int i = 0;
+            while (reader.Read())
+            {
+                users[i] = new string[] { reader[0].ToString(), reader[1].ToString() };
+                i = i + 1;
+            }
+            reader.Close();
+            text = text.Substring(3);
+            Random rnd = new Random();
+            int curUser = rnd.Next(users.Length-1);
+            string result = $"[{ users[curUser][0]}](tg://user?id={users[curUser][1]}) {text}";
+            return result;
+        }
+
+        private static string GetUsersActivity(long chatid)
+        {
+            string sql = $"SELECT `Nickname`, `User_ID`,`LastActivity`  FROM `users` WHERE `Chat_id`={chatid}";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            string result = "Активность пользователей: \n";
+            int cnt = 1;
+            while (reader.Read())
+            {
+                DateTime lastActivity = new DateTime();
+                if (DateTime.TryParse(reader[2].ToString(), out lastActivity))
+                {
+                        result = result + $"{cnt}. [{reader[0].ToString()}](tg://user?id={reader[1].ToString()}) " + "неактивен "+ (DateTime.Now - DateTime.Parse(reader[2].ToString())).Days +" дней"+"\n";
+                        cnt = cnt + 1;
+                }
+            }
+            reader.Close();
+            return result;
+        }
+
         private static string GetStatistics(MyMessage mymessage)
         {
             long chatid = 0;
@@ -388,7 +463,7 @@ namespace TgAdmBot
                     info = info + "👨‍💻 Разрешено писать сообщения\n";
                 }
                 info = info + "🕒 Время последней активности: " + GetLastActivity(chatid, userid)+"\n";
-                 info = info + "⛔️ Количество предупреждений " + GetWarnsCount(chatid, userid) + "/3\n";
+                info = info + "⛔️ Количество предупреждений " + GetWarnsCount(chatid, userid) + "/3\n";
                 info = info + "✉️ Отправлено сообщений: " + GetMessageCount(chatid, userid) + "\n";
                 info = info + "🎤 Отправлено голосовых сообщений: " + GetVoiceMessageCount(chatid, userid) + "\n";
                 info = info + "😄 Отправлено стикеров: " + GetStickerCount(chatid, userid) + "\n";
