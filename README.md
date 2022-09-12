@@ -1,9 +1,7 @@
 # TgAdmBot
  Update the Bottoken before using it
  ### Database structure
---
--- Table structure for table `chats`
---
+Table structure for table `chats`
 
 CREATE TABLE `chats` (
   `Number` int(10) UNSIGNED NOT NULL,
@@ -11,9 +9,9 @@ CREATE TABLE `chats` (
   `IsVIP` tinyint(1) NOT NULL,
   `voiceMessangeBlock` tinyint(1) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
---
--- Table structure for table `users`
---
+
+
+Table structure for table `users`
 
 CREATE TABLE `users` (
   `Number` int(11) NOT NULL,
