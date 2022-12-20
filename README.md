@@ -5,9 +5,9 @@ CREATE TABLE `chats` (
   `voiceMessangeBlock` tinyint(1) NOT NULL,
   `Chat_Rules` varchar(10000) NOT NULL DEFAULT 'Правила чата не созданы /setrules для создания',
   `WarnLimAction` varchar(1000) NOT NULL DEFAULT 'mute'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;  
 ALTER TABLE `chats`
-  ADD UNIQUE KEY `Id` (`Number`);
+  ADD UNIQUE KEY `Id` (`Number`);  
 ALTER TABLE `chats`
   MODIFY `Number` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
   
@@ -27,10 +27,10 @@ ALTER TABLE `chats`
   `StikerCount` int(11) NOT NULL,
   `LastActivity` varchar(100) NOT NULL,
   `UnMuteTime` varchar(1000) NOT NULL DEFAULT 'NotInMute'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;  
 
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`Number`);
+  ADD PRIMARY KEY (`Number`);  
 
 ALTER TABLE `users`
   MODIFY `Number` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
