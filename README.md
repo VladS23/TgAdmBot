@@ -6,8 +6,10 @@ CREATE TABLE `chats` (
   `Chat_Rules` varchar(10000) NOT NULL DEFAULT 'Правила чата не созданы /setrules для создания',
   `WarnLimAction` varchar(1000) NOT NULL DEFAULT 'mute'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;  
+
 ALTER TABLE `chats`
   ADD UNIQUE KEY `Id` (`Number`);  
+  
 ALTER TABLE `chats`
   MODIFY `Number` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
   
