@@ -7,6 +7,7 @@ using Telegram.Bot.Types;
 using MySql.Data.MySqlClient;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace TgAdmBot
 {
@@ -18,6 +19,7 @@ namespace TgAdmBot
         private static string botToken = "BOTTOKEN";
         private static ITelegramBotClient bot = new TelegramBotClient(botToken);
         private static MySqlConnection conn = new MySqlConnection("server=localhost; port=3306; username=root; password=root; database=tgadmbot");
+        private static MySqlConnection checkerconn = new MySqlConnection("server=localhost; port=3306; username=root; password=root; database=tgadmbot");
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             //Servise output
@@ -35,7 +37,7 @@ namespace TgAdmBot
                     if (!isThisChatInDB(message))
                     {
                         CreateThisChatInDb(message);
-                        await botClient.SendTextMessageAsync(message.Chat, "Вас приветсвует бот администратор !help для получения списка команд, для работы боту необходим статус администратора.");
+                        await botClient.SendTextMessageAsync(message.Chat, "Привет! Я Амалия, для корректной работы я должна быть администратором, чтобы узнать мои возможности !help");
 
                     }
                     //Initializing the user
@@ -67,7 +69,7 @@ namespace TgAdmBot
                         }
                         if (message.Text.ToLower() == "настройка беседы")
                         {
-                            await botClient.SendTextMessageAsync(message.Chat, "Список доступных настроек беседы\n1. setdefaultadmins - назначит администраторов беседы в соответсвтвие с тем, как расставлены права в телеграм, может использоваться только создателем беседы\n 2. /voicemessange заблокирует или разблокирует голосовые и видеосообщения, по умолчанию разблокировано, может применяться администраторами или создателем");
+                            await botClient.SendTextMessageAsync(message.Chat, "Список доступных настроек беседы\n1. setdefaultadmins - назначит администраторов беседы в соответсвтвие с тем, как расставлены права в телеграм, может использоваться только создателем беседы\n 2. /voicemessange заблокирует или разблокирует голосовые и видеосообщения, по умолчанию разблокировано, может применяться администраторами или создателем\n3. /setwarninglimitaction - установка наказания за превышение количества предупреждений, по умолчанию mute");
                             return;
                         }
                         if (message.Text.ToLower() == "администрирование")
@@ -83,6 +85,16 @@ namespace TgAdmBot
                             return;
                         }
                         //Entertainment commands
+                        if (message.Text.ToLower() == "/rules")
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, GetRules(message.Chat.Id));
+                            return;
+                        }
+                        if (message.Text.ToLower().Contains("/setrules"))
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, SetRules(message.Chat.Id, message.From.Id, message.Text));
+                            return;
+                        }
                         if (message.Text.ToLower() == "актив")
                         {
                             await botClient.SendTextMessageAsync(message.Chat, GetUsersActivity(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
@@ -131,8 +143,14 @@ namespace TgAdmBot
                                 }
 
                             }
+
                         }
-                        if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 3)
+                        if (message.Text.ToLower() == "стата чата")
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat.Id, ChatInfo(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            return;
+                        }
+                        if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 4)
                         {
                             if (message.Text.Length > 6)
                             {
@@ -290,7 +308,7 @@ namespace TgAdmBot
                                     return;
                                 }
                             }
-                            if (message.Text.ToLower().Trim() == "/warn")
+                            if (message.Text.ToLower().Contains("/warn"))
                             {
                                 if (mymessage.message.reply_to_message != null)
                                 {
@@ -299,14 +317,20 @@ namespace TgAdmBot
                                         if (GetWarnsCount(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id) + 1 < 3)
                                         {
                                             Warn(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
-                                            await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) выдал предупреждение пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) предупреждений до исключения {GetWarnsCount(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)}/3", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                            return;
+                                            if (message.Text.Length > 6)
+                                            {
+                                                await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) выдал предупреждение пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})\nПо причине:{message.Text.Substring(5)}\nПредупреждений до исключения {GetWarnsCount(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)}/3", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                                return;
+                                            }
+                                            else
+                                            {
+                                                await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) выдал предупреждение пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})\nПредупреждений до исключения {GetWarnsCount(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)}/3", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                                return;
+                                            }
                                         }
                                         else
                                         {
-                                            await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) был исключен за превышение количества предупреждений", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                            Ban(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
-                                            return;
+                                            await botClient.SendTextMessageAsync(message.Chat, WarningLimitAction(message.Chat.Id, message.ReplyToMessage.From.Id));
                                         }
 
                                     }
@@ -375,6 +399,11 @@ namespace TgAdmBot
                                 }
 
                             }
+                            if (message.Text.ToLower().Contains("/setwarninglimitaction"))
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, SetWarningLimitAction(message.Chat.Id, message.From.Id, message.Text));
+                                return;                            
+                            }
                         }
                     }
                     //Deletes voice messages if they are blocked
@@ -385,15 +414,197 @@ namespace TgAdmBot
                     }
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine("========================================================\n Неизвестная ошибка при обработке сообщения\n========================================================");
+                Console.WriteLine(ex.Message);
                 Console.WriteLine("========================================================\n Неизвестная ошибка при обработке сообщения\n========================================================");
                 return;
             }
         }
+        private static string StrToYesNo(string s)
+        {
+            if (s == "1")
+            {
+                return "Да";
+            }
+            return "Нет";
+        }
+
+        private static string ChatInfo(long chatid)
+        {
+            long messangeCount = 0;
+            long activChatUser = 0;
+            string info="";
+            string sql = $"SELECT * FROM `chats` WHERE ID={chatid}";
+            MySqlCommand cmd = new MySqlCommand(sql, checkerconn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                info = info + "📊 Информация о чате:\n";
+                info = info + "📈 ID чата: " + reader[1].ToString() + "\n";
+                info = info + "💎 VIP чат: "+ StrToYesNo(reader[2].ToString()) + "\n";
+                info = info + "🎧 Голосовые сообщения запрещены: " + StrToYesNo(reader[3].ToString()) + "\n";
+                info = info + "⚖️ Наказание за превышение лимита предупреждений: "+ reader[5].ToString() + "\n";
+            }
+            reader.Close();
+            sql = $"SELECT `MessageCount` FROM `users` WHERE Chat_id={chatid}";
+            cmd = new MySqlCommand(sql, checkerconn);
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                activChatUser++;
+                messangeCount = messangeCount + Convert.ToInt64(reader[0].ToString());
+            }
+            info = info + "👨‍💻 Активные пользователи: "+activChatUser+"\n";
+            info = info + "✉️ Сообщений всего: " + messangeCount + "\n";
+            reader.Close();
+            return info;
+        }
+
+        private static string SetWarningLimitAction(long chatid, long userid, string text)
+        {
+            if (Array.IndexOf(AdmRangs, AdminStatus(chatid, userid)) <= 1)
+            {
+                string[] command = text.Split(' ');
+                if (command.Length > 1)
+                {
+                    if (command[1] == "mute")
+                    {
+                        string sql = $"UPDATE `chats` SET `WarnLimAction` = 'mute' WHERE `chats`.`ID` = {chatid}";
+                        MySqlCommand cmd = new MySqlCommand(sql, checkerconn);
+                        int rowCount = cmd.ExecuteNonQuery();
+                        return "Теперь после достижения лимита предупреждений пользователю будет запрещено писать";
+                    }
+                    else if (command[1] == "ban")
+                    {
+                        string sql = $"UPDATE `chats` SET `WarnLimAction` = 'ban' WHERE `chats`.`ID` = {chatid}";
+                        MySqlCommand cmd = new MySqlCommand(sql, checkerconn);
+                        int rowCount = cmd.ExecuteNonQuery();
+                        return "Теперь после достижения лимита предупреждений пользователь будет удален";
+                    }
+                    else
+                    {
+                        return "Неизвестный аргумент. Ожидалось mute или ban";
+                    }
+                }
+                else
+                {
+                    return "Недостаточно аргументов";
+                }
+            }
+            else
+            {
+                return "Недостаточно прав для выполнения данной команды"; 
+            }
+        }
+
+        private static void CheckMuted()
+        {
+            string sql = $"SELECT `UnMuteTime`, `Chat_id`, User_ID FROM `users` WHERE `IsMute`=1";
+            MySqlCommand cmd = new MySqlCommand(sql, checkerconn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            List<string[]> unmuteID= new List<string[]>();
+            while (reader.Read())
+            {
+                DateTime unMuteTime = DateTime.Parse(reader[0].ToString());
+                string chatid = reader[1].ToString();
+                string userid = reader[2].ToString();
+                if (unMuteTime < DateTime.Now)
+                {
+                    string[] ids = new[] { chatid, userid };
+                    unmuteID.Add(ids);
+                }
+            }
+            reader.Close();
+            foreach(string[] ID in unmuteID)
+            {
+                sql = $"Update users set IsMute = 0, UnMuteTime='NotInMute' where ID = {ID[0]+ID[1]}";
+                cmd = new MySqlCommand(sql, checkerconn);
+                int rowCount = cmd.ExecuteNonQuery();
+                Unmute(Convert.ToInt64(ID[0]), Convert.ToInt64(ID[1]));
+            }
+        }
+
+        private static string WarningLimitAction(long chatid, long userid)
+        {
+            string sql = "SELECT WarnLimAction FROM chats WHERE ID =" + chatid.ToString();
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            string warningLimitAction = (string)cmd.ExecuteScalar();
+            switch (warningLimitAction)
+            {
+                case "ban":
+                    Ban(chatid, userid);
+                    return "Пользователь был удален в связи с превышением лимита предупреждений";
+                case "mute":
+                    Mute(chatid, userid);
+                    return "Пользователю запрещено писать сообщения в связи с превышением лимита предупреждений";
+                default:
+                    return "Неизвестная ошибка";
+            }
+        }
+
         //======================
         //entertainment messages
         //======================
+        private static string GetRules(long chatid)
+        {
+            string sql = $"SELECT `Chat_Rules` FROM `chats` WHERE `ID`={chatid}";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            string rules = "Правила чата не созданы /setrules для создания";
+            while (reader.Read())
+            {
+                rules = reader[0].ToString();
+            }
+            reader.Close();
+            return rules;
+        }
+        private static string SetRules(long chatid, long userid, string messagetext)
+        {
+            //Checking the validity of the nickname
+            if (Array.IndexOf(AdmRangs, AdminStatus(chatid, userid)) <= 1)
+            {
+                if (messagetext.Length > 5)
+                {
+                    if (messagetext.Length < 10000)
+                    {
+                        try
+                        {
+                            if (!messagetext.ToLower().Contains("drop"))
+                            {
+                                //Process the string and write it to the database
+                                string rules = messagetext.Substring(9);
+                                string sql = $"UPDATE `chats` SET `Chat_Rules` = '{Regex.Escape(rules)}' WHERE `chats`.`ID` = {chatid};";
+                                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                                int rowCount = cmd.ExecuteNonQuery();
+                                return $"Правила чата установлены";
+                            }
+                            else
+                            {
+                                return "Использованы недопустимые символы";
+                            }
+                        }
+                        catch
+                        {
+                            return "Использованы недопустимые символы";
+                        }
+                    }
+                    else
+                    {
+                        return "Правила слишком длинные";
+                    }
+                }
+                else
+                {
+                    return "Правила слишком короткие";
+                }
+            }
+            else
+            {
+                return "Только админы и владелец могут изменять правила";
+            }
+        }
         //**************
         //Nicknames Commands
         //**************
@@ -660,7 +871,7 @@ namespace TgAdmBot
         private static string GetMutedUsers(long chatid)
         {
             //Get a list of user IDs and nicknames that is muted
-            string sql = $"SELECT `Nickname`, `User_ID` FROM `users` WHERE `Chat_id`={chatid} AND `IsMute`=1";
+            string sql = $"SELECT `Nickname`, `User_ID`, `UnMuteTime` FROM `users` WHERE `Chat_id`={chatid} AND `IsMute`=1";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader reader = cmd.ExecuteReader();
             //Build result string
@@ -668,7 +879,7 @@ namespace TgAdmBot
             int cnt = 1;
             while (reader.Read())
             {
-                result = result + $"{cnt}. [{reader[0].ToString()}](tg://user?id={reader[1].ToString()})" + "\n";
+                result = result + $"{cnt}. [{reader[0].ToString()}](tg://user?id={reader[1].ToString()})"+" до "+reader[2].ToString() + "\n";
                 cnt = cnt + 1;
             }
             reader.Close();
@@ -750,7 +961,8 @@ namespace TgAdmBot
 
                         }
                         //and update database cell
-                        string sql = $"Update users set IsMute = 1 where ID = {chatid.ToString() + userid.ToString()}";
+                        string sql = $"Update users set IsMute = 1, UnMuteTime={"\'"+DateTime.Now.AddDays(1)+ "\'"} where ID = {chatid.ToString() + userid.ToString()}";
+                        Console.WriteLine("vhjbn");
                         MySqlCommand cmd = new MySqlCommand(sql, conn);
                         int rowCount = cmd.ExecuteNonQuery();
                     }
@@ -778,7 +990,7 @@ namespace TgAdmBot
 
                         }
                         //and update database cell
-                        string sql = $"Update users set IsMute = 0 where ID = {chatid.ToString() + userid.ToString()}";
+                        string sql = $"Update users set IsMute = 0, UnMuteTime='NotInMute' where ID = {chatid.ToString() + userid.ToString()}";
                         MySqlCommand cmd = new MySqlCommand(sql, conn);
                         int rowCount = cmd.ExecuteNonQuery();
                     }
@@ -1137,11 +1349,14 @@ namespace TgAdmBot
             try
             {
                 conn.Open(); 
+                checkerconn.Open();
             }
             catch
             {
                 Console.WriteLine("Ошибка соединения с базой данных");
             }
+            Thread MytedChecker = new Thread(CheckMuted);
+            MytedChecker.Start();
             var cts = new CancellationTokenSource();
             var cancellationToken = cts.Token;
             var receiverOptions = new ReceiverOptions

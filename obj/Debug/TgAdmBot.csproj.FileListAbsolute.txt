@@ -34,3 +34,8 @@ C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\bin\Debug\System.Buffers.dll
 C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\bin\Debug\K4os.Compression.LZ4.dll
 C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\bin\Debug\K4os.Hash.xxHash.dll
 C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\bin\Debug\MySql.Data.xml
+C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\bin\Debug\TgAdmBot.exe.manifest
+C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\bin\Debug\TgAdmBot.application
+C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\obj\Debug\TgAdmBot.TrustInfo.xml
+C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\obj\Debug\TgAdmBot.exe.manifest
+C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\obj\Debug\TgAdmBot.application
