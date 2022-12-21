@@ -183,3 +183,5 @@ C:\Users\eunv2\Source\Repos\TgAdmBot\VladS23\TgAdmBot\bin\Debug\net6.0\.env
 C:\Users\eunv2\Source\Repos\TgAdmBot\VladS23\TgAdmBot\bin\Debug\net6.0\System.Text.Encodings.Web.dll
 C:\Users\eunv2\Source\Repos\TgAdmBot\VladS23\TgAdmBot\bin\Debug\net6.0\System.Text.Json.dll
 C:\Users\eunv2\Source\Repos\TgAdmBot\VladS23\TgAdmBot\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
+C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\TgAdmBot\bin\Debug\net6.0\Microsoft.Extensions.Configuration.dll
+C:\Users\Vlad\source\repos\TgAdmBot\TgAdmBot\TgAdmBot\bin\Debug\net6.0\Database\.env

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgAdmBot", "TgAdmBot\TgAdmBot.csproj", "{85C3AAE4-69C7-48B5-A337-D80941792B2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TgAdmBot", "TgAdmBot\TgAdmBot.csproj", "{85C3AAE4-69C7-48B5-A337-D80941792B2B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C6177E81-D348-4A36-BA68-39BD855BCD50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

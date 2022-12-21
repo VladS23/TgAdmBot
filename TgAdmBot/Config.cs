@@ -16,6 +16,7 @@ namespace TgAdmBot
         {
             var root = Directory.GetCurrentDirectory();
             var dotenv = Path.Combine(root, ".env");
+            Console.WriteLine(dotenv);
             this.Load(dotenv);
         }
         void Load(string filePath)
