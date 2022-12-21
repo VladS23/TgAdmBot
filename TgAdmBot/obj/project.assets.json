@@ -8,14 +8,10 @@
           "SQLitePCLRaw.core": "2.1.2"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Data.Sqlite.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Data.Sqlite.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Data.Sqlite.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Data.Sqlite.dll": {}
         }
       },
       "Microsoft.EntityFrameworkCore/7.0.0": {
@@ -28,14 +24,10 @@
           "Microsoft.Extensions.Logging": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.EntityFrameworkCore.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.EntityFrameworkCore.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.EntityFrameworkCore.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.EntityFrameworkCore.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/Microsoft.EntityFrameworkCore.props": {}
@@ -44,14 +36,10 @@
       "Microsoft.EntityFrameworkCore.Abstractions/7.0.0": {
         "type": "package",
         "compile": {
-          "lib/net6.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {}
         }
       },
       "Microsoft.EntityFrameworkCore.Analyzers/7.0.0": {
@@ -70,14 +58,10 @@
           "Microsoft.Extensions.Configuration.Abstractions": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.EntityFrameworkCore.Relational.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.EntityFrameworkCore.Relational.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.EntityFrameworkCore.Relational.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.EntityFrameworkCore.Relational.dll": {}
         }
       },
       "Microsoft.EntityFrameworkCore.Sqlite/7.0.0": {
@@ -101,14 +85,10 @@
           "Microsoft.Extensions.DependencyModel": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.EntityFrameworkCore.Sqlite.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.EntityFrameworkCore.Sqlite.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.EntityFrameworkCore.Sqlite.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.EntityFrameworkCore.Sqlite.dll": {}
         }
       },
       "Microsoft.Extensions.Caching.Abstractions/7.0.0": {
@@ -117,14 +97,10 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Caching.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Caching.Abstractions.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Caching.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Caching.Abstractions.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -140,14 +116,10 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Caching.Memory.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Caching.Memory.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Caching.Memory.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Caching.Memory.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -159,14 +131,10 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Configuration.Abstractions.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Configuration.Abstractions.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -178,14 +146,10 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.DependencyInjection.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.DependencyInjection.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.DependencyInjection.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.DependencyInjection.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -194,14 +158,10 @@
       "Microsoft.Extensions.DependencyInjection.Abstractions/7.0.0": {
         "type": "package",
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -214,14 +174,10 @@
           "System.Text.Json": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.DependencyModel.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.DependencyModel.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.DependencyModel.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.DependencyModel.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -236,14 +192,10 @@
           "Microsoft.Extensions.Options": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Logging.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Logging.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Logging.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Logging.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -252,14 +204,10 @@
       "Microsoft.Extensions.Logging.Abstractions/7.0.0": {
         "type": "package",
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Logging.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Logging.Abstractions.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Logging.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Logging.Abstractions.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/Microsoft.Extensions.Logging.Abstractions.targets": {}
@@ -272,14 +220,10 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Options.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Options.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Options.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Options.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -291,14 +235,10 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Primitives.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Primitives.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Primitives.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Microsoft.Extensions.Primitives.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -307,14 +247,10 @@
       "Newtonsoft.Json/12.0.2": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/Newtonsoft.Json.dll": {
-            "related": ".xml"
-          }
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         },
         "runtime": {
-          "lib/netstandard2.0/Newtonsoft.Json.dll": {
-            "related": ".xml"
-          }
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
       "SQLitePCLRaw.bundle_e_sqlite3/2.1.2": {
@@ -468,14 +404,10 @@
       "System.Runtime.CompilerServices.Unsafe/6.0.0": {
         "type": "package",
         "compile": {
-          "lib/net6.0/System.Runtime.CompilerServices.Unsafe.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/System.Runtime.CompilerServices.Unsafe.dll": {}
         },
         "runtime": {
-          "lib/net6.0/System.Runtime.CompilerServices.Unsafe.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/System.Runtime.CompilerServices.Unsafe.dll": {}
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
@@ -487,14 +419,10 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         },
         "compile": {
-          "lib/net6.0/System.Text.Encodings.Web.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/System.Text.Encodings.Web.dll": {}
         },
         "runtime": {
-          "lib/net6.0/System.Text.Encodings.Web.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/System.Text.Encodings.Web.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
@@ -513,14 +441,10 @@
           "System.Text.Encodings.Web": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/System.Text.Json.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/System.Text.Json.dll": {}
         },
         "runtime": {
-          "lib/net6.0/System.Text.Json.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/System.Text.Json.dll": {}
         },
         "build": {
           "buildTransitive/net6.0/System.Text.Json.targets": {}
@@ -532,14 +456,10 @@
           "Newtonsoft.Json": "12.0.2"
         },
         "compile": {
-          "lib/netcoreapp3.1/Telegram.Bot.dll": {
-            "related": ".pdb;.xml"
-          }
+          "lib/netcoreapp3.1/Telegram.Bot.dll": {}
         },
         "runtime": {
-          "lib/netcoreapp3.1/Telegram.Bot.dll": {
-            "related": ".pdb;.xml"
-          }
+          "lib/netcoreapp3.1/Telegram.Bot.dll": {}
         }
       }
     }
@@ -1260,23 +1180,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\eunv2\\.nuget\\packages\\": {},
+    "C:\\Users\\Vlad\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\eunv2\\source\\repos\\PetProjects\\VladS23\\TgAdmBot\\TgAdmBot\\TgAdmBot.csproj",
+      "projectUniqueName": "C:\\Users\\Vlad\\source\\repos\\TgAdmBot\\TgAdmBot\\TgAdmBot\\TgAdmBot.csproj",
       "projectName": "TgAdmBot",
-      "projectPath": "C:\\Users\\eunv2\\source\\repos\\PetProjects\\VladS23\\TgAdmBot\\TgAdmBot\\TgAdmBot.csproj",
-      "packagesPath": "C:\\Users\\eunv2\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\eunv2\\source\\repos\\PetProjects\\VladS23\\TgAdmBot\\TgAdmBot\\obj\\",
+      "projectPath": "C:\\Users\\Vlad\\source\\repos\\TgAdmBot\\TgAdmBot\\TgAdmBot\\TgAdmBot.csproj",
+      "packagesPath": "C:\\Users\\Vlad\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Vlad\\source\\repos\\TgAdmBot\\TgAdmBot\\TgAdmBot\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\eunv2\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Vlad\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1285,7 +1205,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1319,8 +1238,7 @@
           "net47",
           "net471",
           "net472",
-          "net48",
-          "net481"
+          "net48"
         ],
         "assetTargetFallback": true,
         "warn": true,
@@ -1329,7 +1247,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.202\\RuntimeIdentifierGraph.json"
       }
     }
   }

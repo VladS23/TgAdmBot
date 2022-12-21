@@ -24,7 +24,7 @@ namespace TgAdmBot.Database
             public DbSet<Chat> Chats { get; set; }
             protected override void OnConfiguring(DbContextOptionsBuilder options)
             {
-                options.UseSqlite($"Data Source=database.db");
+                options.UseSqlite(@"Data Source=C:\Users\Vlad\source\repos\TgAdmBot\database.db");
             }
         }
     }

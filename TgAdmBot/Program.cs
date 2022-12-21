@@ -17,7 +17,7 @@ namespace TgAdmBot
         //This list help to determine admin hierarсhy
         private static string[] AdmRangs = { "creator", "administrator", "moderator", "helper", "normal" };
         //Initializing botapi and database connection
-        private static string botToken = "";
+        private static string botToken = "5328960378:AAFJx-f2ZnMJY_545JW7GGiJTvCuJDwuNMY";
         private static ITelegramBotClient bot = new TelegramBotClient(botToken);
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
@@ -32,132 +32,121 @@ namespace TgAdmBot
                 MyMessage mymessage = Newtonsoft.Json.JsonConvert.DeserializeObject<MyMessage>(strupdate);
                 Telegram.Bot.Types.Message message = update.Message;
                 //Initializing the chat
-                if (!isThisChatInDB(message))
-                {
-                    CreateThisChatInDb(message);
-                    await botClient.SendTextMessageAsync(message.Chat, "Привет! Я Амалия, для корректной работы я должна быть администратором, чтобы узнать мои возможности /help");
-
-                }
-                //Initializing the user
-                if (!isThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id))
-                {
-                    CreateThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id, mymessage.message.from.first_name);
-                }
-                Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == mymessage.message.chat.id);
-                Database.User user = chat.Users.Single(user => user.TelegramUserId == mymessage.message.from.id);
-                if (mymessage.message.reply_to_message != null)
-                {
-                    if (!isThisUserInDB(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
-                    {
-                        CreateThisUserInDB(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id, mymessage.message.reply_to_message.from.first_name);
-                    }
-                }
-                //Collecting statistics
-                Analyzer(mymessage, message);
                 if (message.Text != null)
                 {
-                    if (message.Text.Split("@").Length==2)
+                    if (!isThisChatInDB(message))
                     {
-                        message.Text = message.Text.Replace($"@{message.Text.Split("@")[message.Text.Split("@").Length - 1]}", "");
-                    }
-                    //Processing help commands
-                    if (message.Text.ToLower() == "/help")
-                    {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat, "Выберите какой раздел команд вас интересует \n 1. Развлечения \n 2. Настройка беседы \n 3. Администрирование");
-                        return;
-                    }
-                    if (message.Text.ToLower() == "1" && user.LastMessage == "/help")
-                    {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat, "Список развлекательных команд\n1. Ник + имя - установит вам в качестве ника \"имя\"\n2. Участники - выведет список всех участников беседы \n3. Стата - выведет вашу статистику, пользователи с рангом модератор и выше могут посмотреть статистику пользователей с рангом меньше, чем у них, если напишут это сообщение в ответ на сообщение пользователя, статистику которого необходимо просмотреть\n4. Рнд число1-число2 - сгенерирует случайное число из указанного промежутка\n5. Вбр вариант1 или вариант2 - выберет один из указанных вариантов\n6. Me действие - выведет сообщение вида: \"пользователь1 действие пользователь2\" (пользователь2 указывается путем ответа на его сообщение)\n 7. кт + действие - выведет: *Случайный участник беседы* действие\n 8. Вртн + событие - предположит вероятность какого-то события");
+                        CreateThisChatInDb(message);
+                        await botClient.SendTextMessageAsync(message.Chat, "Привет! Я Амалия, для корректной работы я должна быть администратором, чтобы узнать мои возможности /help");
 
-                        return;
                     }
-                    if (message.Text.ToLower() == "2" && user.LastMessage == "/help")
+                    //Initializing the user
+                    if (!isThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id))
                     {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat, "Список доступных настроек беседы\n1. setdefaultadmins - назначит администраторов беседы в соответсвтвие с тем, как расставлены права в телеграм, может использоваться только создателем беседы\n 2. /voicemessange заблокирует или разблокирует голосовые и видеосообщения, по умолчанию разблокировано, может применяться администраторами или создателем\n3. /setwarninglimitaction - установка наказания за превышение количества предупреждений, по умолчанию mute");
-                        return;
+                        CreateThisUserInDB(mymessage.message.chat.id, mymessage.message.from.id, mymessage.message.from.first_name);
                     }
-                    if (message.Text.ToLower() == "3" && user.LastMessage == "/help")
+                    Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == mymessage.message.chat.id);
+                    Database.User user = chat.Users.Single(user => user.TelegramUserId == mymessage.message.from.id);
+                    if (mymessage.message.reply_to_message != null)
                     {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat, "Список доступных административных действий:\n 1. Назначения ранга пользователям. Ранг создателя сразу выдается создателем беседы, остальные ранги могут быть назначены пользователем с рангом выше. Чтобы назначить ранг необходимо написать одну из следующих команд в ответ на сообщение пользователя, которому необходимо назначить ранг\n   /admin\n    /moder\n    /helper\n    /normal\n 2. /mute Если ваш ранг выше или равен модератору и выше, чем у пользователя, на сообщение, которого вы ответили, то вы запретите или разрешите ему писать сообщения, не работает на пользователей, которым в настройках беседы телеграм установлен ранг администратор\n 3. /muted Выведет список всех, кому запрещено писать сообщения\n 4. /ban Исключит пользователя из беседы и добавит его в черный список чата, данная команда доступна только создателю и администратора, не работает на пользователей, котрым в настройках беседы в телеграм установлен ранг администратора\n 5. /unban  Исключит пользователя из черного списка чата, команда доступна администраторам и создателям\n 6. /warn Выдаст пользователю предупреждение, по достижению трех предупреждений он будет исключен из беседы, команда доступна создателю или администраторам\n 7. /warns выведет список предупрежденных пользователей беседы, доступна создателю или администраторам \n8. /unwarn снимет с пользователя все предупреждения");
-                        return;
+                        if (!isThisUserInDB(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
+                        {
+                            CreateThisUserInDB(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id, mymessage.message.reply_to_message.from.first_name);
+                        }
                     }
-                    //This command should be used to search for the chat creator
-                    //if it is defined incorrectly during initialization
-                    if (message.Text.ToLower() == "setdefaultadmins")
+                    //Collecting statistics
+                    Analyzer(mymessage, message);
+                    if (message.Text != null)
                     {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat, SetDefaultAdmins(message.Chat.Id, message.From.Id));
-                        return;
-                    }
-                    //Entertainment commands
-                    if (message.Text.ToLower() == "/rules")
-                    {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat, GetRules(message.Chat.Id));
-                        return;
-                    }
-                    if (message.Text.ToLower().Contains("/setrules"))
-                    {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat, SetRules(message.Chat.Id, message.From.Id, message.Text));
-                        return;
-                    }
-                    if (message.Text.ToLower() == "актив")
-                    {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat, GetUsersActivity(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                        return;
-                    }
-                    if (message.Text.Length > 4)
-                    {
-                        if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == ' ')
+                        if (message.Text.Split("@").Length == 2 && message.Text.Split("@").Length == 1)
+                        {
+                            message.Text = message.Text.Replace($"@{message.Text.Split("@")[message.Text.Split("@").Length - 1]}", "");
+                        }
+                        //Processing help commands
+                        if (message.Text.ToLower() == "/help")
                         {
                             user.LastMessage = message.Text;
                             BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, SetNickname(mymessage.message.chat.id, mymessage.message.from.id, mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            await botClient.SendTextMessageAsync(message.Chat, "Выберите какой раздел команд вас интересует \n 1. Развлечения \n 2. Настройка беседы \n 3. Администрирование");
                             return;
                         }
-                    }
-                    if (message.Text.Length == 9)
-                    {
-                        if (message.Text.ToLower() == "участники")
+                        if (message.Text.ToLower() == "1" && user.LastMessage == "/help")
                         {
                             user.LastMessage = message.Text;
                             BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, GetChatNicknames(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            await botClient.SendTextMessageAsync(message.Chat, "Список развлекательных команд\n1. Ник + имя - установит вам в качестве ника \"имя\"\n2. Участники - выведет список всех участников беседы \n3. Стата - выведет вашу статистику, пользователи с рангом модератор и выше могут посмотреть статистику пользователей с рангом меньше, чем у них, если напишут это сообщение в ответ на сообщение пользователя, статистику которого необходимо просмотреть\n4. Рнд число1-число2 - сгенерирует случайное число из указанного промежутка\n5. Вбр вариант1 или вариант2 - выберет один из указанных вариантов\n6. Me действие - выведет сообщение вида: \"пользователь1 действие пользователь2\" (пользователь2 указывается путем ответа на его сообщение)\n 7. кт + действие - выведет: *Случайный участник беседы* действие\n 8. Вртн + событие - предположит вероятность какого-то события");
                             return;
                         }
-                    }
-                    if (message.Text.Length == 5)
-                    {
-                        if (message.Text.ToLower() == "стата")
+                        if (message.Text.ToLower() == "2" && user.LastMessage == "/help")
                         {
-                            if (mymessage.message.reply_to_message == null)
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat, "Список доступных настроек беседы\n1. setdefaultadmins - назначит администраторов беседы в соответсвтвие с тем, как расставлены права в телеграм, может использоваться только создателем беседы\n 2. /voicemessange заблокирует или разблокирует голосовые и видеосообщения, по умолчанию разблокировано, может применяться администраторами или создателем\n3. /setwarninglimitaction - установка наказания за превышение количества предупреждений, по умолчанию mute");
+                            return;
+                        }
+                        if (message.Text.ToLower() == "3" && user.LastMessage == "/help")
+                        {
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat, "Список доступных административных действий:\n 1. Назначения ранга пользователям. Ранг создателя сразу выдается создателем беседы, остальные ранги могут быть назначены пользователем с рангом выше. Чтобы назначить ранг необходимо написать одну из следующих команд в ответ на сообщение пользователя, которому необходимо назначить ранг\n   /admin\n    /moder\n    /helper\n    /normal\n 2. /mute Если ваш ранг выше или равен модератору и выше, чем у пользователя, на сообщение, которого вы ответили, то вы запретите или разрешите ему писать сообщения, не работает на пользователей, которым в настройках беседы телеграм установлен ранг администратор\n 3. /muted Выведет список всех, кому запрещено писать сообщения\n 4. /ban Исключит пользователя из беседы и добавит его в черный список чата, данная команда доступна только создателю и администратора, не работает на пользователей, котрым в настройках беседы в телеграм установлен ранг администратора\n 5. /unban  Исключит пользователя из черного списка чата, команда доступна администраторам и создателям\n 6. /warn Выдаст пользователю предупреждение, по достижению трех предупреждений он будет исключен из беседы, команда доступна создателю или администраторам\n 7. /warns выведет список предупрежденных пользователей беседы, доступна создателю или администраторам \n8. /unwarn снимет с пользователя все предупреждения");
+                            return;
+                        }
+                        //This command should be used to search for the chat creator
+                        //if it is defined incorrectly during initialization
+                        if (message.Text.ToLower() == "setdefaultadmins")
+                        {
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat, SetDefaultAdmins(message.Chat.Id, message.From.Id));
+                            return;
+                        }
+                        //Entertainment commands
+                        if (message.Text.ToLower() == "/rules")
+                        {
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat, GetRules(message.Chat.Id));
+                            return;
+                        }
+                        if (message.Text.ToLower().Contains("/setrules"))
+                        {
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat, SetRules(message.Chat.Id, message.From.Id, message.Text));
+                            return;
+                        }
+                        if (message.Text.ToLower() == "актив")
+                        {
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat, GetUsersActivity(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            return;
+                        }
+                        if (message.Text.Length > 4)
+                        {
+                            if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == ' ')
                             {
                                 user.LastMessage = message.Text;
                                 BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat.Id, GetStatistics(mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                await botClient.SendTextMessageAsync(message.Chat, SetNickname(mymessage.message.chat.id, mymessage.message.from.id, mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                 return;
                             }
-                            else
+                        }
+                        if (message.Text.Length == 9)
+                        {
+                            if (message.Text.ToLower() == "участники")
                             {
-                                //Such a check allows you to determine the user's access level as a number
-                                //and compare it with the specified one
-                                //maximum level 0, minimum 4
-                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                user.LastMessage = message.Text;
+                                BotDatabase.db.SaveChanges();
+                                await botClient.SendTextMessageAsync(message.Chat, GetChatNicknames(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
+                        }
+                        if (message.Text.Length == 5)
+                        {
+                            if (message.Text.ToLower() == "стата")
+                            {
+                                if (mymessage.message.reply_to_message == null)
                                 {
                                     user.LastMessage = message.Text;
                                     BotDatabase.db.SaveChanges();
@@ -166,338 +155,351 @@ namespace TgAdmBot
                                 }
                                 else
                                 {
+                                    //Such a check allows you to determine the user's access level as a number
+                                    //and compare it with the specified one
+                                    //maximum level 0, minimum 4
+                                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                    {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        await botClient.SendTextMessageAsync(message.Chat.Id, GetStatistics(mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        await botClient.SendTextMessageAsync(message.Chat.Id, "Недостаточно прав на выполнение этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                }
+
+                            }
+
+                        }
+                        if (message.Text.ToLower() == "стата чата")
+                        {
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat.Id, ChatInfo(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            return;
+                        }
+                        if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 4)
+                        {
+                            if (message.Text.Length > 6)
+                            {
+                                if (message.Text.ToLower()[0] == 'р' && message.Text.ToLower()[1] == 'н' && message.Text.ToLower()[2] == 'д' && message.Text.ToLower()[3] == ' ')
+                                {
                                     user.LastMessage = message.Text;
                                     BotDatabase.db.SaveChanges();
-                                    await botClient.SendTextMessageAsync(message.Chat.Id, "Недостаточно прав на выполнение этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    await botClient.SendTextMessageAsync(message.Chat, GetRandomNumber(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                     return;
                                 }
                             }
-
+                            if (message.Text.Length > 10)
+                            {
+                                if (message.Text.ToLower()[0] == 'в' && message.Text.ToLower()[1] == 'б' && message.Text.ToLower()[2] == 'р' && message.Text.ToLower()[3] == ' ')
+                                {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
+                                    await botClient.SendTextMessageAsync(message.Chat, Chose(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            if (message.Text.Length > 3)
+                            {
+                                if (message.Text.ToLower()[0] == 'm' && message.Text.ToLower()[1] == 'e' && message.Text.ToLower()[2] == ' ')
+                                {
+                                    if (mymessage.message.reply_to_message != null)
+                                    {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        string mestext = mymessage.message.text.Substring(3);
+                                        await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) " + mestext + $" [{GetNickname(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                                        return;
+                                    }
+                                }
+                            }
+                            if (message.Text.Length > 3)
+                            {
+                                if (message.Text.ToLower()[0] == 'к' && message.Text.ToLower()[1] == 'т' && message.Text.ToLower()[2] == ' ')
+                                {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
+                                    await botClient.SendTextMessageAsync(message.Chat, Who(mymessage.message.text, message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            if (message.Text.Length > 5)
+                            {
+                                if (message.Text.ToLower()[0] == 'в' && message.Text.ToLower()[1] == 'р' && message.Text.ToLower()[2] == 'т' && message.Text.ToLower()[3] == 'н' && message.Text.ToLower()[4] == ' ')
+                                {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
+                                    await botClient.SendTextMessageAsync(message.Chat, Probability(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
                         }
-
-                    }
-                    if (message.Text.ToLower() == "стата чата")
-                    {
-                        user.LastMessage = message.Text;
-                        BotDatabase.db.SaveChanges();
-                        await botClient.SendTextMessageAsync(message.Chat.Id, ChatInfo(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                        return;
-                    }
-                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 4)
-                    {
-                        if (message.Text.Length > 6)
+                        //Administrative command
+                        if (message.Text.ToLower()[0] == '/')
                         {
-                            if (message.Text.ToLower()[0] == 'р' && message.Text.ToLower()[1] == 'н' && message.Text.ToLower()[2] == 'д' && message.Text.ToLower()[3] == ' ')
+                            if (message.Text.ToLower().Trim() == "/admin")
                             {
                                 user.LastMessage = message.Text;
                                 BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, GetRandomNumber(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus(UserRights.administrator, mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                 return;
                             }
-                        }
-                        if (message.Text.Length > 10)
-                        {
-                            if (message.Text.ToLower()[0] == 'в' && message.Text.ToLower()[1] == 'б' && message.Text.ToLower()[2] == 'р' && message.Text.ToLower()[3] == ' ')
+                            if (message.Text.ToLower().Trim() == "/moder")
                             {
                                 user.LastMessage = message.Text;
                                 BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, Chose(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus(UserRights.moderator, mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                 return;
+
                             }
-                        }
-                        if (message.Text.Length > 3)
-                        {
-                            if (message.Text.ToLower()[0] == 'm' && message.Text.ToLower()[1] == 'e' && message.Text.ToLower()[2] == ' ')
+                            if (message.Text.ToLower().Trim() == "/helper")
+                            {
+                                user.LastMessage = message.Text;
+                                BotDatabase.db.SaveChanges();
+                                await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus(UserRights.helper, mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+
+                            }
+                            if (message.Text.ToLower().Trim() == "/normal")
+                            {
+                                user.LastMessage = message.Text;
+                                BotDatabase.db.SaveChanges();
+                                await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus(UserRights.normal, mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+
+                            }
+                            if (mymessage.message.text.ToLower().Trim() == "/mute")
                             {
                                 if (mymessage.message.reply_to_message != null)
                                 {
-                                    user.LastMessage = message.Text;
-                                    BotDatabase.db.SaveChanges();
-                                    string mestext = mymessage.message.text.Substring(3);
-                                    await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) " + mestext + $" [{GetNickname(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
-                                    return;
-                                }
-                            }
-                        }
-                        if (message.Text.Length > 3)
-                        {
-                            if (message.Text.ToLower()[0] == 'к' && message.Text.ToLower()[1] == 'т' && message.Text.ToLower()[2] == ' ')
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, Who(mymessage.message.text, message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                        if (message.Text.Length > 5)
-                        {
-                            if (message.Text.ToLower()[0] == 'в' && message.Text.ToLower()[1] == 'р' && message.Text.ToLower()[2] == 'т' && message.Text.ToLower()[3] == 'н' && message.Text.ToLower()[4] == ' ')
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, Probability(mymessage.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                    }
-                    //Administrative command
-                    if (message.Text.ToLower()[0] == '/')
-                    {
-                        if (message.Text.ToLower().Trim() == "/admin")
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus(UserRights.admin, mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            return;
-                        }
-                        if (message.Text.ToLower().Trim() == "/moder")
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus(UserRights.moderator, mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            return;
-
-                        }
-                        if (message.Text.ToLower().Trim() == "/helper")
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus(UserRights.helper, mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            return;
-
-                        }
-                        if (message.Text.ToLower().Trim() == "/normal")
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, SetAdminStatus(UserRights.user, mymessage), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            return;
-
-                        }
-                        if (mymessage.message.text.ToLower().Trim() == "/mute")
-                        {
-                            if (mymessage.message.reply_to_message != null)
-                            {
-                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
-                                {
-                                    if (IsThisUserMute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
+                                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
                                     {
-                                        user.LastMessage = message.Text;
-                                        BotDatabase.db.SaveChanges();
-                                        Unmute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
-                                        await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) разрешил пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) писать сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                        return;
-
-                                    }
-                                    else
-                                    {
-                                        user.LastMessage = message.Text;
-                                        BotDatabase.db.SaveChanges();
-                                        Mute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
-                                        await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) запретил пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) писать сообщения, чтобы вновь разрешить данному пользователю писать введите " + "\"/mute\" в ответ на его сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                        return;
-                                    }
-                                }
-                                else
-                                {
-                                    user.LastMessage = message.Text;
-                                    BotDatabase.db.SaveChanges();
-                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщением на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                        if (mymessage.message.text.ToLower().Trim() == "/muted")
-                        {
-                            if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2)
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, GetMutedUsers(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                        if (mymessage.message.text.ToLower().Trim() == "/ban")
-                        {
-                            if (mymessage.message.reply_to_message != null)
-                            {
-                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
-                                {
-                                    user.LastMessage = message.Text;
-                                    BotDatabase.db.SaveChanges();
-                                    Ban(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
-                                    await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) забанил [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) чтобы вернуть данного пользователя обратно администратор или создатель должен написать /unban в ответ на любое сообщение пользователя, а затем пригласить его в чат или вручную удалить его из черного списка чата, а затем пригласить ", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-                                }
-                                else
-                                {
-                                    user.LastMessage = message.Text;
-                                    BotDatabase.db.SaveChanges();
-                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                        if (mymessage.message.text.ToLower().Trim() == "/unban")
-                        {
-                            if (mymessage.message.reply_to_message != null)
-                            {
-                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
-                                {
-                                    user.LastMessage = message.Text;
-                                    BotDatabase.db.SaveChanges();
-                                    UnBan(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
-                                    await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) разбанил [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) теперь он вновь может быть приглашен в чат", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-                                }
-                                else
-                                {
-                                    user.LastMessage = message.Text;
-                                    BotDatabase.db.SaveChanges();
-                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                        if (message.Text.ToLower().Contains("/warn"))
-                        {
-                            if (mymessage.message.reply_to_message != null)
-                            {
-                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
-                                {
-                                    if (user.WarnsCount < chat.WarnsLimit)
-                                    {
-                                        user.LastMessage = message.Text;
-                                        BotDatabase.db.SaveChanges();
-                                        Warn(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
-                                        if (message.Text.Length > 6)
+                                        if (IsThisUserMute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id))
                                         {
-                                            await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) выдал предупреждение пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})\nПо причине:{message.Text.Substring(5)}\nПредупреждений до исключения {chat.WarnsLimit - user.WarnsCount}", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                            user.LastMessage = message.Text;
+                                            BotDatabase.db.SaveChanges();
+                                            Unmute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                            await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) разрешил пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) писать сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                             return;
+
                                         }
                                         else
                                         {
-                                            await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) выдал предупреждение пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})\nПредупреждений до исключения {chat.WarnsLimit - user.WarnsCount}", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                            user.LastMessage = message.Text;
+                                            BotDatabase.db.SaveChanges();
+                                            Mute(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                            await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) запретил пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) писать сообщения, чтобы вновь разрешить данному пользователю писать введите " + "\"/mute\" в ответ на его сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                             return;
                                         }
                                     }
                                     else
                                     {
-                                        await botClient.SendTextMessageAsync(message.Chat, WarningLimitAction(message.Chat.Id, message.ReplyToMessage.From.Id));
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
                                     }
-
                                 }
                                 else
-                                {
-                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                        if (message.Text.ToLower().Trim() == "/unwarn")
-                        {
-                            if (mymessage.message.reply_to_message != null)
-                            {
-                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
                                 {
                                     user.LastMessage = message.Text;
                                     BotDatabase.db.SaveChanges();
-                                    Unwarn(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
-                                    await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) снял все предупреждения с пользователя [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-
-                                }
-                                else
-                                {
-                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщением на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                     return;
                                 }
                             }
-                            else
+                            if (mymessage.message.text.ToLower().Trim() == "/muted")
                             {
-                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                        if (mymessage.message.text.ToLower().Trim() == "/warns")
-                        {
-                            if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2)
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, GetWarnedUsers(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
-                        if (message.Text.ToLower().Trim() == "/voicemessange")
-                        {
-                            if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, message.From.Id)) <= 1)
-                            {
-                                voiceMessangeCommand(message);
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                if (isVoiceMessengeBlocked(message) == true)
+                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2)
                                 {
-                                    await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе запрещены голосовые сообщения");
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
+                                    await botClient.SendTextMessageAsync(message.Chat, GetMutedUsers(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            if (mymessage.message.text.ToLower().Trim() == "/ban")
+                            {
+                                if (mymessage.message.reply_to_message != null)
+                                {
+                                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                    {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        Ban(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                        await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) забанил [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) чтобы вернуть данного пользователя обратно администратор или создатель должен написать /unban в ответ на любое сообщение пользователя, а затем пригласить его в чат или вручную удалить его из черного списка чата, а затем пригласить ", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
                                 }
                                 else
                                 {
-                                    await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе разрешены голосовые сообщения");
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
+                                    await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
                                 }
-                                return;
                             }
-                            else
+                            if (mymessage.message.text.ToLower().Trim() == "/unban")
                             {
-                                await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав для выполнения данной команды");
+                                if (mymessage.message.reply_to_message != null)
+                                {
+                                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                    {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        UnBan(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                        await botClient.SendTextMessageAsync(message.Chat, $"[{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) разбанил [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id}) теперь он вновь может быть приглашен в чат", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
+                                    await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            if (message.Text.ToLower().Contains("/warn"))
+                            {
+                                if (mymessage.message.reply_to_message != null)
+                                {
+                                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                    {
+                                        if (user.WarnsCount < chat.WarnsLimit)
+                                        {
+                                            user.LastMessage = message.Text;
+                                            BotDatabase.db.SaveChanges();
+                                            Warn(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                            if (message.Text.Length > 6)
+                                            {
+                                                await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) выдал предупреждение пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})\nПо причине:{message.Text.Substring(5)}\nПредупреждений до исключения {chat.WarnsLimit - user.WarnsCount}", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                                return;
+                                            }
+                                            else
+                                            {
+                                                await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) выдал предупреждение пользователю [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})\nПредупреждений до исключения {chat.WarnsLimit - user.WarnsCount}", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                                return;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            await botClient.SendTextMessageAsync(message.Chat, WarningLimitAction(message.Chat.Id, message.ReplyToMessage.From.Id));
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            if (message.Text.ToLower().Trim() == "/unwarn")
+                            {
+                                if (mymessage.message.reply_to_message != null)
+                                {
+                                    if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 1 && Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                                    {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
+                                        Unwarn(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id);
+                                        await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{GetNickname(mymessage.message.chat.id, mymessage.message.from.id)}](tg://user?id={mymessage.message.from.id}) снял все предупреждения с пользователя [{GetNickname(mymessage.message.reply_to_message.chat.id, mymessage.message.reply_to_message.from.id)}](tg://user?id={mymessage.message.reply_to_message.from.id})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+
+                                    }
+                                    else
+                                    {
+                                        await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            if (mymessage.message.text.ToLower().Trim() == "/warns")
+                            {
+                                if (Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) <= 2)
+                                {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
+                                    await botClient.SendTextMessageAsync(message.Chat, GetWarnedUsers(mymessage.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    return;
+                                }
+                            }
+                            if (message.Text.ToLower().Trim() == "/voicemessange")
+                            {
+                                if (Array.IndexOf(AdmRangs, AdminStatus(message.Chat.Id, message.From.Id)) <= 1)
+                                {
+                                    voiceMessangeCommand(message);
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
+                                    if (isVoiceMessengeBlocked(message) == true)
+                                    {
+                                        await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе запрещены голосовые сообщения");
+                                    }
+                                    else
+                                    {
+                                        await botClient.SendTextMessageAsync(message.Chat, "Теперь в данной беседе разрешены голосовые сообщения");
+                                    }
+                                    return;
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав для выполнения данной команды");
+                                    return;
+                                }
+
+                            }
+                            if (message.Text.ToLower().Contains("/setwarninglimitaction"))
+                            {
+                                user.LastMessage = message.Text;
+                                BotDatabase.db.SaveChanges();
+                                await botClient.SendTextMessageAsync(message.Chat, SetWarningLimitAction(message.Chat.Id, message.From.Id, message.Text));
                                 return;
                             }
 
                         }
-                        if (message.Text.ToLower().Contains("/setwarninglimitaction"))
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, SetWarningLimitAction(message.Chat.Id, message.From.Id, message.Text));
-                            return;
-                        }
-                        
+                    }
+                    //Deletes voice messages if they are blocked
+                    if ((message.Voice != null || message.VideoNote != null) & isVoiceMessengeBlocked(message))
+                    {
+                        await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
+                        return;
                     }
                 }
-                //Deletes voice messages if they are blocked
-                if ((message.Voice != null || message.VideoNote != null) & isVoiceMessengeBlocked(message))
-                {
-                    await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
-                    return;
-                }
-            }
 
+            }
         }
         private static string StrToYesNo(string s)
         {
@@ -529,7 +531,7 @@ namespace TgAdmBot
         private static string SetWarningLimitAction(long chatid, long userid, string text)
         {
             Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == chatid);
-            if (chat.Users.Single(user => user.TelegramUserId == userid).UserRights == UserRights.admin)
+            if (chat.Users.Single(user => user.TelegramUserId == userid).UserRights == UserRights.administrator)
             {
                 string[] command = text.Split(' ').Length > 1 ? text.Split(' ') : new string[] { "", "" };
 
@@ -595,7 +597,7 @@ namespace TgAdmBot
             Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == chatid);
 
             //Checking the validity of the nickname
-            if (chat.Users.Single(user => user.TelegramUserId == userid).UserRights == UserRights.admin)
+            if (chat.Users.Single(user => user.TelegramUserId == userid).UserRights == UserRights.administrator)
             {
                 if (messagetext.Length > 5)
                 {
@@ -985,8 +987,8 @@ namespace TgAdmBot
             if (mymessage.message.reply_to_message != null)
             {
                 Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == mymessage.message.chat.id);
-
-                if (chat.Users.Single(user => user.TelegramUserId == mymessage.message.from.id).UserRights == UserRights.admin)
+                //Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(mymessage.message.chat.id, mymessage.message.reply_to_message.from.id)))
+                if (Array.IndexOf(AdmRangs, chat.Users.Single(user => user.TelegramUserId == mymessage.message.from.id).UserRights.ToString())> Array.IndexOf(AdmRangs, rights.ToString()))
                 {
                     chat.Users.Single(user => user.TelegramUserId == mymessage.message.reply_to_message.from.id).UserRights = rights;
                     BotDatabase.db.SaveChanges();
@@ -1031,12 +1033,19 @@ namespace TgAdmBot
                                 //Verify that the user who initiated the request is the creator
                                 if (userid == creatorId)
                                 {
-
                                     Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == chatid);
                                     foreach (Result admin in admins.result)
                                     {
-                                        chat.Users.Single(user => user.TelegramUserId == admin.user.id).UserRights = UserRights.admin;
+                                        try
+                                        {
+                                            chat.Users.Single(user => user.TelegramUserId == admin.user.id).UserRights = UserRights.administrator;
+                                        }
+                                        catch
+                                        {
+
+                                        }
                                     }
+                                    chat.Users.Single(user => user.TelegramUserId == creatorId).UserRights = UserRights.creator;
                                     BotDatabase.db.SaveChanges();
                                     return "Администраторы успешно обновлены";
                                 }
@@ -1059,11 +1068,13 @@ namespace TgAdmBot
             }
         }
         //Checks the user's rank, if the rank is not specified, then sets it according to the chat settings
-        private static UserRights AdminStatus(long chatid, long userid)
+        private static string AdminStatus(long chatid, long userid)
         {
 
             Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == chatid);
-            return chat.Users.Single(user => user.TelegramUserId == userid).UserRights;
+            Console.WriteLine(chat.Users.Single(user => user.TelegramUserId == userid).TelegramUserId);
+            Console.WriteLine(chat.Users.Single(user => user.TelegramUserId == userid).UserRights);
+            return chat.Users.Single(user => user.TelegramUserId == userid).UserRights.ToString();
         }
         //========================================
         //Chat configuration command
@@ -1142,7 +1153,8 @@ namespace TgAdmBot
         private static bool isThisUserInDB(long chatid, long userid)
         {
             Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == chatid);
-
+            Console.WriteLine(chat.Users.Count);
+            Console.WriteLine(chat.Users.Where(user => user.TelegramUserId == userid).ToList().Count > 0);
             return chat.Users.Where(user => user.TelegramUserId == userid).ToList().Count > 0;
         }
         //****************************
@@ -1152,9 +1164,11 @@ namespace TgAdmBot
         {
             BotDatabase.db.Chats.Add(new Database.Chat { TelegramChatId = message.Chat.Id });
             BotDatabase.db.SaveChanges();
+            SetDefaultAdmins(message.Chat.Id, message.From.Id);
         }
         private static bool isThisChatInDB(Telegram.Bot.Types.Message message)
         {
+            //Console.WriteLine("Chat" + (BotDatabase.db.Chats.Where(chat => chat.TelegramChatId == message.Chat.Id).ToList().Count > 0));
             return BotDatabase.db.Chats.Where(chat => chat.TelegramChatId == message.Chat.Id).ToList().Count > 0;
         }
 
@@ -1168,8 +1182,8 @@ namespace TgAdmBot
         {
             BotDatabase db = new BotDatabase();
             Console.WriteLine("Запущен бот " + bot.GetMeAsync().Result.FirstName);
-            Thread MytedChecker = new Thread(CheckMuted);
-            MytedChecker.Start();
+            //Thread MytedChecker = new Thread(CheckMuted);
+            //MytedChecker.Start();
             var cts = new CancellationTokenSource();
             var cancellationToken = cts.Token;
             var receiverOptions = new ReceiverOptions

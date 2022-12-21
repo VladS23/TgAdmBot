@@ -8,10 +8,11 @@ namespace TgAdmBot.Database
 {
     public enum UserRights
     {
-        admin = 1,
-        user = 2,
-        moderator = 4,
+        creator = 0,
+        administrator = 1,
+        moderator = 2,
         helper = 3,
+        normal = 4,
     }
     public class User
     {
@@ -20,7 +21,7 @@ namespace TgAdmBot.Database
         public long TelegramUserId { get; set; }
         public bool IsMuted { get; set; } = false;
         public DateTime LastActivity { get; set; } = DateTime.Now;
-        public UserRights UserRights { get; set; } = UserRights.user;
+        public UserRights UserRights { get; set; } = UserRights.normal;
         public List<Chat> Chats { get; set; } = new();
         public string Nickname { get; set; }
         public DateTime UnmuteTime { get; set; } = DateTime.Now;
