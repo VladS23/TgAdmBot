@@ -1,4 +1,4 @@
-﻿namespace TgAdmBot
+﻿namespace TgAdmBot.delete
 {
     internal class MyMessage
     {
