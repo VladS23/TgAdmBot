@@ -15,17 +15,29 @@ namespace TgAdmBot.Database
             if (db == null)
             {
                 db = new Database();
+
+                //Для автосброса БД
+                //db.Database.EnsureDeleted();
+
                 db.Database.EnsureCreated();
+                db.Chats.Load();
+                db.Users.Load();
             }
         }
         public class Database : DbContext
         {
+            public Database() : base()
+            {
+
+            }
             public DbSet<User> Users { get; set; }
             public DbSet<Chat> Chats { get; set; }
+
             protected override void OnConfiguring(DbContextOptionsBuilder options)
             {
-                options.UseSqlite(@"Data Source=C:\Users\Vlad\source\repos\TgAdmBot\database.db");
+                options.UseSqlite(@"Data Source=database.db");
             }
+
         }
     }
 }
