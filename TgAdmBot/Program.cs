@@ -339,35 +339,6 @@ namespace TgAdmBot
                     
                     if (message.Text != null)
                     {
-                        if (message.Text.Split("@").Length == 2 && message.Text.Split("@").Length == 1)
-                        {
-                            message.Text = message.Text.Replace($"@{message.Text.Split("@")[message.Text.Split("@").Length - 1]}", "");
-                        }
-                        
-                        //This command should be used to search for the chat creator
-                        //if it is defined incorrectly during initialization
-                        if (message.Text.ToLower() == "setdefaultadmins")
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, SetDefaultAdmins(message.Chat.Id, message.From.Id));
-                            return;
-                        }
-                        //Entertainment commands
-                        if (message.Text.ToLower() == "/rules")
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, GetRules(message.Chat.Id));
-                            return;
-                        }
-                        if (message.Text.ToLower().Contains("/setrules"))
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, SetRules(message.Chat.Id, message.From.Id, message.Text));
-                            return;
-                        }
                         if (message.Text.ToLower() == "актив")
                         {
                             user.LastMessage = message.Text;
@@ -394,48 +365,6 @@ namespace TgAdmBot
                                 await botClient.SendTextMessageAsync(message.Chat, GetChatNicknames(message.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                 return;
                             }
-                        }
-                        if (message.Text.Length == 5)
-                        {
-                            if (message.Text.ToLower() == "стата")
-                            {
-                                if (message.message.reply_to_message == null)
-                                {
-                                    user.LastMessage = message.Text;
-                                    BotDatabase.db.SaveChanges();
-                                    await botClient.SendTextMessageAsync(message.Chat.Id, GetStatistics(message), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-                                }
-                                else
-                                {
-                                    //Such a check allows you to determine the user's access level as a number
-                                    //and compare it with the specified one
-                                    //maximum level 0, minimum 4
-                                    if (Array.IndexOf(AdmRangs, AdminStatus(message.message.chat.id, message.message.from.id)) <= 2 && Array.IndexOf(AdmRangs, AdminStatus(message.message.chat.id, message.message.from.id)) < Array.IndexOf(AdmRangs, AdminStatus(message.message.chat.id, message.message.reply_to_message.from.id)))
-                                    {
-                                        user.LastMessage = message.Text;
-                                        BotDatabase.db.SaveChanges();
-                                        await botClient.SendTextMessageAsync(message.Chat.Id, GetStatistics(message), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        user.LastMessage = message.Text;
-                                        BotDatabase.db.SaveChanges();
-                                        await botClient.SendTextMessageAsync(message.Chat.Id, "Недостаточно прав на выполнение этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                        return;
-                                    }
-                                }
-
-                            }
-
-                        }
-                        if (message.Text.ToLower() == "стата чата")
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat.Id, ChatInfo(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            return;
                         }
                         if (Array.IndexOf(AdmRangs, AdminStatus(message.message.chat.id, message.message.from.id)) <= 4)
                         {
