@@ -49,17 +49,7 @@ namespace TgAdmBot.BotSpace
                 /*if (message.Text != null)
                 {
                     
-                    
-                        if (message.Text.Length > 4)
-                        {
-                            if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == ' ')
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, SetNickname(message.message.chat.id, message.message.from.id, message.message.text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                return;
-                            }
-                        }
+
                         if (message.Text.Length == 9)
                         {
                             if (message.Text.ToLower() == "участники")

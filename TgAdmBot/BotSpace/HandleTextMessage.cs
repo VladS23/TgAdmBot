@@ -471,6 +471,12 @@ namespace TgAdmBot.BotSpace
                         await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав для выполнения данной команды");
                         break;
                     }
+                case "/nick":
+                    user.LastMessage = message.Text;
+                    user.Nickname= message.Text.Substring(6);
+                    BotDatabase.db.SaveChanges();
+                    await botClient.SendTextMessageAsync(message.Chat, $"Вам установлен ник [{user.Nickname}](tg://user?id={user.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    return;
 
                 default:
                     switch (user.LastMessage)
