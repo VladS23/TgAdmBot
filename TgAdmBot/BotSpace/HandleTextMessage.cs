@@ -15,7 +15,7 @@ namespace TgAdmBot.BotSpace
         private async Task HandleTextMessage(Telegram.Bot.Types.Message message, Database.User user, Database.Chat chat)
         {
 
-            switch (message.Text.ToLower().Replace($"@{botClient.GetMeAsync().Result.Username!}", ""))
+            switch (message.Text.ToLower().Replace($"@{botClient.GetMeAsync().Result.Username!}", "").Split()[0])
             {
                 case "/stt":
                     break;
@@ -471,6 +471,7 @@ namespace TgAdmBot.BotSpace
                         await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав для выполнения данной команды");
                         break;
                     }
+
                 default:
                     switch (user.LastMessage)
                     {
