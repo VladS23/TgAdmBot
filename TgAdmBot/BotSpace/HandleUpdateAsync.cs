@@ -54,20 +54,6 @@ namespace TgAdmBot.BotSpace
                 {
                     user.UpdateStatistic(message);
                 }
-
-                #region Хуёвый код под перепись
-                /*
-                private static void CheckMuted()
-                {
-
-                }
-
-        }
-                }
-
-
-                */
-                #endregion
             }
         }
 
