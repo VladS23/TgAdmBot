@@ -135,8 +135,6 @@ namespace TgAdmBot.BotSpace
 
                         if (replUser != null)
                         {
-
-                            BotDatabase.db.SaveChanges();
                             if (user.UserRights < replUser.UserRights)
                             {
                                 replUser.UserRights = UserRights.moderator;
@@ -163,8 +161,6 @@ namespace TgAdmBot.BotSpace
                     {
                         if (replUser != null)
                         {
-
-                            BotDatabase.db.SaveChanges();
                             if (user.UserRights < replUser.UserRights)
                             {
                                 replUser.UserRights = UserRights.helper;
@@ -191,8 +187,6 @@ namespace TgAdmBot.BotSpace
                     {
                         if (replUser != null)
                         {
-
-                            BotDatabase.db.SaveChanges();
                             if (user.UserRights < replUser.UserRights)
                             {
                                 replUser.UserRights = UserRights.normal;
@@ -221,8 +215,6 @@ namespace TgAdmBot.BotSpace
                         {
                             if (user.UserRights < replUser.UserRights)
                             {
-
-                                BotDatabase.db.SaveChanges();
                                 if (replUser.IsMuted)
                                 {
                                     replUser.IsMuted = false;
@@ -244,16 +236,12 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-
-                            BotDatabase.db.SaveChanges();
                             await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщением на сообщение пользователя");
                             break;
                         }
                     }
                     else
                     {
-
-                        BotDatabase.db.SaveChanges();
                         await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
                     }
@@ -283,13 +271,9 @@ namespace TgAdmBot.BotSpace
                     }
                     break;
                 case "/setwarninglimitaction":
-
-                    BotDatabase.db.SaveChanges();
                     await botClient.SendTextMessageAsync(message.Chat, chat.SetWarningLimitAction(message.From.Id, message.Text));
                     break;
                 case "/muted":
-
-                    BotDatabase.db.SaveChanges();
                     if (user.UserRights < UserRights.helper)
                     {
                         await botClient.SendTextMessageAsync(message.Chat, chat.GetMutedUsers(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
@@ -301,8 +285,6 @@ namespace TgAdmBot.BotSpace
                     {
                         if (user.UserRights < UserRights.moderator && user.UserRights < replUser.UserRights)
                         {
-
-                            BotDatabase.db.SaveChanges();
                             replUser.Ban();
                             await botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) забанил [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId}) " +
                                 $"чтобы вернуть данного пользователя обратно администратор или создатель должен написать /unban в ответ на любое сообщение пользователя, а затем пригласить его в чат " +
@@ -311,8 +293,6 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-
-                            BotDatabase.db.SaveChanges();
                             await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия",
                             Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
@@ -320,8 +300,6 @@ namespace TgAdmBot.BotSpace
                     }
                     else
                     {
-
-                        BotDatabase.db.SaveChanges();
                         await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать",
                             Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
@@ -332,7 +310,6 @@ namespace TgAdmBot.BotSpace
                         if (user.UserRights < UserRights.moderator && user.UserRights < replUser.UserRights)
                         {
 
-                            BotDatabase.db.SaveChanges();
                             replUser.UnBan();
                             await botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) разбанил " +
                                 $"[{replUser.Nickname}](tg://user?id={replUser.TelegramUserId}) теперь он вновь может быть приглашен в чат",
@@ -341,8 +318,6 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-
-                            BotDatabase.db.SaveChanges();
                             await botClient.SendTextMessageAsync(message.Chat, "Недостаточно прав на выполнения этого действия",
                                 Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
@@ -350,8 +325,6 @@ namespace TgAdmBot.BotSpace
                     }
                     else
                     {
-
-                        BotDatabase.db.SaveChanges();
                         await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщениес на сообщение пользователя, которому необходимо запретить писать",
                             Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
@@ -363,8 +336,6 @@ namespace TgAdmBot.BotSpace
                         {
                             if (replUser.WarnsCount != chat.WarnsLimit - 1)
                             {
-
-                                BotDatabase.db.SaveChanges();
                                 replUser.Warn();
                                 if (message.Text.Length > 6)
                                 {
@@ -400,7 +371,6 @@ namespace TgAdmBot.BotSpace
                     {
                         if (user.UserRights < UserRights.helper && user.UserRights < replUser.UserRights)
                         {
-
                             replUser.WarnsCount = 0;
                             BotDatabase.db.SaveChanges();
                             await botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{user.Nickname}](tg://user?id={user.TelegramUserId}) снял все предупреждения с пользователя " +
@@ -425,8 +395,6 @@ namespace TgAdmBot.BotSpace
                 case "/warns":
                     if (user.UserRights < UserRights.helper)
                     {
-
-                        BotDatabase.db.SaveChanges();
                         await botClient.SendTextMessageAsync(message.Chat, chat.GetWarnedUsers(),
                             Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
@@ -435,8 +403,6 @@ namespace TgAdmBot.BotSpace
                 case "/voicemessage":
                     if (user.UserRights < UserRights.moderator)
                     {
-
-                        BotDatabase.db.SaveChanges();
                         if (!chat.VoiceMessagesDisallowed)
                         {
                             chat.VoiceMessagesDisallowed = true;
@@ -455,10 +421,33 @@ namespace TgAdmBot.BotSpace
                         break;
                     }
                 case "/nick":
-                    user.LastMessage = message.Text;
-                    user.Nickname= message.Text.Substring(6);
-                    BotDatabase.db.SaveChanges();
-                    await botClient.SendTextMessageAsync(message.Chat, $"Вам установлен ник [{user.Nickname}](tg://user?id={user.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    if (message.Text.Length > 8)
+                    {
+                        if (message.Text.Length < 30)
+                        {
+                            try
+                            {
+                                user.Nickname = message.Text.Substring(6);
+                                BotDatabase.db.SaveChanges();
+                                await botClient.SendTextMessageAsync(message.Chat, $"Вам установлен ник [{user.Nickname}](tg://user?id={user.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            }
+                            catch
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, $"Использованы недопустимые символы", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            }
+                        }
+                        else
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, $"Ник слишком длинный", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        }
+                    }
+                    else
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, $"Ник слишком короткий", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                    break;
+                case "/nicks":
+                    await botClient.SendTextMessageAsync(message.Chat, user.Chat.GetChatNicknames(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     return;
 
                 default:
