@@ -45,6 +45,27 @@ namespace TgAdmBot.Database
             + $"✉️ Сообщений всего: {MessagesCount}\n"
                 );
         }
+        public string GetWarnedUsers()
+        {
+            Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == this.TelegramChatId);
+            List<Database.User> users = chat.Users.Where(user => user.WarnsCount > 0).ToList();
+            //If warned users are exist than retuln result string else return else string
+            if (users.Count > 0)
+            {
+                string result = "Предупреждённые пользователи:\n";
+                int index = 1;
+                foreach (Database.User user in users)
+                {
+                    result = $"{result}{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})\n";
+                    index += 1;
+                }
+                return result;
+            }
+            else
+            {
+                return "Нет предупрежденных пользователей";
+            }
+        }
         public string GetMutedUsers()
         {
             List<Database.User> mutedUsers = Users.Where(user => user.IsMuted == true).ToList();
@@ -57,7 +78,7 @@ namespace TgAdmBot.Database
             {
                 for (int index = 0; index < mutedUsers.Count; index++)
                 {
-                    mutedUsersText = $"{mutedUsersText}{index+1}. {mutedUsers[index].Nickname}\n";
+                    mutedUsersText = $"{mutedUsersText}{index+1}. [{mutedUsers[index].Nickname}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
                 }
             }
 
