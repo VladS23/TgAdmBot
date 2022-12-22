@@ -18,7 +18,7 @@ namespace TgAdmBot.BotSpace
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
                 #region Подготовка к обработке сообщения
-                Telegram.Bot.Types.Message? message = update.Message;
+                Telegram.Bot.Types.Message message = update.Message!;
 
                 Database.Chat chat = Database.Chat.GetOrCreate(message);
 
