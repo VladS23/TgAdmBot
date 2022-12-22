@@ -47,6 +47,18 @@ namespace TgAdmBot.Database
             }
             return user;
         }
+        public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
+        {
+            Database.User? user;
+            user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
+            if (user == null)
+            {
+                BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User { Nickname = TgUser.Username, TelegramUserId = TgUser.Id, IsBot = TgUser.IsBot, Chat = chat });
+                BotDatabase.db.SaveChanges();
+                user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
+            }
+            return user;
+        }
         public string GetInfo()
         {
             return (

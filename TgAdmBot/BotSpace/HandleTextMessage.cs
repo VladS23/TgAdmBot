@@ -20,7 +20,7 @@ namespace TgAdmBot.BotSpace
                 Database.User? replyUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage.From.Id);
                 if (replyUser == null)
                 {
-                    replyUser = Database.User.GetOrCreate(chat, message);
+                    replyUser = Database.User.GetOrCreate(chat, message.ReplyToMessage.From);
                 }
             }
 
