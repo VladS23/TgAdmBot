@@ -168,8 +168,6 @@ namespace TgAdmBot.Database
             {
                 StickerMessagesCount += 1;
             }
-            BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id).MessagesCount += 1;
-            BotDatabase.db.SaveChanges();
         }
     }
 }

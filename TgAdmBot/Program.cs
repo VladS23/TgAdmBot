@@ -8,13 +8,12 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using TgAdmBot.Database;
+using TgAdmBot.BotSpace;
 
 namespace TgAdmBot
 {
     class Program
     {
-        //This list help to determine admin hierarсhy
-        private static string[] AdmRangs = { "creator", "administrator", "moderator", "helper", "normal" };
         //Initializing botapi and database connection
         public static string botToken = new Config().env.GetValueOrDefault("BotToken")!;
         private static ITelegramBotClient bot = new TelegramBotClient(botToken);
@@ -58,6 +57,8 @@ namespace TgAdmBot
                     return;
                 }
                 #endregion
+
+
                 if (message.Text != null)
                 {
                     switch (message.Text.Split()[0])
@@ -886,23 +887,7 @@ namespace TgAdmBot
 
         static void Main(string[] args)
         {
-            BotDatabase db = new BotDatabase();
-            Console.WriteLine("Запущен бот " + bot.GetMeAsync().Result.FirstName);
-            //Thread MytedChecker = new Thread(CheckMuted);
-            //MytedChecker.Start();
-            var cts = new CancellationTokenSource();
-            var cancellationToken = cts.Token;
-            var receiverOptions = new ReceiverOptions
-            {
-                AllowedUpdates = { },
-            };
-            bot.StartReceiving(
-                HandleUpdateAsync,
-                HandleErrorAsync,
-                receiverOptions,
-                cancellationToken
-            );
-            Console.ReadLine();
+            BotSpace.Bot bot = new BotSpace.Bot();
         }
     }
 }

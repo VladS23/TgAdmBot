@@ -16,6 +16,7 @@
   <ItemGroup>
     <None Update=".env">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Generator></Generator>
     </None>
     <None Update="Database\.env">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
