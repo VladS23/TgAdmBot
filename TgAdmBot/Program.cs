@@ -15,6 +15,7 @@ namespace TgAdmBot
     class Program
     {
         public static string botToken = new Config().env.GetValueOrDefault("BotToken")!;
+        public static DateTime LastDbChech = DateTime.Now;
         static void Main(string[] args)
         {
             BotSpace.Bot bot = new BotSpace.Bot();
