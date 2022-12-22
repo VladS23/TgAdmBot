@@ -39,13 +39,56 @@ namespace TgAdmBot.Database
             + $"📈 ID чата: {TelegramChatId}\n"
             + $"💎 VIP чат: {Status.ToString()}\n"
             + $"🎧 Голосовые сообщения запрещены: {(VoiceMessagesDisallowed ? "Да" : "Нет")}\n"
-            + $"⚖️ Наказание за превышение лимита предупреждений: {(WarnsLimitAction == WarnsLimitAction.mute ? "Мут" : "Ничего")}\n"
+            + $"⚖️ Наказание за превышение лимита предупреждений: {(WarnsLimitAction == WarnsLimitAction.mute ? "Мут" : "Бан")}\n"
             + $"👨‍💻 Активные пользователи: {Users.Count}\n"
             + $"👨‍💻 Админов: {Users.Where(p=>p.UserRights==UserRights.administrator).Count()}\n"
             + $"✉️ Сообщений всего: {MessagesCount}\n"
                 );
         }
+        public string GetMutedUsers()
+        {
+            List<Database.User> mutedUsers = Users.Where(user => user.IsMuted == true).ToList();
+            string mutedUsersText = "";
+            if (mutedUsers.Count < 1)
+            {
+                mutedUsersText = "Нет замьюченых пользователей";
+            }
+            else
+            {
+                for (int index = 0; index < mutedUsers.Count; index++)
+                {
+                    mutedUsersText = $"{mutedUsersText}{index+1}. {mutedUsers[index].Nickname}\n";
+                }
+            }
 
+            return mutedUsersText;
+        }
+        public string SetWarningLimitAction(long userid, string text)
+        {
+            if (Users.Single(user => user.TelegramUserId == userid).UserRights < UserRights.moderator)
+            {
+                string[] command = text.Split(' ').Length > 1 ? text.Split(' ') : new string[] { "", "" };
+
+                switch (command[1])
+                {
+                    case "mute":
+                        WarnsLimitAction = WarnsLimitAction.mute;
+                        BotDatabase.db.SaveChanges();
+                        return "Теперь после достижения лимита предупреждений пользователю будет запрещено писать";
+                    case "ban":
+                        WarnsLimitAction = WarnsLimitAction.ban;
+                        BotDatabase.db.SaveChanges();
+                        return "Теперь после достижения лимита предупреждений пользователь будет удален";
+                    default:
+                        return "Неизвестный аргумент. Ожидалось mute или ban";
+                }
+            }
+            else
+            {
+                return "Недостаточно прав!";
+            }
+
+        }
         public string SetDefaultAdmins()
         {
             //Request a list of conversation administrators from telegram

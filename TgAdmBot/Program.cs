@@ -102,20 +102,28 @@ namespace TgAdmBot
                         }
                         break;
                     case "/chatStat":
+                        user.LastMessage = message.Text;
+                        BotDatabase.db.SaveChanges();
                         await botClient.SendTextMessageAsync(message.Chat, chat.GetInfo());
                         return;
                     case "/setdefaultadmins":
                         if (user.UserRights == UserRights.creator)
                         {
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
                             await botClient.SendTextMessageAsync(message.Chat, chat.SetDefaultAdmins());
                             return;
                         }
                         break;
                     case "/rules":
+                        user.LastMessage = message.Text;
+                        BotDatabase.db.SaveChanges();
                         await botClient.SendTextMessageAsync(message.Chat, $"Правила чата:\n{chat.Rules}");
                         return;
                         break;
                     case "/setrules":
+                        user.LastMessage = message.Text;
+                        BotDatabase.db.SaveChanges();
                         if (user.UserRights < UserRights.helper)
                         {
                             await botClient.SendTextMessageAsync(message.Chat, "Следующим сообщением пришлите правила");
@@ -125,11 +133,14 @@ namespace TgAdmBot
                     case "/admin":
                         if (user.UserRights < UserRights.administrator)
                         {
+
                             if (message.ReplyToMessage != null)
                             {
                                 Database.User replUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage.From.Id);
                                 if (replUser != null)
                                 {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
                                     if (user.UserRights < replUser.UserRights)
                                     {
                                         replUser.UserRights = UserRights.administrator;
@@ -159,6 +170,8 @@ namespace TgAdmBot
                                 Database.User replUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage.From.Id);
                                 if (replUser != null)
                                 {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
                                     if (user.UserRights < replUser.UserRights)
                                     {
                                         replUser.UserRights = UserRights.moderator;
@@ -188,6 +201,8 @@ namespace TgAdmBot
                                 Database.User replUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage.From.Id);
                                 if (replUser != null)
                                 {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
                                     if (user.UserRights < replUser.UserRights)
                                     {
                                         replUser.UserRights = UserRights.helper;
@@ -217,6 +232,8 @@ namespace TgAdmBot
                                 Database.User replUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage.From.Id);
                                 if (replUser != null)
                                 {
+                                    user.LastMessage = message.Text;
+                                    BotDatabase.db.SaveChanges();
                                     if (user.UserRights < replUser.UserRights)
                                     {
                                         replUser.UserRights = UserRights.normal;
@@ -248,6 +265,8 @@ namespace TgAdmBot
                                 {
                                     if (user.UserRights < replUser.UserRights)
                                     {
+                                        user.LastMessage = message.Text;
+                                        BotDatabase.db.SaveChanges();
                                         if (replUser.IsMuted)
                                         {
                                             replUser.IsMuted = false;
@@ -305,10 +324,31 @@ namespace TgAdmBot
                             }
                             else
                             {
-                                await botClient.SendTextMessageAsync(message.Chat, "Ответьте этим сообщением на сообщение пользователя");
+                                await botClient.SendTextMessageAsync(message.Chat, user.GetInfo(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                 return;
                             }
                         }
+                        break;
+                    case "/setwarninglimitaction mute":
+                        user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat, chat.SetWarningLimitAction(message.From.Id, message.Text));
+                            return;
+                        break;
+                    case "/setwarninglimitaction ban":
+                        user.LastMessage = message.Text;
+                        BotDatabase.db.SaveChanges();
+                        await botClient.SendTextMessageAsync(message.Chat, chat.SetWarningLimitAction(message.From.Id, message.Text));
+                        return;
+                        break;
+                    case "/muted":
+                        user.LastMessage = message.Text;
+                        BotDatabase.db.SaveChanges();
+                        if (user.UserRights<UserRights.helper)
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, chat.GetMutedUsers(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                return;
+                            }
                         break;
                     default:
                         switch (user.LastMessage)
@@ -337,15 +377,6 @@ namespace TgAdmBot
                 {
                     
                     
-                    if (message.Text != null)
-                    {
-                        if (message.Text.ToLower() == "актив")
-                        {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, GetUsersActivity(message.Chat.Id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            return;
-                        }
                         if (message.Text.Length > 4)
                         {
                             if (message.Text.ToLower()[0] == 'н' && message.Text.ToLower()[1] == 'и' && message.Text.ToLower()[2] == 'к' && message.Text.ToLower()[3] == ' ')
@@ -429,16 +460,7 @@ namespace TgAdmBot
                         {
 
 
-                            if (message.message.text.ToLower().Trim() == "/muted")
-                            {
-                                if (Array.IndexOf(AdmRangs, AdminStatus(message.message.chat.id, message.message.from.id)) <= 2)
-                                {
-                                    user.LastMessage = message.Text;
-                                    BotDatabase.db.SaveChanges();
-                                    await botClient.SendTextMessageAsync(message.Chat, GetMutedUsers(message.message.chat.id), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    return;
-                                }
-                            }
+
                             if (message.message.text.ToLower().Trim() == "/ban")
                             {
                                 if (message.message.reply_to_message != null)
@@ -594,13 +616,7 @@ namespace TgAdmBot
                                 }
 
                             }
-                            if (message.Text.ToLower().Contains("/setwarninglimitaction"))
-                            {
-                                user.LastMessage = message.Text;
-                                BotDatabase.db.SaveChanges();
-                                await botClient.SendTextMessageAsync(message.Chat, SetWarningLimitAction(message.Chat.Id, message.From.Id, message.Text));
-                                return;
-                            }
+
 
                         }
                     }
@@ -637,33 +653,7 @@ namespace TgAdmBot
 
         }
 
-        private static string SetWarningLimitAction(long chatid, long userid, string text)
-        {
-            Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == chatid);
-            if (chat.Users.Single(user => user.TelegramUserId == userid).UserRights == UserRights.administrator)
-            {
-                string[] command = text.Split(' ').Length > 1 ? text.Split(' ') : new string[] { "", "" };
 
-                switch (command[1])
-                {
-                    case "mute":
-                        chat.WarnsLimitAction = WarnsLimitAction.mute;
-                        BotDatabase.db.SaveChanges();
-                        return "Теперь после достижения лимита предупреждений пользователю будет запрещено писать";
-                    case "ban":
-                        chat.WarnsLimitAction = WarnsLimitAction.ban;
-                        BotDatabase.db.SaveChanges();
-                        return "Теперь после достижения лимита предупреждений пользователь будет удален";
-                    default:
-                        return "Неизвестный аргумент. Ожидалось mute или ban";
-                }
-            }
-            else
-            {
-                return "Не достаточно прав!";
-            }
-
-        }
 
         private static void CheckMuted()
         {
@@ -800,16 +790,6 @@ namespace TgAdmBot
             return $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) {text}";
         }
         //Build message about users activity
-        private static string GetUsersActivity(long chatid)
-        {
-            Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == chatid);
-            string result = "Активность пользователей:\n";
-            foreach (Database.User user in chat.Users)
-            {
-                result = $"{result} {user.Nickname} - {user.LastActivity.ToLongDateString}\n";
-            }
-            return result;
-        }
         private static string Probability(string messagetext)
         {
             //Process the string and create a result based on it
@@ -893,25 +873,7 @@ namespace TgAdmBot
             BotDatabase.db.SaveChanges();
         }
         //Builds a message about muted user
-        private static string GetMutedUsers(long chatid)
-        {
-            Database.Chat chat = BotDatabase.db.Chats.First(chat => chat.TelegramChatId == chatid);
-            List<Database.User> mutedUsers = chat.Users.Where(user => user.IsMuted == true).ToList();
-            string mutedUsersText = "";
-            if (mutedUsers.Count < 1)
-            {
-                mutedUsersText = "Нет замьюченых пользователей";
-            }
-            else
-            {
-                for (int index = 0; index < mutedUsers.Count; index++)
-                {
-                    mutedUsersText = $"{mutedUsersText}{index}.{mutedUsers[index].Nickname}\n";
-                }
-            }
 
-            return mutedUsersText;
-        }
         //**************
         //Ban commands
         //**************
