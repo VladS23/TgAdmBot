@@ -32,6 +32,21 @@ namespace TgAdmBot.Database
         public int StickerMessagesCount { get; set; } = 0;
         public string LastMessage { get; set; } = "/start";
 
+        public User()
+        {
+        }
+        public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.Message message)
+        {
+            Database.User? user;
+            user = BotDatabase.db.Users.Single(u=>u.Chat.ChatId==chat.ChatId&&u.TelegramUserId==message.From.Id);
+            if (user==null)
+            {
+                BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User { Nickname = message.From.Username, TelegramUserId = message.From.Id, IsBot = message.From.IsBot, Chat = chat });
+                BotDatabase.db.SaveChanges();
+                user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == message.From.Id);
+            }
+            return user;
+        }
         public string GetInfo()
         {
             return (
@@ -168,6 +183,7 @@ namespace TgAdmBot.Database
             {
                 StickerMessagesCount += 1;
             }
+            BotDatabase.db.SaveChanges();
         }
     }
 }

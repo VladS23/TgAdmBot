@@ -11,7 +11,7 @@ namespace TgAdmBot.BotSpace
 {
     internal partial class Bot
     {
-        internal ITelegramBotClient botClient = new TelegramBotClient(new Config().env.GetValueOrDefault("BotToken")!);
+        internal ITelegramBotClient botClient = new TelegramBotClient(Program.botToken);
         internal ReceiverOptions receiverOptions = new ReceiverOptions
         {
             AllowedUpdates = { },

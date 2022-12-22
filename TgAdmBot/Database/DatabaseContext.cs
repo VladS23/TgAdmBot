@@ -9,7 +9,7 @@ namespace TgAdmBot.Database
 {
     public class BotDatabase
     {
-        public static Database? db = null;
+        public static Database db = null;
         public BotDatabase()
         {
             if (db == null)

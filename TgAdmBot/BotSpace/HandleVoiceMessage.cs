@@ -11,11 +11,20 @@ namespace TgAdmBot.BotSpace
 {
     internal partial class Bot
     {
-        private async Task HandleVoiceMessage(CancellationToken cancellationToken, Telegram.Bot.Types.Message message)
+        private async Task HandleVoiceMessage(CancellationToken cancellationToken, Telegram.Bot.Types.Message message, Database.User user, Database.Chat chat)
         {
-            Task.Run(() => { 
-            //TODO tts
+            Task recognitionTask = Task.Run(() => {
+                if (chat.VoiceMessagesDisallowed)
+                {
+                    botClient.DeleteMessageAsync(message.Chat, message.MessageId);
+                }
+                else
+                {
+                    //TODO perform recognition
+                }
             });
+
+            user.UpdateStatistic(message);
         }
     }
 

@@ -32,6 +32,25 @@ namespace TgAdmBot.Database
         public bool VoiceMessagesDisallowed { get; set; } = false;
         public WarnsLimitAction WarnsLimitAction { get; set; } = WarnsLimitAction.mute;
 
+        public Chat()
+        {
+
+        }
+        public static Chat GetOrCreate(Telegram.Bot.Types.Message message)
+        {
+            Database.Chat chat;
+
+            if (BotDatabase.db.Chats.FirstOrDefault(chat => chat.TelegramChatId == message.Chat.Id) == null)
+            {
+                BotDatabase.db.Add(new Database.Chat { TelegramChatId = message.Chat.Id, Users = new List<Database.User> { new Database.User { Nickname = message.From.Username, TelegramUserId = message.From.Id, IsBot = message.From.IsBot } } });
+                BotDatabase.db.SaveChanges();
+                chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
+                chat.SetDefaultAdmins();
+                BotDatabase.db.SaveChanges();
+            }
+            chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
+            return chat;
+        }
         public string GetInfo()
         {
             return (

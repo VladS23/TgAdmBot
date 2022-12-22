@@ -18,37 +18,11 @@ namespace TgAdmBot.BotSpace
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
                 #region Подготовка к обработке сообщения
-                //I use two object to work with the messange,
-                //since each of them does not implement all the functionality of the second one
-                string strupdate = Newtonsoft.Json.JsonConvert.SerializeObject(update);
-                Telegram.Bot.Types.Message message = update.Message;
+                Telegram.Bot.Types.Message? message = update.Message;
 
-                Database.Chat chat;
+                Database.Chat chat = Database.Chat.GetOrCreate(message);
 
-                if (BotDatabase.db.Chats.FirstOrDefault(chat => chat.TelegramChatId == message.Chat.Id) == null)
-                {
-                    BotDatabase.db.Add(new Database.Chat { TelegramChatId = message.Chat.Id, Users = new List<Database.User> { new Database.User { Nickname = message.From.Username, TelegramUserId = message.From.Id, IsBot = message.From.IsBot } } });
-                    BotDatabase.db.SaveChanges();
-                    chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
-                    chat.SetDefaultAdmins();
-                    BotDatabase.db.SaveChanges();
-                }
-
-                chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
-                Database.User? user = BotDatabase.db.Users.SingleOrDefault(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == message.From.Id);
-
-
-                if (user == null)
-                {
-                    chat.Users.Add(new Database.User { Nickname = message.From.Username, TelegramUserId = message.From.Id, IsBot = message.From.IsBot, Chat = chat });
-                    BotDatabase.db.SaveChanges();
-                    user = chat.Users.Single(user => user.TelegramUserId == message.From.Id);
-                }
-                if ((message.Voice != null || message.VideoNote != null) & chat.VoiceMessagesDisallowed)
-                {
-                    await botClient.DeleteMessageAsync(message.Chat, message.MessageId);
-                    return;
-                }
+                Database.User user = Database.User.GetOrCreate(chat, message);
                 #endregion
 
                 chat.MessagesCount += 1;
@@ -59,13 +33,16 @@ namespace TgAdmBot.BotSpace
                 {
                     Task handledTextTask = this.HandleTextMessage(message, user, chat);
                 }
-
-                if (message.Audio!=null)
+                else if (message.Audio!=null)
                 {
-                    Task handledVoiceTask= this.HandleVoiceMessage(cancellationToken, message);
+                    Task handledVoiceTask= this.HandleVoiceMessage(cancellationToken, message, user, chat);
+                }
+                else
+                {
+                    user.UpdateStatistic(message);
                 }
 
-                user.UpdateStatistic(message);
+
 
                 #region Хуёвыё код под перепись
 
