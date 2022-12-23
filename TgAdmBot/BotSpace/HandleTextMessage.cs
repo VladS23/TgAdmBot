@@ -8,8 +8,8 @@ namespace TgAdmBot.BotSpace
 
         private async Task HandleTextMessage(Telegram.Bot.Types.Message message, Database.User user, Database.Chat chat)
         {
-            Database.User? replUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage.From.Id);
-            if (replUser == null)
+            Database.User? replUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage?.From?.Id);
+            if (replUser == null && message.ReplyToMessage != null)
             {
                 replUser = Database.User.GetOrCreate(chat, message.ReplyToMessage.From);
             }

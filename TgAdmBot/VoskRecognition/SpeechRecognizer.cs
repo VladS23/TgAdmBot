@@ -33,8 +33,6 @@ namespace TgAdmBot.VoskRecognition
 
                 void RecognizeFileSpeech(string fileLocation, Database.Chat chat, int messageId)
                 {
-
-
                     using (Stream source = System.IO.File.OpenRead(fileLocation))
                     {
                         byte[] buffer = new byte[source.Length];
@@ -46,8 +44,24 @@ namespace TgAdmBot.VoskRecognition
                     }
                     FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
                     Console.WriteLine(result.text);
-                    BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == recognitionObject.voiceMessage.MessageId && vm.fileUniqueId == recognitionObject.voiceMessage.Voice.FileUniqueId).recognizedText = result.text;
-                    BotDatabase.db.SaveChanges();
+
+                    void WriteToDb()
+                    {
+                        VoiceMessage voice = BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == recognitionObject.voiceMessage.MessageId && vm.fileUniqueId == recognitionObject.voiceMessage.Voice.FileUniqueId);
+                        voice.recognizedText = result.text;
+                        BotDatabase.db.SaveChanges();
+                    }
+
+                    try
+                    {
+                        WriteToDb();
+                    }
+                    catch (System.InvalidOperationException unsafeEFThreadError)
+                    {
+                        Thread.Sleep(200);
+                        WriteToDb();
+                    }
+
                 }
 
 
