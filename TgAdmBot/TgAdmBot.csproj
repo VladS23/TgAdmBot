@@ -31,136 +31,136 @@
     <None Update="ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\am\final.mdl">
+    <None Update="vosk-model\am\final.mdl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\am\frame_subsampling_factor">
+    <None Update="vosk-model\am\frame_subsampling_factor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\am\tree">
+    <None Update="vosk-model\am\tree">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\conf\ivector_extractor.conf">
+    <None Update="vosk-model\conf\ivector_extractor.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\conf\mfcc.conf">
+    <None Update="vosk-model\conf\mfcc.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\conf\model.conf">
+    <None Update="vosk-model\conf\model.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\conf\online.conf">
+    <None Update="vosk-model\conf\online.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\extra\golos_crowd.ref">
+    <None Update="vosk-model\extra\golos_crowd.ref">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\extra\README">
+    <None Update="vosk-model\extra\README">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\extra\silero_books.ref">
+    <None Update="vosk-model\extra\silero_books.ref">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\extra\silero_calls.ref">
+    <None Update="vosk-model\extra\silero_calls.ref">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\extra\silero_youtube.ref">
+    <None Update="vosk-model\extra\silero_youtube.ref">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\extra\sova_devices.ref">
+    <None Update="vosk-model\extra\sova_devices.ref">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\disambig_tid.int">
+    <None Update="vosk-model\graph\disambig_tid.int">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\HCLG.fst">
+    <None Update="vosk-model\graph\HCLG.fst">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\num_pdfs">
+    <None Update="vosk-model\graph\num_pdfs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones.txt">
+    <None Update="vosk-model\graph\phones.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\align_lexicon.int">
+    <None Update="vosk-model\graph\phones\align_lexicon.int">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\align_lexicon.txt">
+    <None Update="vosk-model\graph\phones\align_lexicon.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\disambig.int">
+    <None Update="vosk-model\graph\phones\disambig.int">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\disambig.txt">
+    <None Update="vosk-model\graph\phones\disambig.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\optional_silence.csl">
+    <None Update="vosk-model\graph\phones\optional_silence.csl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\optional_silence.int">
+    <None Update="vosk-model\graph\phones\optional_silence.int">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\optional_silence.txt">
+    <None Update="vosk-model\graph\phones\optional_silence.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\silence.csl">
+    <None Update="vosk-model\graph\phones\silence.csl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\word_boundary.int">
+    <None Update="vosk-model\graph\phones\word_boundary.int">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\phones\word_boundary.txt">
+    <None Update="vosk-model\graph\phones\word_boundary.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\graph\words.txt">
+    <None Update="vosk-model\graph\words.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\ivector\final.dubm">
+    <None Update="vosk-model\ivector\final.dubm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\ivector\final.ie">
+    <None Update="vosk-model\ivector\final.ie">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\ivector\final.mat">
+    <None Update="vosk-model\ivector\final.mat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\ivector\global_cmvn.stats">
+    <None Update="vosk-model\ivector\global_cmvn.stats">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\ivector\online_cmvn.conf">
+    <None Update="vosk-model\ivector\online_cmvn.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\ivector\splice.conf">
+    <None Update="vosk-model\ivector\splice.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rescore\G.carpa">
+    <None Update="vosk-model\rescore\G.carpa">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rescore\G.fst">
+    <None Update="vosk-model\rescore\G.fst">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rnnlm\features.txt">
+    <None Update="vosk-model\rnnlm\features.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rnnlm\feat_embedding.final.mat">
+    <None Update="vosk-model\rnnlm\feat_embedding.final.mat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rnnlm\final.raw">
+    <None Update="vosk-model\rnnlm\final.raw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rnnlm\info.txt">
+    <None Update="vosk-model\rnnlm\info.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rnnlm\oov.txt">
+    <None Update="vosk-model\rnnlm\oov.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rnnlm\special_symbol_opts.conf">
+    <None Update="vosk-model\rnnlm\special_symbol_opts.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rnnlm\special_symbol_opts.txt">
+    <None Update="vosk-model\rnnlm\special_symbol_opts.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="vosk-model-ru-0.22\rnnlm\word_feats.txt">
+    <None Update="vosk-model\rnnlm\word_feats.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

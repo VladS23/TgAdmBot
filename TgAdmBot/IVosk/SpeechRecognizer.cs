@@ -15,7 +15,7 @@ namespace TgAdmBot.IVosk
 {
     internal class SpeechRecognizer
     {
-        public static VoskRecognizer voskRecognizer = new VoskRecognizer(new Model("vosk-model-ru-0.22"), 48000.0f);
+        public static VoskRecognizer voskRecognizer = new VoskRecognizer(new Model("vosk-model"), 48000.0f);
 
         private static Queue<RecognitionObject> RecognitionObjects = new Queue<RecognitionObject>();
         private static Thread recognitionThread = new Thread(StartRecognition);
