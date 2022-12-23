@@ -56,7 +56,7 @@ namespace TgAdmBot.BotSpace
                 case "1":
                     if (user.LastMessage == "/help")
                     {
-                        await botClient.SendTextMessageAsync(message.Chat, "Список развлекательных команд\n" +
+                        botClient.SendTextMessageAsync(message.Chat, "Список развлекательных команд\n" +
                             "1. /nick + имя - установит вам в качестве ника \"имя\"\n" +
                             "2. /nicks - выведет список всех участников беседы \n" +
                             "3. /stat - выведет вашу статистику, пользователи с рангом модератор и выше могут посмотреть статистику пользователей с рангом меньше, чем у них, если напишут это сообщение в ответ на сообщение пользователя, статистику которого необходимо просмотреть\n" +
@@ -465,12 +465,12 @@ namespace TgAdmBot.BotSpace
                     }
                     break;
                 case "/nicks":
-                    await botClient.SendTextMessageAsync(message.Chat, user.Chat.GetChatNicknames(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    botClient.SendTextMessageAsync(message.Chat, user.Chat.GetChatNicknames(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     break;
                 case "/rnd":
                     if (message.Text.Length > 6)
                     {
-                        await botClient.SendTextMessageAsync(message.Chat, BotGames.GetRandomNumber(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, BotGames.GetRandomNumber(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     break;
                 case "/chs":
@@ -478,11 +478,11 @@ namespace TgAdmBot.BotSpace
                     {
                             user.LastMessage = message.Text;
                             BotDatabase.db.SaveChanges();
-                            await botClient.SendTextMessageAsync(message.Chat, BotGames.Chose(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            botClient.SendTextMessageAsync(message.Chat, BotGames.Chose(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     else
                     {
-                        await botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     break;
                 case "/me":
@@ -491,36 +491,36 @@ namespace TgAdmBot.BotSpace
                             if (message.ReplyToMessage != null)
                             {
                                 string mestext = message.Text.Substring(4);
-                                await botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext + $" [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                                botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext + $" [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
 
                             }
                         else
                         {
                             string mestext = message.Text.Substring(4);
-                            await botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext, Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
                         }
                         }
                     break;
                 case "/wh":
                     if (message.Text.Length > 4)
                     {
-                        await botClient.SendTextMessageAsync(message.Chat, BotGames.Who(message.Text, user.Chat), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, BotGames.Who(message.Text, user.Chat), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     else
                     {
-                        await botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     break;
                 case "/prob":
                     if (message.Text.Length > 5)
                     {
-                        await botClient.SendTextMessageAsync(message.Chat, BotGames.Probability(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, BotGames.Probability(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     else
                     {
-                        await botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     break;
                 default:
@@ -536,21 +536,21 @@ namespace TgAdmBot.BotSpace
 
                                         string rules = message.Text.Substring(9);
                                         chat.Rules = rules;
-                                        await botClient.SendTextMessageAsync(message.Chat, $"Правила чата установлены", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        botClient.SendTextMessageAsync(message.Chat, $"Правила чата установлены", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                     }
                                     else
                                     {
-                                        await botClient.SendTextMessageAsync(message.Chat, "Правила слишком длинные", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        botClient.SendTextMessageAsync(message.Chat, "Правила слишком длинные", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                     }
                                 }
                                 else
                                 {
-                                    await botClient.SendTextMessageAsync(message.Chat, "Правила слишком короткие", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    botClient.SendTextMessageAsync(message.Chat, "Правила слишком короткие", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                 }
                             }
                             else
                             {
-                                await botClient.SendTextMessageAsync(message.Chat, "Только админы и владелец могут изменять правила", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                botClient.SendTextMessageAsync(message.Chat, "Только админы и владелец могут изменять правила", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             }
                             break;
                         default: break;
