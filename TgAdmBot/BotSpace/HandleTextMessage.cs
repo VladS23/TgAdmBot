@@ -231,11 +231,36 @@ namespace TgAdmBot.BotSpace
                                 }
                                 else
                                 {
-                                    replUser.IsMuted = true;
-                                    BotDatabase.db.SaveChanges();
-                                    replUser.Mute();
-                                    botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{user.Nickname}](tg://user?id={user.TelegramUserId}) запретил пользователю [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId}) писать сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                    break;
+                                    if (message.Text.Split().Length == 2)
+                                    {
+                                        try
+                                        {
+                                            int time = Convert.ToInt32(message.Text.Split()[1]);
+                                            if (time > 0 && time < 99999)
+                                            {
+                                                replUser.IsMuted = true;
+                                                BotDatabase.db.SaveChanges();
+                                                replUser.Mute(time);
+                                                botClient.SendTextMessageAsync(message.Chat, $"Пользователь [{user.Nickname}](tg://user?id={user.TelegramUserId}) запретил пользователю [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId}) писать сообщения", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                botClient.SendTextMessageAsync(message.Chat, "Некорректное время мута (0-99999)", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                                break;
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            botClient.SendTextMessageAsync(message.Chat,"Первый аргумент должен быть числом" , Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                            break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        botClient.SendTextMessageAsync(message.Chat, "Укажите время мута", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                        break;
+                                    }
                                 }
                             }
 

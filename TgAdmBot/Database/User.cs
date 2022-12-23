@@ -115,13 +115,13 @@
                     Ban();
                     return "Пользователь был удален в связи с превышением лимита предупреждений";
                 case WarnsLimitAction.mute:
-                    Mute();
+                    Mute(24*60);
                     return "Пользователю запрещено писать сообщения в связи с превышением лимита предупреждений";
                 default:
                     return "Неизвестная ошибка";
             }
         }
-        public void Mute()
+        public void Mute(int minuts)
         {
             try
             {
@@ -134,7 +134,7 @@
                 {
                     using (HttpClient cln = new HttpClient())
                     {
-                        string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}";
+                        string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() + 60*minuts}";
                         using (var request = cln.GetAsync(restext).Result)
                         {
 
