@@ -8,10 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="vosk-model-small-ru-0.22\**" />
+    <EmbeddedResource Remove="vosk-model-small-ru-0.22\**" />
+    <None Remove="vosk-model-small-ru-0.22\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-    <PackageReference Include="System.Speech" Version="7.0.0" />
     <PackageReference Include="Telegram.Bot" Version="18.0.0" />
+    <PackageReference Include="Vosk" Version="0.3.38" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +28,38 @@
     <None Update="Database\.env">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\eunv2\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libgcc_s_seh-1.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\eunv2\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libstdc++-6.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\eunv2\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libvosk.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\eunv2\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libwinpthread-1.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\eunv2\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libwinpthread-1.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\eunv2\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libgcc_s_seh-1.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\eunv2\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libstdc++-6.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\eunv2\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libvosk.dll" />
   </ItemGroup>
 
 </Project>

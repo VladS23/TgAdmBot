@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using TgAdmBot.delete;
 
 namespace TgAdmBot.Database
 {
@@ -51,7 +50,19 @@ namespace TgAdmBot.Database
             chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
             return chat;
         }
-        public string GetInfo()
+        public string GetChatNicknames()
+        {
+            string result = "Участники беседы:\n";
+            int index = 1;
+            foreach (User user in Users)
+            {
+                result = $"{result}{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})\n";
+                index += 1;
+            }
+            return result;
+        }
+
+            public string GetInfo()
         {
             return (
                "📊 Информация о чате:\n"

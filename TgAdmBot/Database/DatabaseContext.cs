@@ -17,7 +17,7 @@ namespace TgAdmBot.Database
                 db = new Database();
 
                 //Для автосброса БД
-                //db.Database.EnsureDeleted();
+                db.Database.EnsureDeleted();
 
                 db.Database.EnsureCreated();
                 db.Chats.Load();

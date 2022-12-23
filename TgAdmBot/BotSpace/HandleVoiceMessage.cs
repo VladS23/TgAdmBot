@@ -1,59 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Speech.Recognition;
 using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
+using Telegram.Bot.Types;
 using TgAdmBot.Database;
+using TgAdmBot.IVosk;
+using Vosk;
 
 namespace TgAdmBot.BotSpace
 {
     internal partial class Bot
     {
-        private async Task HandleVoiceMessage(CancellationToken cancellationToken, Telegram.Bot.Types.Message message, Database.User user, Database.Chat chat)
+        private async void HandleVoiceMessage(Telegram.Bot.Types.Message message, Database.User user, Database.Chat chat)
         {
-            Task recognitionTask = Task.Run(() =>
+            if (chat.VoiceMessagesDisallowed)
             {
-                if (chat.VoiceMessagesDisallowed)
-                {
-                    botClient.DeleteMessageAsync(message.Chat, message.MessageId);
-                }
-                else
-                {
-
-                    // Create an in-process speech recognizer for the en-US locale.  
-                    using (
-                    SpeechRecognitionEngine recognizer =
-                      new SpeechRecognitionEngine(
-                        new System.Globalization.CultureInfo("ru-RU")))
-                    {
-
-                        // Create and load a dictation grammar.  
-                        recognizer.LoadGrammar(new DictationGrammar());
-
-                        // Add a handler for the speech recognized event.  
-                        recognizer.SpeechRecognized +=
-                          new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);
-
-                        // Configure input to the speech recognizer.  
-                        recognizer.SetInputToWaveFile("");
-
-                        // Start asynchronous, continuous speech recognition.  
-                        recognizer.RecognizeAsync(RecognizeMode.Single);
-
-                        void recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
-                        {
-                            Console.WriteLine("Recognized text: " + e.Result.Text);
-                        }
-
-                    }
-                }
-            });
+                botClient.DeleteMessageAsync(message.Chat, message.MessageId);
+            }
+            else
+            {
+                BotDatabase.db.VoiceMessages.Add(new VoiceMessage { Chat = chat, MessageId = message.MessageId,fileId=message.Voice.FileId, fileUniqueId=message.Voice.FileUniqueId });
+                BotDatabase.db.SaveChanges();
+                string filepath = $"{message.From.Id}_{message.Chat.Id}";
+                //Поток обработки аудио
+                SpeechRecognizer.AddMessageToQueue(new RecognitionObject { chat=chat,voiceMessage=message});
+            }
 
             user.UpdateStatistic(message);
         }
+
     }
 
 }
