@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TgAdmBot.Database;
 
-namespace TgAdmBot.Database
+namespace TgAdmBot.BotSpace
 {
     internal class BotGames
     {
@@ -29,7 +30,7 @@ namespace TgAdmBot.Database
             {
                 string mes = messagetext.Substring(4);
                 string[] separator = { " или " };
-                string[] variables = mes.Split(separator, System.StringSplitOptions.RemoveEmptyEntries);
+                string[] variables = mes.Split(separator, StringSplitOptions.RemoveEmptyEntries);
                 Random rnd = new Random();
                 return "✨✨ Я выбираю " + variables[rnd.Next(0, 2)];
             }
@@ -38,7 +39,7 @@ namespace TgAdmBot.Database
                 return "Неправильный синтаксис команды. Пример правильной команды '/chs вариант 1 или вариант 2'";
             }
         }
-        public static string Who(string text, Chat chat) 
+        public static string Who(string text, Chat chat)
         {
             text = text.Substring(4);
             Database.User user = chat.Users[new Random().Next(0, chat.Users.Count - 1)];

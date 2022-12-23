@@ -1,4 +1,4 @@
-﻿namespace TgAdmBot
+﻿namespace TgAdmBot.BotSpace
 {
     internal class ChatAdministrators
     {
