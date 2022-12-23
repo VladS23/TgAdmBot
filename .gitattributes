@@ -5,3 +5,4 @@ final.mdl filter=lfs diff=lfs merge=lfs -text
 *.carpa filter=lfs diff=lfs merge=lfs -text
 *.mdl filter=lfs diff=lfs merge=lfs -text
 rnnlm/word_feats.txt filter=lfs diff=lfs merge=lfs -text
+word_feats.txt filter=lfs diff=lfs merge=lfs -text
