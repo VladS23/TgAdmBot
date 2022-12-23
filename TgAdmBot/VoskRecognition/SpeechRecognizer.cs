@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using TgAdmBot.BotSpace;
 using TgAdmBot.Database;
 using Vosk;
 
-namespace TgAdmBot.IVosk
+namespace TgAdmBot.VoskRecognition
 {
     internal class SpeechRecognizer
     {
@@ -53,7 +46,7 @@ namespace TgAdmBot.IVosk
                     }
                     FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
                     Console.WriteLine(result.text);
-                    BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == recognitionObject.voiceMessage.MessageId&&vm.fileUniqueId==recognitionObject.voiceMessage.Voice.FileUniqueId).recognizedText = result.text;
+                    BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == recognitionObject.voiceMessage.MessageId && vm.fileUniqueId == recognitionObject.voiceMessage.Voice.FileUniqueId).recognizedText = result.text;
                     BotDatabase.db.SaveChanges();
                 }
 
