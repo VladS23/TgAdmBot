@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot;
+﻿using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using TgAdmBot.Database;
 
 namespace TgAdmBot.BotSpace
@@ -24,20 +20,7 @@ namespace TgAdmBot.BotSpace
 
                 Database.User user = Database.User.GetOrCreate(chat, message.From);
                 #endregion
-                #region Авторазмут пользователей
-                if (DateTime.Now > Program.LastDbChech.AddMinutes(1))
-                {
-                    Program.LastDbChech=DateTime.Now;
-                    Console.WriteLine("DbChecked");
-                    foreach (Database.Chat ch in BotDatabase.db.Chats)
-                    {
-                        foreach (Database.User us in ch.Users.Where(us => us.IsMuted && us.UnmuteTime < DateTime.Now).ToList())
-                        {
-                            us.Unmute();
-                        }
-                    }
-                }
-                #endregion
+
                 chat.MessagesCount += 1;
                 BotDatabase.db.SaveChanges();
 
@@ -46,7 +29,7 @@ namespace TgAdmBot.BotSpace
                 {
                     Task handledTextTask = this.HandleTextMessage(message, user, chat);
                 }
-                else if (message.Voice!=null)
+                else if (message.Voice != null)
                 {
                     this.HandleVoiceMessage(message, user, chat);
                 }
@@ -54,6 +37,11 @@ namespace TgAdmBot.BotSpace
                 {
                     user.UpdateStatistic(message);
                 }
+            }
+            else if (update.Type == UpdateType.InlineQuery)
+            {
+                Telegram.Bot.Types.InlineQuery inlineQuery = update.InlineQuery!;
+                Console.WriteLine(inlineQuery.Query);
             }
         }
 

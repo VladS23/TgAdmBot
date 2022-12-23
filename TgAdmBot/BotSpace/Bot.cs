@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Polling;
 using TgAdmBot.Database;
-using Vosk;
 
 namespace TgAdmBot.BotSpace
 {
@@ -19,9 +13,10 @@ namespace TgAdmBot.BotSpace
             AllowedUpdates = { },
         };
         internal CancellationToken cancellationToken = new CancellationTokenSource().Token;
-        
-        
-        public Bot() {
+
+
+        public Bot()
+        {
             BotDatabase db = new BotDatabase();
             currentObject = botClient;
             botClient.StartReceiving(

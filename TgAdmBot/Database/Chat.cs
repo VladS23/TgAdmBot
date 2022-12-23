@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot.Types;
+﻿using System.Text;
 using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
@@ -53,10 +47,11 @@ namespace TgAdmBot.Database
         }
         public string GetInfo()
         {
+            //TODO переделать с использованиеи StringBuilder
             return (
                "📊 Информация о чате:\n"
             + $"📈 ID чата: {TelegramChatId}\n"
-            +$"⛔️ Лимит предупреждений {WarnsLimit}\n"
+            + $"⛔️ Лимит предупреждений {WarnsLimit}\n"
             + $"💎 VIP чат: {Status.ToString()}\n"
             + $"🎧 Голосовые сообщения запрещены: {(VoiceMessagesDisallowed ? "Да" : "Нет")}\n"
             + $"⚖️ Наказание за превышение лимита предупреждений: {(WarnsLimitAction == WarnsLimitAction.mute ? "Мут" : "Бан")}\n"
@@ -67,14 +62,26 @@ namespace TgAdmBot.Database
         }
         public string GetChatNicknames()
         {
-            string result = "Участники беседы:\n";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Участники беседы:");
             int index = 1;
             foreach (User user in Users)
             {
-                result = $"{result}{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})\n";
+                sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
                 index += 1;
             }
-            return result;
+            return sb.ToString();
+        }
+
+        public string GetAllMentions()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Все участники были отмечены под этим сообщением.");
+            foreach (User user in Users)
+            {
+                sb.Append($"[ᅠ](tg://user?id={user.TelegramUserId})");
+            }
+            return sb.ToString();
         }
 
         public string GetWarnedUsers()
@@ -84,6 +91,7 @@ namespace TgAdmBot.Database
             //If warned users are exist than retuln result string else return else string
             if (users.Count > 0)
             {
+                //TODO переделать с использованиеи StringBuilder
                 string result = "Предупреждённые пользователи:\n";
                 int index = 1;
                 foreach (Database.User user in users)
@@ -101,6 +109,7 @@ namespace TgAdmBot.Database
         public string GetMutedUsers()
         {
             List<Database.User> mutedUsers = Users.Where(user => user.IsMuted == true).ToList();
+            //TODO переделать с использованиеи StringBuilder
             string mutedUsersText = "";
             if (mutedUsers.Count < 1)
             {
@@ -110,12 +119,14 @@ namespace TgAdmBot.Database
             {
                 for (int index = 0; index < mutedUsers.Count; index++)
                 {
-                    mutedUsersText = $"{mutedUsersText}{index+1}. [{mutedUsers[index].Nickname}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
+                    mutedUsersText = $"{mutedUsersText}{index + 1}. [{mutedUsers[index].Nickname}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
                 }
             }
 
             return mutedUsersText;
         }
+
+
         public string SetWarningLimitAction(long userid, string text)
         {
             if (Users.Single(user => user.TelegramUserId == userid).UserRights < UserRights.moderator)
@@ -124,6 +135,7 @@ namespace TgAdmBot.Database
 
                 switch (command[1])
                 {
+                    //TODO переделать с использованиеи enum в case
                     case "mute":
                         WarnsLimitAction = WarnsLimitAction.mute;
                         BotDatabase.db.SaveChanges();
@@ -169,14 +181,13 @@ namespace TgAdmBot.Database
                                         creatorId = admin.user.id;
                                         chat.Users.Add(new Database.User { Nickname = admin.user.username, TelegramUserId = admin.user.id, IsBot = admin.user.is_bot, Chat = this, UserRights = UserRights.creator });
                                     }
-                                    else if (admin.status== "administrator")
+                                    else if (admin.status == "administrator")
                                     {
                                         chat.Users.Add(new Database.User { Nickname = admin.user.username, TelegramUserId = admin.user.id, IsBot = admin.user.is_bot, Chat = this, UserRights = UserRights.administrator });
                                     }
                                     else
                                     {
                                         chat.Users.Add(new Database.User { Nickname = admin.user.username, TelegramUserId = admin.user.id, IsBot = admin.user.is_bot, Chat = this, UserRights = UserRights.normal });
-
                                     }
                                 }
                                 BotDatabase.db.SaveChanges();

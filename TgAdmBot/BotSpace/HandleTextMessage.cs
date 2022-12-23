@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using TgAdmBot.Database;
 
 namespace TgAdmBot.BotSpace
@@ -13,31 +8,26 @@ namespace TgAdmBot.BotSpace
 
         private async Task HandleTextMessage(Telegram.Bot.Types.Message message, Database.User user, Database.Chat chat)
         {
-            Database.User? replUser = null;
-            if (message.ReplyToMessage != null)
+            Database.User? replUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage.From.Id);
+            if (replUser == null)
             {
-                Database.User? replyUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage.From.Id);
-                if (replyUser == null)
-                {
-                    replyUser = Database.User.GetOrCreate(chat, message.ReplyToMessage.From);
-                }
-                replUser = replyUser;
+                replUser = Database.User.GetOrCreate(chat, message.ReplyToMessage.From);
             }
 
 
             switch (message.Text.ToLower().Replace($"@{botClient.GetMeAsync().Result.Username!}", "").Split()[0])
             {
                 case "/stt":
-                    if (replUser!=null)
+                    if (replUser != null)
                     {
                         VoiceMessage? voiseMessage = BotDatabase.db.VoiceMessages.SingleOrDefault(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == message.ReplyToMessage.MessageId);
-                        if (voiseMessage==null)
+                        if (voiseMessage == null)
                         {
                             botClient.SendTextMessageAsync(chatId: message.Chat, "Сообщения, отправленные раньше добавления бота не будут обработаны.");
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(chatId:message.Chat,voiseMessage.recognizedText, replyToMessageId:message.ReplyToMessage.MessageId);
+                            botClient.SendTextMessageAsync(chatId: message.Chat, voiseMessage.recognizedText, replyToMessageId: message.ReplyToMessage.MessageId);
                         }
                     }
                     else
@@ -99,7 +89,6 @@ namespace TgAdmBot.BotSpace
                 case "/setdefaultadmins":
                     if (user.UserRights == UserRights.creator)
                     {
-
                         BotDatabase.db.SaveChanges();
                         botClient.SendTextMessageAsync(message.Chat, chat.SetDefaultAdmins());
                         break;
@@ -351,6 +340,7 @@ namespace TgAdmBot.BotSpace
                     {
                         if (user.UserRights < UserRights.helper && user.UserRights < replUser.UserRights)
                         {
+                            //TODO переделать. Будет отображаться неверное число варнов
                             if (replUser.WarnsCount != chat.WarnsLimit - 1)
                             {
                                 replUser.Warn();
@@ -475,9 +465,9 @@ namespace TgAdmBot.BotSpace
                 case "/chs":
                     if (message.Text.Length > 11)
                     {
-                            user.LastMessage = message.Text;
-                            BotDatabase.db.SaveChanges();
-                            botClient.SendTextMessageAsync(message.Chat, BotGames.Chose(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        user.LastMessage = message.Text;
+                        BotDatabase.db.SaveChanges();
+                        botClient.SendTextMessageAsync(message.Chat, BotGames.Chose(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     else
                     {
@@ -487,20 +477,20 @@ namespace TgAdmBot.BotSpace
                 case "/me":
                     if (message.Text.Length > 4)
                     {
-                            if (message.ReplyToMessage != null)
-                            {
-                                string mestext = message.Text.Substring(4);
-                                botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext + $" [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                        if (message.ReplyToMessage != null)
+                        {
+                            string mestext = message.Text.Substring(4);
+                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext + $" [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
 
-                            }
+                        }
                         else
                         {
                             string mestext = message.Text.Substring(4);
                             botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
                         }
-                        }
+                    }
                     break;
                 case "/wh":
                     if (message.Text.Length > 4)
@@ -521,6 +511,9 @@ namespace TgAdmBot.BotSpace
                     {
                         botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
+                    break;
+                case "@all":
+                    botClient.SendTextMessageAsync(message.Chat, chat.GetAllMentions(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     break;
                 default:
                     switch (user.LastMessage)
@@ -552,7 +545,12 @@ namespace TgAdmBot.BotSpace
                                 botClient.SendTextMessageAsync(message.Chat, "Только админы и владелец могут изменять правила", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             }
                             break;
-                        default: break;
+                        default:
+                            if (message.Text.Contains("@all"))
+                            {
+                                botClient.SendTextMessageAsync(message.Chat, chat.GetAllMentions(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            }
+                            break;
                     }
                     break;
 
