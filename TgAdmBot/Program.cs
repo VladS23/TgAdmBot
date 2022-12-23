@@ -16,6 +16,7 @@ namespace TgAdmBot
     class Program
     {
         public static string botToken = new Config().env.GetValueOrDefault("BotToken")!;
+        public static DateTime LastDbChech = DateTime.Now;
         static void Main(string[] args)
         {
             Vosk.Vosk.SetLogLevel(0);

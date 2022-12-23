@@ -50,6 +50,20 @@ namespace TgAdmBot.Database
             chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
             return chat;
         }
+        public string GetInfo()
+        {
+            return (
+               "📊 Информация о чате:\n"
+            + $"📈 ID чата: {TelegramChatId}\n"
+            +$"⛔️ Лимит предупреждений {WarnsLimit}\n"
+            + $"💎 VIP чат: {Status.ToString()}\n"
+            + $"🎧 Голосовые сообщения запрещены: {(VoiceMessagesDisallowed ? "Да" : "Нет")}\n"
+            + $"⚖️ Наказание за превышение лимита предупреждений: {(WarnsLimitAction == WarnsLimitAction.mute ? "Мут" : "Бан")}\n"
+            + $"👨‍💻 Активные пользователи: {Users.Count}\n"
+            + $"👨‍💻 Админов: {Users.Where(p => p.UserRights == UserRights.administrator).Count()}\n"
+            + $"✉️ Сообщений всего: {MessagesCount}\n"
+                );
+        }
         public string GetChatNicknames()
         {
             string result = "Участники беседы:\n";
@@ -62,19 +76,6 @@ namespace TgAdmBot.Database
             return result;
         }
 
-            public string GetInfo()
-        {
-            return (
-               "📊 Информация о чате:\n"
-            + $"📈 ID чата: {TelegramChatId}\n"
-            + $"💎 VIP чат: {Status.ToString()}\n"
-            + $"🎧 Голосовые сообщения запрещены: {(VoiceMessagesDisallowed ? "Да" : "Нет")}\n"
-            + $"⚖️ Наказание за превышение лимита предупреждений: {(WarnsLimitAction == WarnsLimitAction.mute ? "Мут" : "Бан")}\n"
-            + $"👨‍💻 Активные пользователи: {Users.Count}\n"
-            + $"👨‍💻 Админов: {Users.Where(p=>p.UserRights==UserRights.administrator).Count()}\n"
-            + $"✉️ Сообщений всего: {MessagesCount}\n"
-                );
-        }
         public string GetWarnedUsers()
         {
             Database.Chat chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == this.TelegramChatId);

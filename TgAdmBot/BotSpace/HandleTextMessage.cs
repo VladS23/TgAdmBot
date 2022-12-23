@@ -56,15 +56,16 @@ namespace TgAdmBot.BotSpace
                 case "1":
                     if (user.LastMessage == "/help")
                     {
-                        botClient.SendTextMessageAsync(message.Chat, "Список развлекательных команд\n" +
-                            "1. Ник + имя - установит вам в качестве ника \"имя\"\n" +
-                            "2. Участники - выведет список всех участников беседы \n" +
-                            "3. Стата - выведет вашу статистику, пользователи с рангом модератор и выше могут посмотреть статистику пользователей с рангом меньше, чем у них, если напишут это сообщение в ответ на сообщение пользователя, статистику которого необходимо просмотреть\n" +
-                            "4. Рнд число1-число2 - сгенерирует случайное число из указанного промежутка\n" +
-                            "5. Вбр вариант1 или вариант2 - выберет один из указанных вариантов\n" +
-                            "6. Me действие - выведет сообщение вида: \"пользователь1 действие пользователь2\" (пользователь2 указывается путем ответа на его сообщение)\n" +
-                            "7. кт + действие - выведет: *Случайный участник беседы* действие\n" +
-                            "8. Вртн + событие - предположит вероятность какого-то события");
+                        await botClient.SendTextMessageAsync(message.Chat, "Список развлекательных команд\n" +
+                            "1. /nick + имя - установит вам в качестве ника \"имя\"\n" +
+                            "2. /nicks - выведет список всех участников беседы \n" +
+                            "3. /stat - выведет вашу статистику, пользователи с рангом модератор и выше могут посмотреть статистику пользователей с рангом меньше, чем у них, если напишут это сообщение в ответ на сообщение пользователя, статистику которого необходимо просмотреть\n" +
+                            "4. /rnd число1-число2 - сгенерирует случайное число из указанного промежутка\n" +
+                            "5. /chs вариант1 или вариант2 - выберет один из указанных вариантов\n" +
+                            "6. /me действие - выведет сообщение вида: \"пользователь1 действие пользователь2\" (пользователь2 указывается путем ответа на его сообщение) пользователя указывать необязательно\n" +
+                            "7. /wh + действие - выведет: *Случайный участник беседы* действие\n" +
+                            "8. /prob + событие - предположит вероятность какого-то события\n" +
+                            "9. /chatstat выведет статистику чата");
                     }
                     break;
                 case "2":
@@ -464,23 +465,98 @@ namespace TgAdmBot.BotSpace
                     }
                     break;
                 case "/nicks":
-                    botClient.SendTextMessageAsync(message.Chat, user.Chat.GetChatNicknames(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                    return;
+                    await botClient.SendTextMessageAsync(message.Chat, user.Chat.GetChatNicknames(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    break;
+                case "/rnd":
+                    if (message.Text.Length > 6)
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, BotGames.GetRandomNumber(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                    break;
+                case "/chs":
+                    if (message.Text.Length > 11)
+                    {
+                            user.LastMessage = message.Text;
+                            BotDatabase.db.SaveChanges();
+                            await botClient.SendTextMessageAsync(message.Chat, BotGames.Chose(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                    else
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                    break;
+                case "/me":
+                    if (message.Text.Length > 4)
+                    {
+                            if (message.ReplyToMessage != null)
+                            {
+                                string mestext = message.Text.Substring(4);
+                                await botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext + $" [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
 
+                            }
+                        else
+                        {
+                            string mestext = message.Text.Substring(4);
+                            await botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                        }
+                        }
+                    break;
+                case "/wh":
+                    if (message.Text.Length > 4)
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, BotGames.Who(message.Text, user.Chat), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                    else
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                    break;
+                case "/prob":
+                    if (message.Text.Length > 5)
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, BotGames.Probability(message.Text), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                    else
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                    break;
                 default:
                     switch (user.LastMessage)
                     {
                         case "/setrules":
                             if (user.UserRights < UserRights.moderator)
                             {
-                                chat.Rules = message.Text;
-                                botClient.SendTextMessageAsync(message.Chat, $"Новые правила:\n{chat.Rules}");
-                                BotDatabase.db.SaveChanges();
+                                if (message.Text.Length > 15)
+                                {
+                                    if (message.Text.Length < 10000)
+                                    {
+
+                                        string rules = message.Text.Substring(9);
+                                        chat.Rules = rules;
+                                        await botClient.SendTextMessageAsync(message.Chat, $"Правила чата установлены", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    }
+                                    else
+                                    {
+                                        await botClient.SendTextMessageAsync(message.Chat, "Правила слишком длинные", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    }
+                                }
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(message.Chat, "Правила слишком короткие", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                }
+                            }
+                            else
+                            {
+                                await botClient.SendTextMessageAsync(message.Chat, "Только админы и владелец могут изменять правила", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             }
                             break;
                         default: break;
                     }
                     break;
+
             }
 
             user.UpdateStatistic(message);

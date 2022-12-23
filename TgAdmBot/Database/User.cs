@@ -61,12 +61,20 @@ namespace TgAdmBot.Database
         }
         public string GetInfo()
         {
-            return (
+            string result =
                 $"📈 Информация о {Nickname}\n"
                 + $"👥 Ник : [{Nickname}](tg://user?id={TelegramUserId})" + "\n"
                 + $"👑 Ранг: {UserRights.ToString()}\n"
                 + $"🚫 Количество предупреждений {WarnsCount}\n"
-                );
+                + $"🖊 Разрешено писать: {(IsMuted ? "Нет" : "Да")}\n";
+            if (IsMuted)
+            {
+                result = result + $"🤐 Замьючен до {UnmuteTime}\n";
+            }
+            result = result + $"✉️ Количество сообщений: {MessagesCount}\n"
+                +$"🎧 Количество голосовых сообщений: {VoiceMessagesCount}\n"
+                +$"😀 Количество стикеров: {StickerMessagesCount}";
+            return result;
         }
         public  void UnBan()
         {
@@ -135,6 +143,7 @@ namespace TgAdmBot.Database
             try
             {
                 IsMuted = true;
+                UnmuteTime=DateTime.Now.AddHours(30);
                 BotDatabase.db.SaveChanges();
                 //Send a request to telegram api and mute user
                 using (HttpClientHandler hndl = new HttpClientHandler())
