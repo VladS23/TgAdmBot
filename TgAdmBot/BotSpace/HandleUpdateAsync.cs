@@ -25,11 +25,11 @@ namespace TgAdmBot.BotSpace
                 BotDatabase.db.SaveChanges();
 
 
-                if (message.Text != null)
+                if (message.Text != null && message.Type == MessageType.Text)
                 {
                     Task handledTextTask = this.HandleTextMessage(message, user, chat);
                 }
-                else if (message.Voice != null)
+                else if (message.Voice != null && message.Type == MessageType.Voice)
                 {
                     this.HandleVoiceMessage(message, user, chat);
                 }
