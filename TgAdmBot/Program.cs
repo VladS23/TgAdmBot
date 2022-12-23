@@ -1,22 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Telegram.Bot;
-using Telegram.Bot.Polling;
-using Telegram.Bot.Types;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using TgAdmBot.Database;
-using TgAdmBot.BotSpace;
-using TgAdmBot.IVosk;
+﻿using Telegram.Bot;
+using TgAdmBot.VoskRecognition;
 
 namespace TgAdmBot
 {
     class Program
     {
         public static string botToken = new Config().env.GetValueOrDefault("BotToken")!;
-        public static DateTime LastDbChech = DateTime.Now;
         static void Main(string[] args)
         {
             Vosk.Vosk.SetLogLevel(0);

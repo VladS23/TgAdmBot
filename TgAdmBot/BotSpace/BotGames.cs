@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TgAdmBot.Database;
+﻿using TgAdmBot.Database;
 
 namespace TgAdmBot.BotSpace
 {
+    //TODO переделать нейминг переменных методов
     internal class BotGames
     {
         public static string GetRandomNumber(string messagetext)
         {
             try
             {
-                //Process the string and create a result based on it
+                //TODO переделать с использованиеи нормального рандома
+
                 string mes = messagetext.Substring(4);
                 string[] nums = mes.Split('-');
                 Random rnd = new Random();
@@ -28,8 +25,10 @@ namespace TgAdmBot.BotSpace
         {
             try
             {
+                //TODO переделать с использованиеи нормального рандома
+
                 string mes = messagetext.Substring(4);
-                string[] separator = { " или " };
+                string[] separator = { " или " };//TODO убрать
                 string[] variables = mes.Split(separator, StringSplitOptions.RemoveEmptyEntries);
                 Random rnd = new Random();
                 return "✨✨ Я выбираю " + variables[rnd.Next(0, 2)];
@@ -41,12 +40,16 @@ namespace TgAdmBot.BotSpace
         }
         public static string Who(string text, Chat chat)
         {
+            //TODO переделать с использованиеи нормального рандома
+
             text = text.Substring(4);
             Database.User user = chat.Users[new Random().Next(0, chat.Users.Count - 1)];
             return $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) {text}";
         }
         public static string Probability(string messagetext)
         {
+            //TODO переделать с использованиеи нормального рандома
+
             string mes = messagetext.Substring(5);
             Random rnd = new Random();
             return "Вероятность" + mes + $" {rnd.Next(0, 101)}%";

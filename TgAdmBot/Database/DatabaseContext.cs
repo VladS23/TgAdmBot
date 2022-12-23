@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TgAdmBot.Database
 {
@@ -16,8 +11,10 @@ namespace TgAdmBot.Database
             {
                 db = new Database();
 
-                //Для автосброса БД
-                db.Database.EnsureDeleted();
+                //Для автосброса БД в отладочной сборке
+#if (DEBUG)
+                db.Database.EnsureDeleted();//TODO ознакомиться (!)
+#endif
 
                 db.Database.EnsureCreated();
                 db.Chats.Load();

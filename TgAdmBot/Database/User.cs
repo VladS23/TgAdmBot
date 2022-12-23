@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot.Types;
-
-namespace TgAdmBot.Database
+﻿namespace TgAdmBot.Database
 {
     public enum UserRights
     {
@@ -35,22 +28,10 @@ namespace TgAdmBot.Database
         public User()
         {
         }
-        public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.Message message)
-        {
-            Database.User? user;
-            user = BotDatabase.db.Users.Single(u=>u.Chat.ChatId==chat.ChatId&&u.TelegramUserId==message.From.Id);
-            if (user==null)
-            {
-                BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User { Nickname = message.From.Username, TelegramUserId = message.From.Id, IsBot = message.From.IsBot, Chat = chat });
-                BotDatabase.db.SaveChanges();
-                user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == message.From.Id);
-            }
-            return user;
-        }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
         {
             Database.User? user;
-            user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
+            user = BotDatabase.db.Users.SingleOrDefault(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
             if (user == null)
             {
                 BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User { Nickname = TgUser.Username, TelegramUserId = TgUser.Id, IsBot = TgUser.IsBot, Chat = chat });
@@ -61,6 +42,7 @@ namespace TgAdmBot.Database
         }
         public string GetInfo()
         {
+            //TODO переделать с использованиеи StringBuilder
             string result =
                 $"📈 Информация о {Nickname}\n"
                 + $"👥 Ник : [{Nickname}](tg://user?id={TelegramUserId})" + "\n"
@@ -72,11 +54,11 @@ namespace TgAdmBot.Database
                 result = result + $"🤐 Замьючен до {UnmuteTime}\n";
             }
             result = result + $"✉️ Количество сообщений: {MessagesCount}\n"
-                +$"🎧 Количество голосовых сообщений: {VoiceMessagesCount}\n"
-                +$"😀 Количество стикеров: {StickerMessagesCount}";
+                + $"🎧 Количество голосовых сообщений: {VoiceMessagesCount}\n"
+                + $"😀 Количество стикеров: {StickerMessagesCount}";
             return result;
         }
-        public  void UnBan()
+        public void UnBan()
         {
             try
             {
@@ -90,6 +72,7 @@ namespace TgAdmBot.Database
                         {
 
                         }
+                        //TODO прикрутить сюда приглос чела назад
                     }
                 }
             }
@@ -143,7 +126,8 @@ namespace TgAdmBot.Database
             try
             {
                 IsMuted = true;
-                UnmuteTime=DateTime.Now.AddHours(30);
+                //TODO допилить выбор ограничения по времени
+                UnmuteTime = DateTime.Now.AddHours(30);
                 BotDatabase.db.SaveChanges();
                 //Send a request to telegram api and mute user
                 using (HttpClientHandler hndl = new HttpClientHandler())
@@ -170,12 +154,13 @@ namespace TgAdmBot.Database
             {
                 IsMuted = false;
                 BotDatabase.db.SaveChanges();
-                //Send a request to telegram api and unmute users
+
                 using (HttpClientHandler hndl = new HttpClientHandler())
                 {
                     using (HttpClient cln = new HttpClient())
                     {
                         string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() + 35}";
+                        //TODO разблочить поток
                         using (var request = cln.GetAsync(restext).Result)
                         {
 
@@ -190,6 +175,7 @@ namespace TgAdmBot.Database
         }
         public void UpdateStatistic(Telegram.Bot.Types.Message message)
         {
+            IsMuted = false;
             LastActivity = DateTime.Now;
             if (message.Text != null)
             {
