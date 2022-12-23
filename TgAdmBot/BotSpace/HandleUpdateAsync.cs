@@ -22,7 +22,7 @@ namespace TgAdmBot.BotSpace
 
                 Database.Chat chat = Database.Chat.GetOrCreate(message);
 
-                Database.User user = Database.User.GetOrCreate(chat, message);
+                Database.User user = Database.User.GetOrCreate(chat, message.From);
                 #endregion
                 #region Авторазмут пользователей
                 if (DateTime.Now > Program.LastDbChech.AddMinutes(1))
@@ -46,9 +46,9 @@ namespace TgAdmBot.BotSpace
                 {
                     Task handledTextTask = this.HandleTextMessage(message, user, chat);
                 }
-                else if (message.Audio!=null)
+                else if (message.Voice!=null)
                 {
-                    Task handledVoiceTask= this.HandleVoiceMessage(cancellationToken, message, user, chat);
+                    this.HandleVoiceMessage(message, user, chat);
                 }
                 else
                 {
