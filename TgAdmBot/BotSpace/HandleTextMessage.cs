@@ -15,6 +15,15 @@ namespace TgAdmBot.BotSpace
             }
 
 
+
+
+
+            if (message.Text.Contains("@all"))
+            {
+                botClient.SendTextMessageAsync(message.Chat, chat.GetAllMentions(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+            }
+
+
             switch (message.Text.ToLower().Replace($"@{botClient.GetMeAsync().Result.Username!}", "").Split()[0])
             {
                 case "/stt":
@@ -537,9 +546,6 @@ namespace TgAdmBot.BotSpace
                         botClient.SendTextMessageAsync(message.Chat, "Сообщение слишком короткое", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     break;
-                case "@all":
-                    botClient.SendTextMessageAsync(message.Chat, chat.GetAllMentions(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                    break;
                 default:
                     switch (user.LastMessage)
                     {
@@ -571,10 +577,6 @@ namespace TgAdmBot.BotSpace
                             }
                             break;
                         default:
-                            if (message.Text.Contains("@all"))
-                            {
-                                botClient.SendTextMessageAsync(message.Chat, chat.GetAllMentions(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                            }
                             break;
                     }
                     break;
