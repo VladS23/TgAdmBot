@@ -44,6 +44,12 @@ namespace TgAdmBot.BotSpace
                         botClient.SendTextMessageAsync(message.Chat, "Ответьте этой командой на голосовое сообщение.");
                     }
                     break;
+                case "/db":
+                    if (message.Chat.Id==Convert.ToInt64(Program.ownerId))
+                    {
+                     //TODO отправка бд в чат   
+                    }
+                    break;
                 case "/help":
                     botClient.SendTextMessageAsync(message.Chat, "" +
                         "Выберите какой раздел команд вас интересует \n" +
