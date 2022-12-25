@@ -29,7 +29,7 @@ namespace TgAdmBot.BotSpace
                     botClient.SendTextMessageAsync(message.Chat, BotPhrases.StartCommandAnswer);
                     break;
                 case "/ranks":
-                    botClient.SendTextMessageAsync(message.Chat, chat.GetRanks());
+                    botClient.SendTextMessageAsync(message.Chat, chat.GetRanks(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     break;
                 case "/stt":
                     if (replUser != null)
