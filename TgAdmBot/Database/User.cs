@@ -17,7 +17,8 @@
         public DateTime LastActivity { get; set; } = DateTime.Now;
         public UserRights UserRights { get; set; } = UserRights.normal;
         public Chat Chat { get; set; }
-        public string Nickname { get; set; }
+        public string? Nickname { get; set; }
+        public string FirstName { get; set; }
         public DateTime UnmuteTime { get; set; } = DateTime.Now;
         public bool IsBot { get; set; } = false;
         public int MessagesCount { get; set; } = 0;
@@ -28,15 +29,40 @@
         public User()
         {
         }
+        public User(string? username, string firstName, long telegramId, bool isBot, Chat chat)
+        {
+            this.Chat = chat;
+            this.IsBot = isBot;
+            this.FirstName= firstName;
+            this.TelegramUserId= telegramId;
+            this.Nickname = username;
+        }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
         {
             Database.User? user;
             user = BotDatabase.db.Users.SingleOrDefault(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
             if (user == null)
             {
-                BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User { Nickname = TgUser.Username, TelegramUserId = TgUser.Id, IsBot = TgUser.IsBot, Chat = chat });
+                BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User
+                {
+                    FirstName = TgUser.Username != null ? TgUser.Username : TgUser.FirstName,
+                    Nickname = TgUser.FirstName,
+                    TelegramUserId = TgUser.Id,
+                    IsBot = TgUser.IsBot,
+                    Chat = chat
+                });
                 BotDatabase.db.SaveChanges();
                 user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
+            }
+            if (user.FirstName!=TgUser.Username)
+            {
+                user.FirstName = TgUser.Username;
+                BotDatabase.db.SaveChanges();
+            }
+            if (user.FirstName!=TgUser.FirstName)
+            {
+                user.FirstName = TgUser.FirstName;
+                BotDatabase.db.SaveChanges();
             }
             return user;
         }
@@ -44,8 +70,8 @@
         {
             //TODO переделать с использованиеи StringBuilder
             string result =
-                $"📈 Информация о {Nickname}\n"
-                + $"👥 Ник : [{Nickname}](tg://user?id={TelegramUserId})" + "\n"
+                $"📈 Информация о {FirstName}\n"
+                + $"👥 Ник : [{FirstName}](tg://user?id={TelegramUserId})" + "\n"
                 + $"👑 Ранг: {UserRights.ToString()}\n"
                 + $"🚫 Количество предупреждений {WarnsCount}\n"
                 + $"🖊 Разрешено писать: {(IsMuted ? "Нет" : "Да")}\n";
@@ -115,7 +141,7 @@
                     Ban();
                     return "Все, доигрался, в бан";
                 case WarnsLimitAction.mute:
-                    Mute(24*60);
+                    Mute(24 * 60);
                     return "Все! замолчи и подумай о своем поведении!";
                 default:
                     return "Кажется что-то пошло не так";
@@ -133,7 +159,7 @@
                 {
                     using (HttpClient cln = new HttpClient())
                     {
-                        string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() + 60*minuts}";
+                        string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() + 60 * minuts}";
                         using (var request = cln.GetAsync(restext).Result)
                         {
 

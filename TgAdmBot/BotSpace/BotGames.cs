@@ -44,7 +44,7 @@ namespace TgAdmBot.BotSpace
 
             text = text.Substring(4);
             Database.User user = chat.Users[new Random().Next(0, chat.Users.Count - 1)];
-            return $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) {text}";
+            return $"[{user.FirstName}](tg://user?id={user.TelegramUserId}) {text}";
         }
         public static string Probability(string messagetext)
         {
