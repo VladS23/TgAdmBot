@@ -2,6 +2,7 @@
 using Telegram.Bot;
 using TgAdmBot.BotSpace;
 using TgAdmBot.Database;
+using TgAdmBot.Logger;
 using Vosk;
 
 namespace TgAdmBot.VoskRecognition
@@ -53,7 +54,7 @@ namespace TgAdmBot.VoskRecognition
                 }
             }
             FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
-            Console.WriteLine(result.text);
+            new Log($"RecognizeFileSpeech\n{result.text}");
 
             void WriteToDb()
             {
@@ -86,7 +87,7 @@ namespace TgAdmBot.VoskRecognition
                 }
             }
             FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
-            Console.WriteLine(result.text);
+            new Log($"RecognizeFileSpeech(video_note)\n{result.text}");
 
             void WriteToDb()
             {
@@ -137,7 +138,6 @@ namespace TgAdmBot.VoskRecognition
                 Process convert = Process.Start("ffmpeg.exe", $"-i {fileLocation}.ogg {fileLocation}.wav");
                 convert.WaitForExit();
                 System.IO.File.Delete($"{fileLocation}.ogg");
-                Console.WriteLine($"{fileLocation}.wav");
                 RecognizeFileSpeech($"{fileLocation}.wav", recognitionObject.chat, recognitionObject.voiceMessage.MessageId, recognitionObject);
 
                 VoiceRecognitionObjects.Dequeue();
@@ -179,7 +179,7 @@ namespace TgAdmBot.VoskRecognition
                 Process convert = Process.Start($"ffmpeg.exe",$"-i {fileLocation}.mp4 -vn -acodec pcm_s16le -ar 44100 -ac 2 {fileLocation}.wav");
                 convert.WaitForExit();
                 System.IO.File.Delete($"{fileLocation}.mp4");
-                Console.WriteLine($"{fileLocation}.wav");
+                new Log($"{fileLocation}.wav");
                 RecognizeFileSpeech($"{fileLocation}.wav", recognitionObject.chat, recognitionObject.videoNoteMessage.MessageId, recognitionObject);
 
                 VideoNoteRecognitionObjects.Dequeue();
