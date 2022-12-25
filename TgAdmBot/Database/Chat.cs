@@ -40,7 +40,6 @@ namespace TgAdmBot.Database
                 BotDatabase.db.SaveChanges();
                 chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
                 chat.SetDefaultAdmins();
-                chat.Users.Add(User.GetOrCreate(chat, message.From));
                 BotDatabase.db.SaveChanges();
             }
             chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
