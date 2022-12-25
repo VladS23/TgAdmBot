@@ -25,6 +25,9 @@ namespace TgAdmBot.BotSpace
 
             switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
+                case "/start":
+                    botClient.SendTextMessageAsync(message.Chat, BotPhrases.StartCommandAnswer);
+                    break;
                 case "/ranks":
                     botClient.SendTextMessageAsync(message.Chat, chat.GetRanks());
                     break;
