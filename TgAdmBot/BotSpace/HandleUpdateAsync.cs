@@ -27,11 +27,15 @@ namespace TgAdmBot.BotSpace
 
                 if (message.Text != null && message.Type == MessageType.Text)
                 {
-                    Task handledTextTask = this.HandleTextMessage(message, user, chat);
+                    this.HandleTextMessage(message, user, chat);
                 }
                 else if (message.Voice != null && message.Type == MessageType.Voice)
                 {
                     this.HandleVoiceMessage(message, user, chat);
+                }
+                else if (message.VideoNote != null && message.Type == MessageType.VideoNote)
+                {
+                    this.HandleVideoNoteMessage(message, user, chat);
                 }
                 else
                 {

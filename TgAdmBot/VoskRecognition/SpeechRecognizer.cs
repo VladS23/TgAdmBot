@@ -10,63 +10,108 @@ namespace TgAdmBot.VoskRecognition
     {
         public static VoskRecognizer voskRecognizer = new VoskRecognizer(new Model("vosk-model"), 48000.0f);
 
-        private static Queue<RecognitionObject> RecognitionObjects = new Queue<RecognitionObject>();
-        private static Thread recognitionThread = new Thread(StartRecognition);
-        public static void AddMessageToQueue(RecognitionObject recognitionObject)
+        private static Queue<VoiceRecognitionObject> VoiceRecognitionObjects = new Queue<VoiceRecognitionObject>();
+        private static Thread voiceRecognitionThread = new Thread(StartVoiceRecognition);
+
+        private static Queue<VideoNoteRecognitionObject> VideoNoteRecognitionObjects = new Queue<VideoNoteRecognitionObject>();
+        private static Thread videoNoteRecognitionThread = new Thread(StartVideoNoteRecognition);
+        public static void AddVoiceMessageToQueue(VoiceRecognitionObject recognitionObject)
         {
-            RecognitionObjects.Enqueue(recognitionObject);
-            if (RecognitionObjects.Count < 2
-                && (recognitionThread.ThreadState == System.Threading.ThreadState.Unstarted
-                    || recognitionThread.ThreadState != System.Threading.ThreadState.Aborted)
+            VoiceRecognitionObjects.Enqueue(recognitionObject);
+            if (VoiceRecognitionObjects.Count < 2
+                && (voiceRecognitionThread.ThreadState == System.Threading.ThreadState.Unstarted
+                    || voiceRecognitionThread.ThreadState != System.Threading.ThreadState.Aborted)
                 )
             {
-                recognitionThread = new Thread(StartRecognition);
-                recognitionThread.Start();
+                voiceRecognitionThread = new Thread(StartVoiceRecognition);
+                voiceRecognitionThread.Start();
             }
         }
 
-        private static async void StartRecognition()
+        public static void AddVideoNoteMessageToQueue(VideoNoteRecognitionObject recognitionObject)
         {
-            while (RecognitionObjects.Count > 0)
+            VideoNoteRecognitionObjects.Enqueue(recognitionObject);
+            if (VideoNoteRecognitionObjects.Count < 2
+                && (videoNoteRecognitionThread.ThreadState == System.Threading.ThreadState.Unstarted
+                    || videoNoteRecognitionThread.ThreadState != System.Threading.ThreadState.Aborted)
+                )
             {
-                RecognitionObject recognitionObject = RecognitionObjects.Peek();
+                videoNoteRecognitionThread = new Thread(StartVideoNoteRecognition);
+                videoNoteRecognitionThread.Start();
+            }
+        }
 
-                void RecognizeFileSpeech(string fileLocation, Database.Chat chat, int messageId)
+        private static void RecognizeFileSpeech(string fileLocation, Database.Chat chat, int messageId, VoiceRecognitionObject recognitionObject)
+        {
+            using (Stream source = System.IO.File.OpenRead(fileLocation))
+            {
+                byte[] buffer = new byte[source.Length];
+                int bytesRead;
+                while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    using (Stream source = System.IO.File.OpenRead(fileLocation))
-                    {
-                        byte[] buffer = new byte[source.Length];
-                        int bytesRead;
-                        while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
-                        {
-                            voskRecognizer.AcceptWaveform(buffer, bytesRead);
-                        }
-                    }
-                    FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
-                    Console.WriteLine(result.text);
-
-                    void WriteToDb()
-                    {
-                        VoiceMessage voice = BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == recognitionObject.voiceMessage.MessageId && vm.fileUniqueId == recognitionObject.voiceMessage.Voice.FileUniqueId);
-                        voice.recognizedText = result.text;
-                        BotDatabase.db.SaveChanges();
-                    }
-
-                    try
-                    {
-                        WriteToDb();
-                    }
-                    catch (System.InvalidOperationException)
-                    {
-                        Thread.Sleep(200);
-                        WriteToDb();
-                    }
-
+                    voskRecognizer.AcceptWaveform(buffer, bytesRead);
                 }
+            }
+            FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
+            Console.WriteLine(result.text);
 
+            void WriteToDb()
+            {
+                VoiceMessage voice = BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == recognitionObject.voiceMessage.MessageId && vm.fileUniqueId == recognitionObject.voiceMessage.Voice.FileUniqueId);
+                voice.recognizedText = result.text;
+                BotDatabase.db.SaveChanges();
+            }
 
+            try
+            {
+                WriteToDb();
+            }
+            catch (System.InvalidOperationException)
+            {
+                Thread.Sleep(200);
+                WriteToDb();
+            }
 
+        }
 
+        private static void RecognizeFileSpeech(string fileLocation, Database.Chat chat, int messageId, VideoNoteRecognitionObject recognitionObject)
+        {
+            using (Stream source = System.IO.File.OpenRead(fileLocation))
+            {
+                byte[] buffer = new byte[source.Length];
+                int bytesRead;
+                while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    voskRecognizer.AcceptWaveform(buffer, bytesRead);
+                }
+            }
+            FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
+            Console.WriteLine(result.text);
+
+            void WriteToDb()
+            {
+                VoiceMessage voice = BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == messageId && vm.fileUniqueId == recognitionObject.videoNoteMessage.VideoNote.FileUniqueId);
+                voice.recognizedText = result.text;
+                BotDatabase.db.SaveChanges();
+            }
+
+            try
+            {
+                WriteToDb();
+            }
+            catch (System.InvalidOperationException)
+            {
+                Thread.Sleep(200);
+                WriteToDb();
+            }
+
+        }
+
+        private static async void StartVoiceRecognition()
+        {
+            while (VoiceRecognitionObjects.Count > 0)
+            {
+                VoiceRecognitionObject recognitionObject = VoiceRecognitionObjects.Peek();
 
                 string fileName = $"{recognitionObject.voiceMessage.From.Id}_{recognitionObject.voiceMessage.Chat.Id}_{recognitionObject.voiceMessage.MessageId}";
                 if (!Directory.Exists("voicemessages"))
@@ -93,11 +138,52 @@ namespace TgAdmBot.VoskRecognition
                 convert.WaitForExit();
                 System.IO.File.Delete($"{fileLocation}.ogg");
                 Console.WriteLine($"{fileLocation}.wav");
-                RecognizeFileSpeech($"{fileLocation}.wav", recognitionObject.chat, recognitionObject.voiceMessage.MessageId);
+                RecognizeFileSpeech($"{fileLocation}.wav", recognitionObject.chat, recognitionObject.voiceMessage.MessageId, recognitionObject);
 
-                RecognitionObjects.Dequeue();
+                VoiceRecognitionObjects.Dequeue();
             }
-            recognitionThread.Interrupt();
+            voiceRecognitionThread.Interrupt();
+        }
+
+
+
+
+        private static async void StartVideoNoteRecognition()
+        {
+            while (VideoNoteRecognitionObjects.Count > 0)
+            {
+                VideoNoteRecognitionObject recognitionObject = VideoNoteRecognitionObjects.Peek();
+
+                string fileName = $"{recognitionObject.videoNoteMessage.From.Id}_{recognitionObject.videoNoteMessage.Chat.Id}_{recognitionObject.videoNoteMessage.MessageId}";
+                if (!Directory.Exists("videonotes"))
+                {
+                    Directory.CreateDirectory("videonotes");
+                }
+                string fileLocation = $"{Directory.GetCurrentDirectory()}\\videonotes\\{fileName}";
+
+                if (System.IO.File.Exists($"{fileLocation}.mp4"))
+                {
+                    System.IO.File.Delete($"{fileLocation}.mp4");
+                }
+
+                if (System.IO.File.Exists($"{fileLocation}.wav"))
+                {
+                    System.IO.File.Delete($"{fileLocation}.wav");
+                }
+
+                Stream destStream = System.IO.File.OpenWrite($"{fileLocation}.mp4");
+                Telegram.Bot.Types.File file = await Bot.currentObject.GetInfoAndDownloadFileAsync(recognitionObject.videoNoteMessage.VideoNote.FileId, destStream);
+                destStream.Close();
+                destStream.Dispose();
+                bool fileExists = System.IO.File.Exists($"{fileLocation}.mp4");
+                Process convert = Process.Start($"ffmpeg.exe",$"-i {fileLocation}.mp4 -vn -acodec pcm_s16le -ar 44100 -ac 2 {fileLocation}.wav");
+                convert.WaitForExit();
+                System.IO.File.Delete($"{fileLocation}.mp4");
+                Console.WriteLine($"{fileLocation}.wav");
+                RecognizeFileSpeech($"{fileLocation}.wav", recognitionObject.chat, recognitionObject.videoNoteMessage.MessageId, recognitionObject);
+
+                VideoNoteRecognitionObjects.Dequeue();
+            }
         }
     }
 }
