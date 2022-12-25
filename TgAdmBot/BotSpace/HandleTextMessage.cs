@@ -543,7 +543,7 @@ namespace TgAdmBot.BotSpace
                                     if (message.Text.Length < 10000)
                                     {
 
-                                        string rules = message.Text.Substring(9);
+                                        string rules = message.Text;
                                         chat.Rules = rules;
                                         botClient.SendTextMessageAsync(message.Chat, $"Теперь у нас есть законы", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                     }
