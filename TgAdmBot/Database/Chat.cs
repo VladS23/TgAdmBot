@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Telegram.Bot.Types;
 using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
@@ -59,6 +60,63 @@ namespace TgAdmBot.Database
             + $"👨‍💻 Админов: {Users.Where(p => p.UserRights == UserRights.administrator).Count()}\n"
             + $"✉️ Сообщений всего: {MessagesCount}\n"
                 ;
+        }
+
+        public string GetRanks()
+        {
+            Database.User owner = Users.Single(u => u.UserRights == UserRights.creator);
+            List<Database.User> admins = Users.Where(u => u.UserRights == UserRights.administrator).ToList();
+            List<Database.User> moders = Users.Where(u => u.UserRights == UserRights.moderator).ToList();
+            List<Database.User> helpers = Users.Where(u => u.UserRights == UserRights.helper).ToList();
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Владелец:");
+            sb.AppendLine($"[{owner.Nickname}](tg://user?id={owner.TelegramUserId})");
+            if (admins.Count>0)
+            {
+                sb.AppendLine("\nАдминистраторы:");
+                int index = 1;
+                foreach (User user in admins)
+                {
+                    sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
+                    index += 1;
+                }
+            }
+            else
+            {
+                sb.AppendLine("\nАдминистраторы отсутствуют.");
+            }
+
+            if (moders.Count>0)
+            {
+                sb.AppendLine("\nМодераторы:");
+                int index = 1;
+                foreach (User user in moders)
+                {
+                    sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
+                    index += 1;
+                }
+            }
+            else
+            {
+                sb.AppendLine("\nМодераторы отсутствуют.");
+            }
+
+            if (helpers.Count>0)
+            {
+                sb.AppendLine("\nХэлперы:");
+                int index = 1;
+                foreach (User user in helpers)
+                {
+                    sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
+                    index += 1;
+                }
+            }
+            else
+            {
+                sb.AppendLine("\nХэлперы отсутствуют.");
+            }
+            return sb.ToString();
         }
         public string GetChatNicknames()
         {
