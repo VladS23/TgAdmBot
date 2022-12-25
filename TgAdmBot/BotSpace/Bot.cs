@@ -1,6 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Polling;
 using TgAdmBot.Database;
+using TgAdmBot.Logger;
 
 namespace TgAdmBot.BotSpace
 {
@@ -25,6 +26,7 @@ namespace TgAdmBot.BotSpace
                 receiverOptions,
                 cancellationToken
             );
+            new Log("App started", LogType.info);
         }
 
     }
