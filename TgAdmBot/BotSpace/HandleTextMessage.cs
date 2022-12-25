@@ -44,6 +44,12 @@ namespace TgAdmBot.BotSpace
                         botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0]);
                     }
                     break;
+                case "/db":
+                    if (message.Chat.Id==Convert.ToInt64(Program.ownerId))
+                    {
+                     //TODO отправка бд в чат   
+                    }
+                    break;
                 case "/help":
                     botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessage[0]);
                     break;

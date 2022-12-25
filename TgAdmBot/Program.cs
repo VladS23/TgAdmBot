@@ -6,6 +6,8 @@ namespace TgAdmBot
     class Program
     {
         public static string botToken = new Config().env.GetValueOrDefault("BotToken")!;
+        public static string ownerId = new Config().env.GetValueOrDefault("OwnerId")!;
+        public static string dbFileName = new Config().env.GetValueOrDefault("DatabaseFileName")!;
         static void Main(string[] args)
         {
             Vosk.Vosk.SetLogLevel(0);
