@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Telegram.Bot.Types;
 using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
@@ -37,11 +36,10 @@ namespace TgAdmBot.Database
 
             if (BotDatabase.db.Chats.FirstOrDefault(chat => chat.TelegramChatId == message.Chat.Id) == null)
             {
-                BotDatabase.db.Add(new Database.Chat { TelegramChatId = message.Chat.Id});
+                BotDatabase.db.Add(new Database.Chat { TelegramChatId = message.Chat.Id });
                 BotDatabase.db.SaveChanges();
                 chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
                 chat.SetDefaultAdmins();
-                chat.Users.Add(User.GetOrCreate(chat, message.From));
                 BotDatabase.db.SaveChanges();
             }
             chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
@@ -50,7 +48,7 @@ namespace TgAdmBot.Database
         public string GetInfo()
         {
             //TODO переделать с использованиеи StringBuilder
-            return (
+            return
                "📊 Информация о чате:\n"
             + $"📈 ID чата: {TelegramChatId}\n"
             + $"⛔️ Лимит предупреждений {WarnsLimit}\n"
@@ -60,7 +58,7 @@ namespace TgAdmBot.Database
             + $"👨‍💻 Активные пользователи: {Users.Count}\n"
             + $"👨‍💻 Админов: {Users.Where(p => p.UserRights == UserRights.administrator).Count()}\n"
             + $"✉️ Сообщений всего: {MessagesCount}\n"
-                );
+                ;
         }
         public string GetChatNicknames()
         {
@@ -121,7 +119,7 @@ namespace TgAdmBot.Database
             {
                 for (int index = 0; index < mutedUsers.Count; index++)
                 {
-                    mutedUsersText = $"{mutedUsersText}{index + 1}. [{mutedUsers[index].FirstName}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
+                    mutedUsersText = $"{mutedUsersText}{index + 1}. [{mutedUsers[index].Nickname}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
                 }
             }
 
@@ -159,53 +157,47 @@ namespace TgAdmBot.Database
         public string SetDefaultAdmins()
         {
             //Request a list of conversation administrators from telegram
-            using (HttpClientHandler hld = new HttpClientHandler())
+            using HttpClientHandler hld = new HttpClientHandler();
+            using HttpClient cln = new HttpClient();
+            using var resp = cln.GetAsync($"https://api.telegram.org/bot" + Program.botToken + $"/getChatAdministrators?chat_id=" + TelegramChatId).Result;
+            var json = resp.Content.ReadAsStringAsync().Result;
+            if (!string.IsNullOrEmpty(json))
             {
-                using (HttpClient cln = new HttpClient())
+                //Parse request from JSON
+                ChatAdministrators admins = Newtonsoft.Json.JsonConvert.DeserializeObject<ChatAdministrators>(json);
+                if (admins.result != null)
                 {
-                    using (var resp = cln.GetAsync($"https://api.telegram.org/bot" + Program.botToken + $"/getChatAdministrators?chat_id=" + TelegramChatId).Result)
+                    //Find the creator
+                    long creatorId = 0;
+                    Database.Chat chat = BotDatabase.db.Chats.Single(s => s.TelegramChatId == this.TelegramChatId);
+                    chat.Users.Clear();
+                    foreach (var admin in admins.result)
                     {
-                        var json = resp.Content.ReadAsStringAsync().Result;
-                        if (!string.IsNullOrEmpty(json))
+                        if (admin.status == "creator")
                         {
-                            //Parse request from JSON
-                            ChatAdministrators admins = Newtonsoft.Json.JsonConvert.DeserializeObject<ChatAdministrators>(json);
-                            if (admins.result != null)
-                            {
-                                //Find the creator
-                                long creatorId = 0;
-                                Database.Chat chat = BotDatabase.db.Chats.Single(s => s.TelegramChatId == this.TelegramChatId);
-                                chat.Users.Clear();
-                                foreach (var admin in admins.result)
-                                {
-                                    if (admin.status == "creator")
-                                    {
-                                        creatorId = admin.user.id;
-                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights=UserRights.creator});
-                                    }
-                                    else if (admin.status == "administrator")
-                                    {
-                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.administrator });
-                                    }
-                                    else
-                                    {
-                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.normal });
-                                    }
-                                }
-                                BotDatabase.db.SaveChanges();
-                                return "Все! Администраторы обновлены!";
-                            }
-                            else
-                            {
-                                return "Извини, но тут я послушаюсь только создателя чата";
-                            }
+                            creatorId = admin.user.id;
+                            chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.creator });
+                        }
+                        else if (admin.status == "administrator")
+                        {
+                            chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.administrator });
                         }
                         else
                         {
-                            return "Ой! У меня что-то не получилось, давай попробуем позднее";
+                            chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.normal });
                         }
                     }
+                    BotDatabase.db.SaveChanges();
+                    return "Все! Администраторы обновлены!";
                 }
+                else
+                {
+                    return "Извини, но тут я послушаюсь только создателя чата";
+                }
+            }
+            else
+            {
+                return "Ой! У меня что-то не получилось, давай попробуем позднее";
             }
         }
 

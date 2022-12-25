@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TgAdmBot.BotSpace
+﻿namespace TgAdmBot.BotSpace
 {
 
     internal class BotPhrases
     {
         public const string OldMessagePh = "Похоже это было до того как я пришла, я не понмаю о чем ты(";
-        public const string ReplyToMesage = "Я не понимаю о чем ты, ответь, пожалуйста, на сообщение, которое хочешь мне показать" ;
+        public const string ReplyToMesage = "Я не понимаю о чем ты, ответь, пожалуйста, на сообщение, которое хочешь мне показать";
         public const string HelpMessage = "О чем бы ты хотел узнать? \n" +
                                               "1. Развлечения \n" +
                                               "2. Настройка беседы\n" +
@@ -26,13 +20,13 @@ namespace TgAdmBot.BotSpace
                             "7. /wh + действие - выведет: *Случайный участник беседы* действие\n" +
                             "8. /prob + событие - предположит вероятность какого-то события\n" +
                             "9. /chatstat выведет статистику чата";
-        public const string HelpMessageSettingsActions=
+        public const string HelpMessageSettingsActions =
         "Список доступных настроек беседы\n" +
                             "1. /setdefaultadmins - назначит администраторов беседы в соответсвтвие с тем, как расставлены права в телеграм, может использоваться только создателем беседы\n" +
                             "2. /voicemessange заблокирует или разблокирует голосовые и видеосообщения, по умолчанию разблокировано, может применяться администраторами или создателем\n" +
                             "3. /setwarninglimitaction - установка наказания за превышение количества предупреждений, по умолчанию mute\n" +
                             "4. /setrules - установка правил";
-        public const string HelpMessageAdminActions=
+        public const string HelpMessageAdminActions =
         "Список доступных административных действий:\n" +
                             "1. Назначения ранга пользователям. Ранг создателя сразу выдается создателем беседы, остальные ранги могут быть назначены пользователем с рангом выше. Чтобы назначить ранг необходимо написать одну из следующих команд в ответ на сообщение пользователя, которому необходимо назначить ранг\n   /admin\n    /moder\n    /helper\n    /normal\n" +
                             "2. /mute Если ваш ранг выше или равен модератору и выше, чем у пользователя, на сообщение, которого вы ответили, то вы запретите или разрешите ему писать сообщения, не работает на пользователей, которым в настройках беседы телеграм установлен ранг администратор\n" +
