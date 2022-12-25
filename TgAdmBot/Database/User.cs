@@ -18,7 +18,6 @@
         public UserRights UserRights { get; set; } = UserRights.normal;
         public Chat Chat { get; set; }
         public string? Nickname { get; set; }
-        public string FirstName { get; set; }
         public DateTime UnmuteTime { get; set; } = DateTime.Now;
         public bool IsBot { get; set; } = false;
         public int MessagesCount { get; set; } = 0;
@@ -29,13 +28,12 @@
         public User()
         {
         }
-        public User(string? username, string firstName, long telegramId, bool isBot, Chat chat)
+        public User(string firstName, long telegramId, bool isBot, Chat chat)
         {
             this.Chat = chat;
             this.IsBot = isBot;
-            this.FirstName= firstName;
             this.TelegramUserId= telegramId;
-            this.Nickname = username;
+            this.Nickname = firstName;
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
         {
@@ -45,8 +43,7 @@
             {
                 BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User
                 {
-                    FirstName = TgUser.Username != null ? TgUser.Username : TgUser.FirstName,
-                    Nickname = TgUser.FirstName,
+                    Nickname = TgUser.Username != null ? TgUser.Username : TgUser.FirstName,
                     TelegramUserId = TgUser.Id,
                     IsBot = TgUser.IsBot,
                     Chat = chat
@@ -54,24 +51,15 @@
                 BotDatabase.db.SaveChanges();
                 user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
             }
-            if (user.FirstName!=TgUser.Username)
-            {
-                user.FirstName = TgUser.Username;
-                BotDatabase.db.SaveChanges();
-            }
-            if (user.FirstName!=TgUser.FirstName)
-            {
-                user.FirstName = TgUser.FirstName;
-                BotDatabase.db.SaveChanges();
-            }
+
             return user;
         }
         public string GetInfo()
         {
             //TODO переделать с использованиеи StringBuilder
             string result =
-                $"📈 Информация о {FirstName}\n"
-                + $"👥 Ник : [{FirstName}](tg://user?id={TelegramUserId})" + "\n"
+                $"📈 Информация о {Nickname}\n"
+                + $"👥 Ник : [{Nickname}](tg://user?id={TelegramUserId})" + "\n"
                 + $"👑 Ранг: {UserRights.ToString()}\n"
                 + $"🚫 Количество предупреждений {WarnsCount}\n"
                 + $"🖊 Разрешено писать: {(IsMuted ? "Нет" : "Да")}\n";

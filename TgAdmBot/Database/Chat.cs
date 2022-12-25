@@ -69,7 +69,7 @@ namespace TgAdmBot.Database
             int index = 1;
             foreach (User user in Users)
             {
-                sb.AppendLine($"{index}. [{user.FirstName}](tg://user?id={user.TelegramUserId})");
+                sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
                 index += 1;
             }
             return sb.ToString();
@@ -98,7 +98,7 @@ namespace TgAdmBot.Database
                 int index = 1;
                 foreach (Database.User user in users)
                 {
-                    result = $"{result}{index}. [{user.FirstName}](tg://user?id={user.TelegramUserId})\n";
+                    result = $"{result}{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})\n";
                     index += 1;
                 }
                 return result;
@@ -181,15 +181,15 @@ namespace TgAdmBot.Database
                                     if (admin.status == "creator")
                                     {
                                         creatorId = admin.user.id;
-                                        chat.Users.Add(new Database.User(admin.user.username, admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights=UserRights.creator});
+                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights=UserRights.creator});
                                     }
                                     else if (admin.status == "administrator")
                                     {
-                                        chat.Users.Add(new Database.User(admin.user.username, admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.administrator });
+                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.administrator });
                                     }
                                     else
                                     {
-                                        chat.Users.Add(new Database.User(admin.user.username, admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.normal });
+                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.normal });
                                     }
                                 }
                                 BotDatabase.db.SaveChanges();
