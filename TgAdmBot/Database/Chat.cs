@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Telegram.Bot.Types;
 using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
@@ -36,10 +37,11 @@ namespace TgAdmBot.Database
 
             if (BotDatabase.db.Chats.FirstOrDefault(chat => chat.TelegramChatId == message.Chat.Id) == null)
             {
-                BotDatabase.db.Add(new Database.Chat { TelegramChatId = message.Chat.Id, Users = new List<Database.User> { new Database.User { Nickname = message.From.Username, TelegramUserId = message.From.Id, IsBot = message.From.IsBot } } });
+                BotDatabase.db.Add(new Database.Chat { TelegramChatId = message.Chat.Id});
                 BotDatabase.db.SaveChanges();
                 chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
                 chat.SetDefaultAdmins();
+                chat.Users.Add(User.GetOrCreate(chat, message.From));
                 BotDatabase.db.SaveChanges();
             }
             chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
@@ -119,7 +121,7 @@ namespace TgAdmBot.Database
             {
                 for (int index = 0; index < mutedUsers.Count; index++)
                 {
-                    mutedUsersText = $"{mutedUsersText}{index + 1}. [{mutedUsers[index].Nickname}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
+                    mutedUsersText = $"{mutedUsersText}{index + 1}. [{mutedUsers[index].FirstName}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
                 }
             }
 
@@ -179,15 +181,15 @@ namespace TgAdmBot.Database
                                     if (admin.status == "creator")
                                     {
                                         creatorId = admin.user.id;
-                                        chat.Users.Add(new Database.User { Nickname = admin.user.username, TelegramUserId = admin.user.id, IsBot = admin.user.is_bot, Chat = this, UserRights = UserRights.creator });
+                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights=UserRights.creator});
                                     }
                                     else if (admin.status == "administrator")
                                     {
-                                        chat.Users.Add(new Database.User { Nickname = admin.user.username, TelegramUserId = admin.user.id, IsBot = admin.user.is_bot, Chat = this, UserRights = UserRights.administrator });
+                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.administrator });
                                     }
                                     else
                                     {
-                                        chat.Users.Add(new Database.User { Nickname = admin.user.username, TelegramUserId = admin.user.id, IsBot = admin.user.is_bot, Chat = this, UserRights = UserRights.normal });
+                                        chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.normal });
                                     }
                                 }
                                 BotDatabase.db.SaveChanges();

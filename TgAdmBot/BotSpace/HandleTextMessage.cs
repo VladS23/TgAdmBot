@@ -23,8 +23,7 @@ namespace TgAdmBot.BotSpace
                 botClient.SendTextMessageAsync(message.Chat, chat.GetAllMentions(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
             }
 
-
-            switch (message.Text.ToLower().Replace($"@{botClient.GetMeAsync().Result.Username!}", "").Split()[0])
+            switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
                 case "/stt":
                     if (replUser != null)
@@ -32,7 +31,7 @@ namespace TgAdmBot.BotSpace
                         VoiceMessage? voiseMessage = BotDatabase.db.VoiceMessages.SingleOrDefault(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == message.ReplyToMessage.MessageId);
                         if (voiseMessage == null)
                         {
-                            botClient.SendTextMessageAsync(chatId: message.Chat, BotPhrases.OldMessagePh[0]);
+                            botClient.SendTextMessageAsync(chatId: message.Chat, BotPhrases.OldMessagePh);
                         }
                         else
                         {
@@ -41,7 +40,7 @@ namespace TgAdmBot.BotSpace
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0]);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage);
                     }
                     break;
                 case "/db":
@@ -51,24 +50,24 @@ namespace TgAdmBot.BotSpace
                     }
                     break;
                 case "/help":
-                    botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessage[0]);
+                    botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessage);
                     break;
                 case "1":
                     if (user.LastMessage == "/help")
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessage[1]);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessageFunActions);
                     }
                     break;
                 case "2":
                     if (user.LastMessage == "/help")
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessage[2]);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessageSettingsActions);
                     }
                     break;
                 case "3":
                     if (user.LastMessage == "/help")
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessage[3]);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessageAdminActions);
                     }
                     break;
                 case "/chatstat":
@@ -94,7 +93,7 @@ namespace TgAdmBot.BotSpace
                     BotDatabase.db.SaveChanges();
                     if (user.UserRights < UserRights.helper)
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.NextChatRules[0]);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.NextChatRules);
                         break;
                     }
                     break;
@@ -114,13 +113,13 @@ namespace TgAdmBot.BotSpace
                             }
                             else
                             {
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0]);
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
                                 break;
                             }
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0]);
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage);
                             break;
                         }
                     }
@@ -140,14 +139,14 @@ namespace TgAdmBot.BotSpace
                             }
                             else
                             {
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0]);
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
                                 break;
                             }
                         }
 
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0]);
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage);
                             break;
                         }
                     }
@@ -166,14 +165,14 @@ namespace TgAdmBot.BotSpace
                             }
                             else
                             {
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0]);
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
                                 break;
                             }
                         }
 
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0]);
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage);
                             break;
                         }
                     }
@@ -192,14 +191,14 @@ namespace TgAdmBot.BotSpace
                             }
                             else
                             {
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0]);
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
                                 break;
                             }
                         }
 
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0]);
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage);
                             break;
                         }
                     }
@@ -257,13 +256,13 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0]);
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage);
                             break;
                         }
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0], Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
                     }
                     break;
@@ -279,7 +278,7 @@ namespace TgAdmBot.BotSpace
                             }
                             else
                             {
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0]);
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
                                 break;
                             }
 
@@ -314,14 +313,14 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0],
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights,
                             Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
                         }
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0],
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage,
                             Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
                     }
@@ -339,14 +338,14 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0],
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights,
                                 Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
                         }
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0],
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage,
                             Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
                     }
@@ -378,13 +377,13 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0], Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
                         }
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0], Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
                     }
                     break;
@@ -403,14 +402,14 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0],
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights,
                                 Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
                         }
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage[0],
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ReplyToMesage,
                             Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
                     }
@@ -439,7 +438,7 @@ namespace TgAdmBot.BotSpace
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0]);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
                         break;
                     }
                 case "/nick":
@@ -486,7 +485,7 @@ namespace TgAdmBot.BotSpace
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ShortMessage[0], Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ShortMessage, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     break;
                 case "/me":
@@ -514,7 +513,7 @@ namespace TgAdmBot.BotSpace
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ShortMessage[0], Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ShortMessage, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     break;
                 case "/prob":
@@ -524,7 +523,7 @@ namespace TgAdmBot.BotSpace
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ShortMessage[0], Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.ShortMessage, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     break;
                 default:
@@ -554,7 +553,7 @@ namespace TgAdmBot.BotSpace
                             }
                             else
                             {
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights[0], Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             }
                             break;
                         default:
