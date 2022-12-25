@@ -32,7 +32,7 @@
         {
             this.Chat = chat;
             this.IsBot = isBot;
-            this.TelegramUserId= telegramId;
+            this.TelegramUserId = telegramId;
             this.Nickname = firstName;
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
@@ -77,18 +77,11 @@
             try
             {
                 //Send a request to telegram api and ban user
-                using (HttpClientHandler hndl = new HttpClientHandler())
-                {
-                    using (HttpClient cln = new HttpClient())
-                    {
-                        string restext = $"https://api.telegram.org/bot{Program.botToken}/unbanChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&only_if_banned=true";
-                        using (var request = cln.GetAsync(restext).Result)
-                        {
-
-                        }
-                        //TODO прикрутить сюда приглос чела назад
-                    }
-                }
+                using HttpClientHandler hndl = new HttpClientHandler();
+                using HttpClient cln = new HttpClient();
+                string restext = $"https://api.telegram.org/bot{Program.botToken}/unbanChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&only_if_banned=true";
+                using var request = cln.GetAsync(restext).Result;
+                //TODO прикрутить сюда приглос чела назад
             }
             catch
             {
@@ -99,17 +92,10 @@
         {
             try
             {
-                using (HttpClientHandler hndl = new HttpClientHandler())
-                {
-                    using (HttpClient cln = new HttpClient())
-                    {
-                        string restext = $"https://api.telegram.org/bot{Program.botToken}/banChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}";
-                        using (var request = cln.GetAsync(restext).Result)
-                        {
-
-                        }
-                    }
-                }
+                using HttpClientHandler hndl = new HttpClientHandler();
+                using HttpClient cln = new HttpClient();
+                string restext = $"https://api.telegram.org/bot{Program.botToken}/banChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}";
+                using var request = cln.GetAsync(restext).Result;
             }
             catch
             {
@@ -143,17 +129,10 @@
                 UnmuteTime = DateTime.Now.AddHours(24);
                 BotDatabase.db.SaveChanges();
                 //Send a request to telegram api and mute user
-                using (HttpClientHandler hndl = new HttpClientHandler())
-                {
-                    using (HttpClient cln = new HttpClient())
-                    {
-                        string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() + 60 * minuts}";
-                        using (var request = cln.GetAsync(restext).Result)
-                        {
-
-                        }
-                    }
-                }
+                using HttpClientHandler hndl = new HttpClientHandler();
+                using HttpClient cln = new HttpClient();
+                string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() + (60 * minuts)}";
+                using var request = cln.GetAsync(restext).Result;
             }
             catch
             {
@@ -168,18 +147,11 @@
                 IsMuted = false;
                 BotDatabase.db.SaveChanges();
 
-                using (HttpClientHandler hndl = new HttpClientHandler())
-                {
-                    using (HttpClient cln = new HttpClient())
-                    {
-                        string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() + 35}";
-                        //TODO разблочить поток
-                        using (var request = cln.GetAsync(restext).Result)
-                        {
-
-                        }
-                    }
-                }
+                using HttpClientHandler hndl = new HttpClientHandler();
+                using HttpClient cln = new HttpClient();
+                string restext = $"https://api.telegram.org/bot{Program.botToken}/restrictChatMember?user_id={TelegramUserId}&chat_id={Chat.TelegramChatId}&until_date={((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() + 35}";
+                //TODO разблочить поток
+                using var request = cln.GetAsync(restext).Result;
             }
             catch
             {

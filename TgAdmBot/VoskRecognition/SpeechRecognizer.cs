@@ -56,7 +56,7 @@ namespace TgAdmBot.VoskRecognition
                     {
                         WriteToDb();
                     }
-                    catch (System.InvalidOperationException unsafeEFThreadError)
+                    catch (System.InvalidOperationException)
                     {
                         Thread.Sleep(200);
                         WriteToDb();

@@ -12,7 +12,7 @@ namespace TgAdmBot.Database
                 db = new DatabaseContext();
 
                 //Для автосброса БД в отладочной сборке
-#if (DEBUG)
+#if DEBUG
                 db.Database.EnsureDeleted();//TODO ознакомиться (!)
 #endif
 

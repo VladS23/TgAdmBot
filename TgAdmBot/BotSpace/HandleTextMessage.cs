@@ -44,9 +44,9 @@ namespace TgAdmBot.BotSpace
                     }
                     break;
                 case "/db":
-                    if (message.Chat.Id==Convert.ToInt64(Program.ownerId))
+                    if (message.Chat.Id == Convert.ToInt64(Program.ownerId))
                     {
-                     //TODO отправка бд в чат   
+                        //TODO отправка бд в чат   
                     }
                     break;
                 case "/help":
@@ -108,7 +108,7 @@ namespace TgAdmBot.BotSpace
                             {
                                 replUser.UserRights = UserRights.administrator;
                                 BotDatabase.db.SaveChanges();
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0]+"администратор");
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0] + "администратор");
                                 break;
                             }
                             else
@@ -134,7 +134,7 @@ namespace TgAdmBot.BotSpace
                             {
                                 replUser.UserRights = UserRights.moderator;
                                 BotDatabase.db.SaveChanges();
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0] +"модератор");
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0] + "модератор");
                                 break;
                             }
                             else
@@ -160,7 +160,7 @@ namespace TgAdmBot.BotSpace
                             {
                                 replUser.UserRights = UserRights.helper;
                                 BotDatabase.db.SaveChanges();
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0]+"помощник");
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0] + "помощник");
                                 break;
                             }
                             else
@@ -241,7 +241,7 @@ namespace TgAdmBot.BotSpace
                                         }
                                         catch
                                         {
-                                            botClient.SendTextMessageAsync(message.Chat,"Так, окей, а на сколько минут запретить то?" , Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                            botClient.SendTextMessageAsync(message.Chat, "Так, окей, а на сколько минут запретить то?", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                             break;
                                         }
                                     }

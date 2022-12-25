@@ -10,7 +10,8 @@
             Console.WriteLine(dotenv);
             this.Load(dotenv);
         }
-        void Load(string filePath)
+
+        private void Load(string filePath)
         {
             if (!File.Exists(filePath))
                 return;
