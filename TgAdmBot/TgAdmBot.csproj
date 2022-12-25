@@ -72,7 +72,13 @@
     <None Update="vosk-model\graph\disambig_tid.int">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="vosk-model\graph\Gr.fst">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="vosk-model\graph\HCLG.fst">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="vosk-model\graph\HCLr.fst">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="vosk-model\graph\num_pdfs">
