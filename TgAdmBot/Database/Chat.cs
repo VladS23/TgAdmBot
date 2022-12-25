@@ -76,7 +76,7 @@ namespace TgAdmBot.Database
         public string GetAllMentions()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Все участники были отмечены под этим сообщением.");
+            sb.AppendLine("Я позвала всех");
             foreach (User user in Users)
             {
                 sb.Append($"[ᅠ](tg://user?id={user.TelegramUserId})");
@@ -103,7 +103,7 @@ namespace TgAdmBot.Database
             }
             else
             {
-                return "Нет предупрежденных пользователей";
+                return "Все молодцы! Никто не получал предупреждений";
             }
         }
         public string GetMutedUsers()
@@ -113,7 +113,7 @@ namespace TgAdmBot.Database
             string mutedUsersText = "";
             if (mutedUsers.Count < 1)
             {
-                mutedUsersText = "Нет замьюченых пользователей";
+                mutedUsersText = "Все молодцы, все могут общаться";
             }
             else
             {
@@ -139,11 +139,11 @@ namespace TgAdmBot.Database
                     case "mute":
                         WarnsLimitAction = WarnsLimitAction.mute;
                         BotDatabase.db.SaveChanges();
-                        return "Теперь после достижения лимита предупреждений пользователю будет запрещено писать";
+                        return "Теперь в качестве наказания будет мут";
                     case "ban":
                         WarnsLimitAction = WarnsLimitAction.ban;
                         BotDatabase.db.SaveChanges();
-                        return "Теперь после достижения лимита предупреждений пользователь будет удален";
+                        return "Теперь в качестве наказания будет бан";
                     default:
                         return "Неизвестный аргумент. Ожидалось mute или ban";
                 }
@@ -191,16 +191,16 @@ namespace TgAdmBot.Database
                                     }
                                 }
                                 BotDatabase.db.SaveChanges();
-                                return "Администраторы успешно обновлены";
+                                return "Все! Администраторы обновлены!";
                             }
                             else
                             {
-                                return "Команда доступна только создателю чата";
+                                return "Извини, но тут я послушаюсь только создателя чата";
                             }
                         }
                         else
                         {
-                            return "Неизвестная ошибка, попробуйте немного позднее";
+                            return "Ой! У меня что-то не получилось, давай попробуем позднее";
                         }
                     }
                 }

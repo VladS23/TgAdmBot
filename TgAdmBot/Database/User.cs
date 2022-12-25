@@ -113,12 +113,12 @@
             {
                 case WarnsLimitAction.ban:
                     Ban();
-                    return "Пользователь был удален в связи с превышением лимита предупреждений";
+                    return "Все, доигрался, в бан";
                 case WarnsLimitAction.mute:
                     Mute(24*60);
-                    return "Пользователю запрещено писать сообщения в связи с превышением лимита предупреждений";
+                    return "Все! замолчи и подумай о своем поведении!";
                 default:
-                    return "Неизвестная ошибка";
+                    return "Кажется что-то пошло не так";
             }
         }
         public void Mute(int minuts)
@@ -126,8 +126,7 @@
             try
             {
                 IsMuted = true;
-                //TODO допилить выбор ограничения по времени
-                UnmuteTime = DateTime.Now.AddHours(30);
+                UnmuteTime = DateTime.Now.AddHours(24);
                 BotDatabase.db.SaveChanges();
                 //Send a request to telegram api and mute user
                 using (HttpClientHandler hndl = new HttpClientHandler())

@@ -14,11 +14,11 @@ namespace TgAdmBot.BotSpace
                 string mes = messagetext.Substring(4);
                 string[] nums = mes.Split('-');
                 Random rnd = new Random();
-                return "🎲🎲 Я бросил кости и выпало " + rnd.Next(Convert.ToInt32(nums[0]), Convert.ToInt32(nums[1]));
+                return "🎲🎲 Я бросила кости и выпало " + rnd.Next(Convert.ToInt32(nums[0]), Convert.ToInt32(nums[1]));
             }
             catch
             {
-                return "Неправильный синтаксис команды. Пример правильной команды 'рнд 1-12'";
+                return "Я тебя не поняла(. Пример правильной команды 'рнд 1-12'";
             }
         }
         public static string Chose(string messagetext)
@@ -31,11 +31,11 @@ namespace TgAdmBot.BotSpace
                 string[] separator = { " или " };//TODO убрать
                 string[] variables = mes.Split(separator, StringSplitOptions.RemoveEmptyEntries);
                 Random rnd = new Random();
-                return "✨✨ Я выбираю " + variables[rnd.Next(0, 2)];
+                return "✨✨ Ух ты! правда мне можно выбрать? Спасибо за доверие! Я выбираю " + variables[rnd.Next(0, 2)];
             }
             catch
             {
-                return "Неправильный синтаксис команды. Пример правильной команды '/chs вариант 1 или вариант 2'";
+                return "Я тебя не поняла(. Пример правильной команды '/chs вариант 1 или вариант 2'";
             }
         }
         public static string Who(string text, Chat chat)
