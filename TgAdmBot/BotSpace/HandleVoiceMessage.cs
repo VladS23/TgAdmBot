@@ -16,9 +16,8 @@ namespace TgAdmBot.BotSpace
             {
                 BotDatabase.db.VoiceMessages.Add(new VoiceMessage { Chat = chat, MessageId = message.MessageId, fileId = message.Voice.FileId, fileUniqueId = message.Voice.FileUniqueId });
                 BotDatabase.db.SaveChanges();
-                string filepath = $"{message.From.Id}_{message.Chat.Id}";
                 //Поток обработки аудио
-                SpeechRecognizer.AddMessageToQueue(new RecognitionObject { chat = chat, voiceMessage = message });
+                SpeechRecognizer.AddVoiceMessageToQueue(new VoiceRecognitionObject { chat = chat, voiceMessage = message });
             }
 
             user.UpdateStatistic(message);

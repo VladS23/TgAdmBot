@@ -1,4 +1,6 @@
-﻿namespace TgAdmBot
+﻿using TgAdmBot.Logger;
+
+namespace TgAdmBot
 {
     public class Config
     {
@@ -7,7 +9,7 @@
         {
             var root = Directory.GetCurrentDirectory();
             var dotenv = Path.Combine(root, ".env");
-            Console.WriteLine(dotenv);
+            new Log(dotenv);
             this.Load(dotenv);
         }
 

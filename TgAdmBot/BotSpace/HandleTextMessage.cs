@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot;
+using Telegram.Bot.Types;
 using TgAdmBot.Database;
 
 namespace TgAdmBot.BotSpace
@@ -25,11 +26,33 @@ namespace TgAdmBot.BotSpace
 
             switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
+                case "/filterwords":
+                    chat.ObsceneWordsDisallowed = !chat.ObsceneWordsDisallowed;
+                    BotDatabase.db.SaveChanges();
+                    if (chat.ObsceneWordsDisallowed)
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, "Хорошо, солнышко, буду удалять маты из этого чатика✨✨");
+                    }
+                    else
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, "Ю-хуу!\nДаёшь свободу слова! Теперь я не буду следить за вашими выражениями)");
+                    }
+                    break;
+                case "/silientmode":
+                    if (user.UserRights < UserRights.moderator)
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, "Выберите команду:\n1. Включить\n2. Выключить");
+                    }
+                    else
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
+                    }
+                    break;
                 case "/start":
                     botClient.SendTextMessageAsync(message.Chat, BotPhrases.StartCommandAnswer);
                     break;
                 case "/ranks":
-                    botClient.SendTextMessageAsync(message.Chat, chat.GetRanks());
+                    botClient.SendTextMessageAsync(message.Chat, chat.GetRanks(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     break;
                 case "/stt":
                     if (replUser != null)
@@ -63,11 +86,37 @@ namespace TgAdmBot.BotSpace
                     {
                         botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessageFunActions);
                     }
+                    else if (user.LastMessage.StartsWith("/silientmode") && user.UserRights < UserRights.moderator)
+                    {
+                        ChatPermissions silientPermissions = new ChatPermissions();
+                        silientPermissions.CanSendMessages = false;
+                        silientPermissions.CanSendPolls = false;
+                        silientPermissions.CanSendOtherMessages = false;
+                        silientPermissions.CanPinMessages = false;
+                        silientPermissions.CanSendMediaMessages = false;
+                        silientPermissions.CanSendPolls = false;
+                        silientPermissions.CanChangeInfo = false;
+                        botClient.SetChatPermissionsAsync(chatId: message.Chat, silientPermissions);
+                        botClient.SendTextMessageAsync(message.Chat, "Тихий режим активировала, котик");
+                    }
                     break;
                 case "2":
                     if (user.LastMessage == "/help")
                     {
                         botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessageSettingsActions);
+                    }
+                    else if (user.LastMessage.StartsWith("/silientmode") && user.UserRights < UserRights.moderator)
+                    {
+                        ChatPermissions silientPermissions = new ChatPermissions();
+                        silientPermissions.CanSendMessages = true;
+                        silientPermissions.CanSendPolls = false;
+                        silientPermissions.CanSendOtherMessages = true;
+                        silientPermissions.CanPinMessages = false;
+                        silientPermissions.CanSendMediaMessages = true;
+                        silientPermissions.CanSendPolls = true;
+                        silientPermissions.CanChangeInfo = false;
+                        botClient.SetChatPermissionsAsync(chatId: message.Chat, silientPermissions);
+                        botClient.SendTextMessageAsync(message.Chat, "Тихий режим деактивировала, котик");
                     }
                     break;
                 case "3":
