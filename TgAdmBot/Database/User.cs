@@ -34,7 +34,7 @@
             this.Chat = chat;
             this.IsBot = isBot;
             this.TelegramUserId = telegramId;
-            this.Nickname = firstName;
+            this.Nickname = firstName.Replace("_", "");
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
         {
@@ -44,7 +44,7 @@
             {
                 BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User
                 {
-                    Nickname = TgUser.Username != null ? TgUser.Username : TgUser.FirstName,
+                    Nickname = TgUser.Username != null ? TgUser.Username.Replace("_", "") : TgUser.FirstName.Replace("_", ""),
                     TelegramUserId = TgUser.Id,
                     IsBot = TgUser.IsBot,
                     Chat = chat
@@ -60,7 +60,7 @@
             //TODO переделать с использованиеи StringBuilder
             string result =
                 $"📈 Информация о {Nickname}\n"
-                + $"👥 Ник : [{Nickname}](tg://user?id={TelegramUserId})" + "\n"
+                + $"👥 Ник : [{Nickname.Replace("_", "")}](tg://user?id={TelegramUserId})" + "\n"
                 + $"👑 Ранг: {UserRights.ToString()}\n"
                 + $"🚫 Количество предупреждений {WarnsCount}\n"
                 + $"🖊 Разрешено писать: {(IsMuted ? "Нет" : "Да")}\n";

@@ -40,7 +40,7 @@ namespace TgAdmBot.BotSpace
                                 user.Marriage.Agreed = true;
                                 BotDatabase.db.SaveChanges();
                                 //TODO отправка свидетельств
-                                botClient.SendTextMessageAsync(message.Chat, $"Желаю Вам, дорогие мои [{user.Nickname}](tg://{user.TelegramUserId}) и [{replUser.Nickname}](tg://{replUser.TelegramUserId}) счастливого брака!", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                botClient.SendTextMessageAsync(message.Chat, $"Желаю Вам, [{user.Nickname.Replace("_", "")}](tg://{user.TelegramUserId}) и [{replUser.Nickname.Replace("_", "")}](tg://{replUser.TelegramUserId}) счастливого брака!", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             }
                             else
                             {
@@ -50,7 +50,7 @@ namespace TgAdmBot.BotSpace
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, $"Теперь милашка [{replUser.Nickname}](tg://{replUser.TelegramUserId}) должен ответить ваше сообщение /marry", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            botClient.SendTextMessageAsync(message.Chat, $"Теперь [{replUser.Nickname.Replace("_", "")}](tg://{replUser.TelegramUserId}) должен ответить твое сообщение /marry", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         }
                     }
                     break;
@@ -298,7 +298,7 @@ namespace TgAdmBot.BotSpace
                                     replUser.IsMuted = false;
                                     BotDatabase.db.SaveChanges();
                                     replUser.Unmute();
-                                    botClient.SendTextMessageAsync(message.Chat, $"Хорошо, по просьбе [{user.Nickname}](tg://user?id={user.TelegramUserId}) я разрешаю [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId}) говорить", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    botClient.SendTextMessageAsync(message.Chat, $"Хорошо, по просьбе [{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}) я разрешаю [{replUser.Nickname.Replace("_", "")}](tg://user?id={replUser.TelegramUserId}) говорить", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                     break;
                                 }
                                 else
@@ -313,7 +313,7 @@ namespace TgAdmBot.BotSpace
                                                 replUser.IsMuted = true;
                                                 BotDatabase.db.SaveChanges();
                                                 replUser.Mute(time);
-                                                botClient.SendTextMessageAsync(message.Chat, $"Ммм,  [{user.Nickname}](tg://user?id={user.TelegramUserId}), какой ты строгий администратор... Но хорошо, ладно, только ради тебя, запрещаю [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId}) говорить", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                                botClient.SendTextMessageAsync(message.Chat, $"Ммм,  [{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}), какой ты строгий администратор... Но хорошо, ладно, только ради тебя, запрещаю [{replUser.Nickname.Replace("_", "")}](tg://user?id={replUser.TelegramUserId}) говорить", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                                 break;
                                             }
                                             else
@@ -389,7 +389,7 @@ namespace TgAdmBot.BotSpace
                         if (user.UserRights < UserRights.moderator && user.UserRights < replUser.UserRights)
                         {
                             replUser.Ban();
-                            botClient.SendTextMessageAsync(message.Chat, $"Ну ты, [{user.Nickname}](tg://user?id={user.TelegramUserId}), прям сама строгость! Прощай [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId}) " +
+                            botClient.SendTextMessageAsync(message.Chat, $"Ну ты, [{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}), прям сама строгость! Прощай [{replUser.Nickname.Replace("_", "")}](tg://user?id={replUser.TelegramUserId}) " +
                                 $"если передумаешь то напиши /unban в ответ на любое его сообщение, а затем пригласи его в чат " +
                                 $"или вручную удалить его из черного списка чата, а затем пригласи ", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
@@ -414,8 +414,8 @@ namespace TgAdmBot.BotSpace
                         {
 
                             replUser.UnBan();
-                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}), ты милашка! Прощаем " +
-                                $"[{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})! Теперь он снова может быть приглашен в чат",
+                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}), ты милашка! Прощаем " +
+                                $"[{replUser.Nickname.Replace("_", "")}](tg://user?id={replUser.TelegramUserId})! Теперь он снова может быть приглашен в чат",
                                 Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
                         }
@@ -443,12 +443,12 @@ namespace TgAdmBot.BotSpace
                                 replUser.Warn();
                                 if (message.Text.Length > 6)
                                 {
-                                    botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) предупреждает тебя, [{user.Nickname}](tg://user?id={user.TelegramUserId})\nза {message.Text.Substring(5)}\nПредупреждений до наказания {chat.WarnsLimit - replUser.WarnsCount}", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}) предупреждает тебя, [{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId})\nза {message.Text.Substring(5)}\nПредупреждений до наказания {chat.WarnsLimit - replUser.WarnsCount}", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                     break;
                                 }
                                 else
                                 {
-                                    botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) предупреждает тебя, [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})\nПредупреждений до наказания {chat.WarnsLimit - replUser.WarnsCount}", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                    botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}) предупреждает тебя, [{replUser.Nickname.Replace("_", "")}](tg://user?id={replUser.TelegramUserId})\nПредупреждений до наказания {chat.WarnsLimit - replUser.WarnsCount}", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                                     break;
                                 }
                             }
@@ -477,8 +477,8 @@ namespace TgAdmBot.BotSpace
                         {
                             replUser.WarnsCount = 0;
                             BotDatabase.db.SaveChanges();
-                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) прощает " +
-                                $"[{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})",
+                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}) прощает " +
+                                $"[{replUser.Nickname.Replace("_", "")}](tg://user?id={replUser.TelegramUserId})",
                                 Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
 
@@ -531,9 +531,9 @@ namespace TgAdmBot.BotSpace
                         {
                             try
                             {
-                                user.Nickname = message.Text.Substring(6);
+                                user.Nickname = message.Text.Substring(6).Replace("_", "");
                                 BotDatabase.db.SaveChanges();
-                                botClient.SendTextMessageAsync(message.Chat, $"Окей, теперь ты [{user.Nickname}](tg://user?id={user.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                                botClient.SendTextMessageAsync(message.Chat, $"Окей, теперь ты [{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             }
                             catch
                             {
@@ -577,14 +577,14 @@ namespace TgAdmBot.BotSpace
                         if (message.ReplyToMessage != null)
                         {
                             string mestext = message.Text.Substring(4);
-                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext + $" [{replUser.Nickname}](tg://user?id={replUser.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}) " + mestext + $" [{replUser.Nickname.Replace("_", "")}](tg://user?id={replUser.TelegramUserId})", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
 
                         }
                         else
                         {
                             string mestext = message.Text.Substring(4);
-                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname}](tg://user?id={user.TelegramUserId}) " + mestext, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            botClient.SendTextMessageAsync(message.Chat, $"[{user.Nickname.Replace("_", "")}](tg://user?id={user.TelegramUserId}) " + mestext, Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
                         }
                     }
