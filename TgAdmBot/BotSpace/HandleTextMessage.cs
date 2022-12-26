@@ -23,9 +23,14 @@ namespace TgAdmBot.BotSpace
             {
                 botClient.SendTextMessageAsync(message.Chat, chat.GetAllMentions(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
             }
-
+            //List<Database.User> MarriedUser = chat.Users.Where(user => user.Marriage?.Agreed == true).ToList();
             switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
+                case "/marriages":
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, chat.GetMarriages(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        break;
+                    }
                 case "/marry":
                     if (replUser != null)
                     {
@@ -39,6 +44,7 @@ namespace TgAdmBot.BotSpace
                                 replUser.Marriage.Agreed = true;
                                 user.Marriage.Agreed = true;
                                 BotDatabase.db.SaveChanges();
+                                //List<Database.User> MarriedUser = chat.Users.Where(user => user.Marriage?.Agreed == true).ToList();
                                 //TODO отправка свидетельств
                                 botClient.SendTextMessageAsync(message.Chat, $"Желаю Вам, [{user.Nickname.Replace("_", "")}](tg://{user.TelegramUserId}) и [{replUser.Nickname.Replace("_", "")}](tg://{replUser.TelegramUserId}) счастливого брака!", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             }

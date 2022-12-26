@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
@@ -259,6 +260,16 @@ namespace TgAdmBot.Database
                 return "Ой! У меня что-то не получилось, давай попробуем позднее";
             }
         }
-
+        public string GetMarriages()
+        {
+            List<Database.User> MarriedUser = Users.Where(user => user.Marriage?.Agreed==true).ToList();
+            string result = $"Занятые котики:\n";
+            foreach (Database.User user in MarriedUser)
+            {
+                 //MarriedUser.Remove(user.Marriage.User);
+                //result = result + $"❤️{user.Nickname.Replace("_", "")}](tg://{user.TelegramUserId} и {user.Marriage.User.Nickname.Replace("_", "")}](tg://{user.Marriage.User.TelegramUserId} в браке {(DateTime.Now - user.Marriage.DateOfConclusion)} дней\n";
+            }
+            return result;
+        }
     }
 }

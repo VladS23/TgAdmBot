@@ -13,7 +13,7 @@ namespace TgAdmBot.Database
 
                 //Для автосброса БД в отладочной сборке
 #if DEBUG
-                db.Database.EnsureDeleted();//TODO ознакомиться (!)
+                //db.Database.EnsureDeleted();//TODO ознакомиться (!)
 #endif
 
                 db.Database.EnsureCreated();
