@@ -144,12 +144,12 @@ namespace TgAdmBot.VoskRecognition
 
                     VoiceRecognitionObjects.Dequeue();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     new Log($"Recognition error:\n{e.ToString()}", LogType.error);
                     continue;
                 }
-                
+
             }
             voiceRecognitionThread.Interrupt();
         }
