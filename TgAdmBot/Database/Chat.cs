@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Telegram.Bot.Types;
 using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
@@ -26,6 +25,8 @@ namespace TgAdmBot.Database
         public List<User> Users { get; set; } = new();
         public bool VoiceMessagesDisallowed { get; set; } = false;
         public WarnsLimitAction WarnsLimitAction { get; set; } = WarnsLimitAction.mute;
+        public bool VideoNotesDisallowed { get; set; } = false;
+        public bool ObsceneWordsDisallowed { get; set; } = false;
 
         public Chat()
         {
@@ -72,7 +73,7 @@ namespace TgAdmBot.Database
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Владелец:");
             sb.AppendLine($"[{owner.Nickname}](tg://user?id={owner.TelegramUserId})");
-            if (admins.Count>0)
+            if (admins.Count > 0)
             {
                 sb.AppendLine("\nАдминистраторы:");
                 int index = 1;
@@ -87,7 +88,7 @@ namespace TgAdmBot.Database
                 sb.AppendLine("\nАдминистраторы отсутствуют.");
             }
 
-            if (moders.Count>0)
+            if (moders.Count > 0)
             {
                 sb.AppendLine("\nМодераторы:");
                 int index = 1;
@@ -102,7 +103,7 @@ namespace TgAdmBot.Database
                 sb.AppendLine("\nМодераторы отсутствуют.");
             }
 
-            if (helpers.Count>0)
+            if (helpers.Count > 0)
             {
                 sb.AppendLine("\nХэлперы:");
                 int index = 1;

@@ -176,7 +176,7 @@ namespace TgAdmBot.VoskRecognition
                 destStream.Close();
                 destStream.Dispose();
                 bool fileExists = System.IO.File.Exists($"{fileLocation}.mp4");
-                Process convert = Process.Start($"ffmpeg.exe",$"-i {fileLocation}.mp4 -vn -acodec pcm_s16le -ar 44100 -ac 2 {fileLocation}.wav");
+                Process convert = Process.Start($"ffmpeg.exe", $"-i {fileLocation}.mp4 -vn -acodec pcm_s16le -ar 44100 -ac 2 {fileLocation}.wav");
                 convert.WaitForExit();
                 System.IO.File.Delete($"{fileLocation}.mp4");
                 new Log($"{fileLocation}.wav");
