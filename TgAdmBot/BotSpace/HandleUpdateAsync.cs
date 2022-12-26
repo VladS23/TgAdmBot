@@ -27,6 +27,20 @@ namespace TgAdmBot.BotSpace
                     chat.MessagesCount += 1;
                     BotDatabase.db.SaveChanges();
 
+                    if (chat.ObsceneWordsDisallowed)
+                    {
+                        if (
+                            //проверка текста сообщения на мат
+                            (message.Text != null && ObsceneChecker.WordsChecker.CheckStringToObsceneWords(message.Text))
+                            ||
+                            //Проверка подписи сообщения на мат
+                            (message.Caption != null && ObsceneChecker.WordsChecker.CheckStringToObsceneWords(message.Caption))
+                            )
+                        {
+                            botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                        }
+                    }
+
 
                     if (message.Text != null && message.Type == MessageType.Text)
                     {
@@ -51,12 +65,12 @@ namespace TgAdmBot.BotSpace
                     new Log(inlineQuery.Query);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
                 new Log($"UPDATE ERROR\n{e.Message}\n{e.InnerException}\n{e.Data}\n{e.Source}\n{e.StackTrace}\n{e.HelpLink}\n{e.HResult}\n{e.TargetSite}", LogType.error);
             }
-            
+
         }
 
     }

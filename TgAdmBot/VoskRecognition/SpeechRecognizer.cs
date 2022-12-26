@@ -130,17 +130,26 @@ namespace TgAdmBot.VoskRecognition
                     System.IO.File.Delete($"{fileLocation}.wav");
                 }
 
-                Stream destStream = System.IO.File.OpenWrite($"{fileLocation}.ogg");
-                await Bot.currentObject.GetInfoAndDownloadFileAsync(recognitionObject.voiceMessage.Voice.FileId, destStream);
-                destStream.Close();
-                destStream.Dispose();
+                try
+                {
+                    Stream destStream = System.IO.File.OpenWrite($"{fileLocation}.ogg");
+                    await Bot.currentObject.GetInfoAndDownloadFileAsync(recognitionObject.voiceMessage.Voice.FileId, destStream);
+                    destStream.Close();
+                    destStream.Dispose();
 
-                Process convert = Process.Start("ffmpeg.exe", $"-i {fileLocation}.ogg {fileLocation}.wav");
-                convert.WaitForExit();
-                System.IO.File.Delete($"{fileLocation}.ogg");
-                RecognizeFileSpeech($"{fileLocation}.wav", recognitionObject.chat, recognitionObject.voiceMessage.MessageId, recognitionObject);
+                    Process convert = Process.Start("ffmpeg.exe", $"-i {fileLocation}.ogg {fileLocation}.wav");
+                    convert.WaitForExit();
+                    System.IO.File.Delete($"{fileLocation}.ogg");
+                    RecognizeFileSpeech($"{fileLocation}.wav", recognitionObject.chat, recognitionObject.voiceMessage.MessageId, recognitionObject);
 
-                VoiceRecognitionObjects.Dequeue();
+                    VoiceRecognitionObjects.Dequeue();
+                }
+                catch(Exception e)
+                {
+                    new Log($"Recognition error:\n{e.ToString()}", LogType.error);
+                    continue;
+                }
+                
             }
             voiceRecognitionThread.Interrupt();
         }
@@ -176,7 +185,7 @@ namespace TgAdmBot.VoskRecognition
                 destStream.Close();
                 destStream.Dispose();
                 bool fileExists = System.IO.File.Exists($"{fileLocation}.mp4");
-                Process convert = Process.Start($"ffmpeg.exe",$"-i {fileLocation}.mp4 -vn -acodec pcm_s16le -ar 44100 -ac 2 {fileLocation}.wav");
+                Process convert = Process.Start($"ffmpeg.exe", $"-i {fileLocation}.mp4 -vn -acodec pcm_s16le -ar 44100 -ac 2 {fileLocation}.wav");
                 convert.WaitForExit();
                 System.IO.File.Delete($"{fileLocation}.mp4");
                 new Log($"{fileLocation}.wav");

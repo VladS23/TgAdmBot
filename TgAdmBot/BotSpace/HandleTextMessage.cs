@@ -26,8 +26,20 @@ namespace TgAdmBot.BotSpace
 
             switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
+                case "/filterwords":
+                    chat.ObsceneWordsDisallowed = !chat.ObsceneWordsDisallowed;
+                    BotDatabase.db.SaveChanges();
+                    if (chat.ObsceneWordsDisallowed)
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, "Хорошо, солнышко, буду удалять маты из этого чатика✨✨");
+                    }
+                    else
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, "Ю-хуу!\nДаёшь свободу слова! Теперь я не буду следить за вашими выражениями)");
+                    }
+                    break;
                 case "/silientmode":
-                    if (user.UserRights<UserRights.moderator)
+                    if (user.UserRights < UserRights.moderator)
                     {
                         botClient.SendTextMessageAsync(message.Chat, "Выберите команду:\n1. Включить\n2. Выключить");
                     }
@@ -74,7 +86,7 @@ namespace TgAdmBot.BotSpace
                     {
                         botClient.SendTextMessageAsync(message.Chat, BotPhrases.HelpMessageFunActions);
                     }
-                    else if (user.LastMessage.StartsWith("/silientmode") && user.UserRights<UserRights.moderator)
+                    else if (user.LastMessage.StartsWith("/silientmode") && user.UserRights < UserRights.moderator)
                     {
                         ChatPermissions silientPermissions = new ChatPermissions();
                         silientPermissions.CanSendMessages = false;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TgAdmBot.Logger
+﻿namespace TgAdmBot.Logger
 {
     public enum LogType
     {
@@ -18,10 +12,10 @@ namespace TgAdmBot.Logger
         public LogType type;
         public DateTime time;
 
-        public Log(string text, LogType logType=LogType.output)
+        public Log(string text, LogType logType = LogType.output)
         {
             this.text = text;
-            this.type= logType;
+            this.type = logType;
             this.time = DateTime.Now;
             Logger.AddLog(this);
         }

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TgAdmBot.Logger
+﻿namespace TgAdmBot.Logger
 {
     internal class Logger
     {
         private static Queue<Log> logsQueue = new Queue<Log>();
         private static Thread loggerThread;
-        private static string logsDirectory ="logs";
-        private static string errorLogsPath = Path.Combine(Directory.GetCurrentDirectory(),logsDirectory, "error.log");
+        private static string logsDirectory = "logs";
+        private static string errorLogsPath = Path.Combine(Directory.GetCurrentDirectory(), logsDirectory, "error.log");
         private static string infoLogsPath = Path.Combine(Directory.GetCurrentDirectory(), logsDirectory, "info.log");
         private static string outputLogsPath = Path.Combine(Directory.GetCurrentDirectory(), logsDirectory, "output.log");
 
@@ -19,7 +13,7 @@ namespace TgAdmBot.Logger
         public static void AddLog(Log logObject)
         {
             logsQueue.Enqueue(logObject);
-            if (logsQueue.Count<2)
+            if (logsQueue.Count < 2)
             {
                 loggerThread = new Thread(WriteLogs);
                 loggerThread.Start();
@@ -39,36 +33,30 @@ namespace TgAdmBot.Logger
 
         private static void WriteLogs()
         {
-            using (StreamWriter outputLogs = File.AppendText(outputLogsPath))
+            using StreamWriter outputLogs = File.AppendText(outputLogsPath);
+            using StreamWriter infoLogs = File.AppendText(infoLogsPath);
+            using StreamWriter errorLogs = File.AppendText(errorLogsPath);
+            while (logsQueue.Count > 0)
             {
-                using (StreamWriter infoLogs = File.AppendText(infoLogsPath))
+                Log logObject = logsQueue.Peek();
+                switch (logObject.type)
                 {
-                    using (StreamWriter errorLogs = File.AppendText(errorLogsPath))
-                    {
-                        while (logsQueue.Count > 0)
-                        {
-                            Log logObject = logsQueue.Peek();
-                            switch (logObject.type)
-                            {
-                                case LogType.output:
-                                    outputLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
-                                    break;
-                                case LogType.info:
-                                    infoLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
-                                    break;
-                                case LogType.error:
-                                    errorLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
-                                    break;
-                                default:
-                                    errorLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\nNO LOG TYPE PROVIDED\n{logObject.text}\n{new String('=', 30)}");
-                                    break;
-                            }
-                            logsQueue.Dequeue();
-                        }
-                    }
+                    case LogType.output:
+                        outputLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
+                        break;
+                    case LogType.info:
+                        infoLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
+                        break;
+                    case LogType.error:
+                        errorLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
+                        break;
+                    default:
+                        errorLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\nNO LOG TYPE PROVIDED\n{logObject.text}\n{new String('=', 30)}");
+                        break;
                 }
+                logsQueue.Dequeue();
             }
-            
+
         }
     }
 }

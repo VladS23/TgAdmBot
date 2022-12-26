@@ -1,5 +1,6 @@
 ﻿using Telegram.Bot;
 using TgAdmBot.Logger;
+using TgAdmBot.ObsceneChecker;
 using TgAdmBot.VoskRecognition;
 
 namespace TgAdmBot
@@ -12,6 +13,7 @@ namespace TgAdmBot
 
         private static void Main(string[] args)
         {
+            WordsChecker.CheckStringToObsceneWords("Сука");
             Logger.Logger.PrepareLogsFolders();
             new Log("Starting app...", LogType.info);
             Vosk.Vosk.SetLogLevel(0);
