@@ -13,7 +13,6 @@ namespace TgAdmBot
 
         private static void Main(string[] args)
         {
-            WordsChecker.CheckStringToObsceneWords("Сука");
             Logger.Logger.PrepareLogsFolders();
             new Log("Starting app...", LogType.info);
             Vosk.Vosk.SetLogLevel(0);
