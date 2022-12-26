@@ -26,6 +26,34 @@ namespace TgAdmBot.BotSpace
 
             switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
+                case "/marry":
+                    if (replUser!=null)
+                    {
+                        Marriage marriage= new Marriage(replUser);
+                        user.Marriage = marriage;
+                        BotDatabase.db.SaveChanges();
+                        if (replUser.Marriage?.User==user)
+                        {
+                            if (replUser.Marriage.User != user.Marriage.User)
+                            {
+                                replUser.Marriage.Agreed = true;
+                                user.Marriage.Agreed = true;
+                                BotDatabase.db.SaveChanges();
+                                //TODO отправка свидетельств
+                                botClient.SendTextMessageAsync(message.Chat, $"Желаю Вам, дорогие мои [{user.Nickname}](tg://{user.TelegramUserId}) и [{replUser.Nickname}](tg://{replUser.TelegramUserId}) счастливого брака!", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            }
+                            else
+                            {
+                                botClient.SendTextMessageAsync(message.Chat, $"Прости, солнце, я понимаю, что ты у мамы самый лучший, но провести бракосочетание в одиночку не получится.", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            }
+                             
+                        }
+                        else
+                        {
+                            botClient.SendTextMessageAsync(message.Chat, $"Теперь милашка [{replUser.Nickname}](tg://{replUser.TelegramUserId}) должен ответить ваше сообщение /marry", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        }
+                    }
+                    break;
                 case "/filterwords":
                     chat.ObsceneWordsDisallowed = !chat.ObsceneWordsDisallowed;
                     BotDatabase.db.SaveChanges();

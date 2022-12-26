@@ -24,6 +24,7 @@
         public int VoiceMessagesCount { get; set; } = 0;
         public int StickerMessagesCount { get; set; } = 0;
         public string LastMessage { get; set; } = "/start";
+        public Marriage? Marriage { get; set; } = null;
 
         public User()
         {
