@@ -53,6 +53,11 @@ namespace TgAdmBot.BotSpace
                             botClient.SendTextMessageAsync(message.Chat, $"Теперь [{replUser.Nickname.Replace("_", "")}](tg://{replUser.TelegramUserId}) должен ответить твое сообщение /marry", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         }
                     }
+                    else
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, $"Нет, это так не работает, прежде чем заключать брак необходимо кого-нибудь себе найти", Telegram.Bot.Types.Enums.ParseMode.Markdown);
+
+                    }
                     break;
                 case "/filterwords":
                     chat.ObsceneWordsDisallowed = !chat.ObsceneWordsDisallowed;
