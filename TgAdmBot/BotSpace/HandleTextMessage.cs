@@ -191,7 +191,7 @@ namespace TgAdmBot.BotSpace
                             {
                                 replUser.UserRights = UserRights.administrator;
                                 BotDatabase.db.SaveChanges();
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0] + "администратор");
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights + "администратор");
                                 break;
                             }
                             else
@@ -217,7 +217,7 @@ namespace TgAdmBot.BotSpace
                             {
                                 replUser.UserRights = UserRights.moderator;
                                 BotDatabase.db.SaveChanges();
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0] + "модератор");
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights + "модератор");
                                 break;
                             }
                             else
@@ -243,7 +243,7 @@ namespace TgAdmBot.BotSpace
                             {
                                 replUser.UserRights = UserRights.helper;
                                 BotDatabase.db.SaveChanges();
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights[0] + "помощник");
+                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.setRights + "помощник");
                                 break;
                             }
                             else
