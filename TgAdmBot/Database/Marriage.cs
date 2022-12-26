@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot;
-using Telegram.Bot.Polling;
-using TgAdmBot.Database;
-
-namespace TgAdmBot.Database
+﻿namespace TgAdmBot.Database
 {
     public class Marriage
     {

@@ -42,16 +42,16 @@
                 switch (logObject.type)
                 {
                     case LogType.output:
-                        outputLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
+                        outputLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
                         break;
                     case LogType.info:
-                        infoLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
+                        infoLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
                         break;
                     case LogType.error:
-                        errorLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n{logObject.text}\n{new String('=', 30)}");
+                        errorLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
                         break;
                     default:
-                        errorLogs.Write($"\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\nNO LOG TYPE PROVIDED\n{logObject.text}\n{new String('=', 30)}");
+                        errorLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\nNO LOG TYPE PROVIDED\n<|COLUMNDELIMITER|>{logObject.text}\n{new String('=', 30)}<|ROWDELIMITER|>");
                         break;
                 }
                 logsQueue.Dequeue();
