@@ -27,12 +27,12 @@ namespace TgAdmBot.BotSpace
             switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
                 case "/marry":
-                    if (replUser!=null)
+                    if (replUser != null)
                     {
-                        Marriage marriage= new Marriage(replUser);
+                        Marriage marriage = new Marriage(replUser);
                         user.Marriage = marriage;
                         BotDatabase.db.SaveChanges();
-                        if (replUser.Marriage?.User==user)
+                        if (replUser.Marriage?.User == user)
                         {
                             if (replUser.Marriage.User != user.Marriage.User)
                             {
@@ -46,7 +46,7 @@ namespace TgAdmBot.BotSpace
                             {
                                 botClient.SendTextMessageAsync(message.Chat, $"Прости, солнце, я понимаю, что ты у мамы самый лучший, но провести бракосочетание в одиночку не получится.", Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             }
-                             
+
                         }
                         else
                         {
