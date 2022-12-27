@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
@@ -265,8 +266,15 @@ namespace TgAdmBot.Database
             string result = $"Занятые котики:\n";
             foreach (Database.User user in MarriedUser)
             {
-                //MarriedUser.Remove(user.Marriage.User);
-                //result = result + $"❤️{user.NicknameMd()}](tg://{user.TelegramUserId} и {user.Marriage.User.NicknameMd()}](tg://{user.Marriage.User.TelegramUserId} в браке {(DateTime.Now - user.Marriage.DateOfConclusion)} дней\n";
+                result = result + $"💖 [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{user.Marriage.User.NicknameMd()}](tg://user?id={user.Marriage.User.TelegramUserId})\n";
+                if (MarriedUser.Count>2)
+                {
+                    MarriedUser.Remove(MarriedUser.Single(u => u.UserId == user.Marriage.User.UserId));
+                }
+                else
+                {
+                    break;
+                }
             }
             return result;
         }
