@@ -19,30 +19,7 @@ namespace TgAdmBot.Database
         public DateTime LastActivity { get; set; } = DateTime.Now;
         public UserRights UserRights { get; set; } = UserRights.normal;
         public Chat Chat { get; set; }
-        private string _nickname;
-        public string NicknameMd
-        {
-            get
-            {
-                string nameMd = Regex.Replace(_nickname, @"([|\\*_`{}\[\]\(\)#\+-\.!])", "\\$1");
-                return nameMd;
-            }
-            set
-            {
-                _nickname = value;
-            }
-        }
-        public string Nickname
-        {
-            get
-            {
-                return _nickname;
-            }
-            set
-            {
-                _nickname = value;
-            }
-        }
+        public string Nickname { get; set; }
         public DateTime UnmuteTime { get; set; } = DateTime.Now;
         public bool IsBot { get; set; } = false;
         public int MessagesCount { get; set; } = 0;
@@ -60,6 +37,11 @@ namespace TgAdmBot.Database
             this.IsBot = isBot;
             this.TelegramUserId = telegramId;
             this.Nickname = firstName;
+        }
+        public string NicknameMd()
+        {
+            string nameMd = Regex.Replace(Nickname, @"([|\\*_`{}\[\]\(\)#\+-\.!])", "\\$1");
+            return nameMd;
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
         {
@@ -84,8 +66,8 @@ namespace TgAdmBot.Database
         {
             //TODO переделать с использованиеи StringBuilder
             string result =
-                $"📈 Информация о {NicknameMd}\n"
-                + $"👥 Ник : [{NicknameMd}](tg://user?id={TelegramUserId})" + "\n"
+                $"📈 Информация о {NicknameMd()}\n"
+                + $"👥 Ник : [{NicknameMd()}](tg://user?id={TelegramUserId})" + "\n"
                 + $"👑 Ранг: {UserRights.ToString()}\n"
                 + $"🚫 Количество предупреждений {WarnsCount}\n"
                 + $"🖊 Разрешено писать: {(IsMuted ? "Нет" : "Да")}\n";
@@ -95,7 +77,7 @@ namespace TgAdmBot.Database
             }
             result = result + $"✉️ Количество сообщений: {MessagesCount}\n"
                 + $"🎧 Количество голосовых сообщений: {VoiceMessagesCount}\n"
-                + $"🕊 В браке: {(Marriage?.Agreed == true ? $"c [{Marriage?.User.NicknameMd}](tg://user?id={Marriage?.User.TelegramUserId})" : "нет")}\n"
+                + $"🕊 В браке: {(Marriage?.Agreed == true ? $"c [{Marriage?.User.NicknameMd()}](tg://user?id={Marriage?.User.TelegramUserId})" : "нет")}\n"
                 + $"😀 Количество стикеров: {StickerMessagesCount}";
             return result;
         }
