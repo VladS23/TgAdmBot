@@ -1,4 +1,6 @@
-﻿namespace TgAdmBot.Database
+﻿using System.Text.RegularExpressions;
+
+namespace TgAdmBot.Database
 {
     public enum UserRights
     {
@@ -17,7 +19,30 @@
         public DateTime LastActivity { get; set; } = DateTime.Now;
         public UserRights UserRights { get; set; } = UserRights.normal;
         public Chat Chat { get; set; }
-        public string Nickname { get; set; }
+        private string _nickname;
+        public string NicknameMd
+        {
+            get
+            {
+                string nameMd = Regex.Replace(_nickname, @"([|\\*_`{}\[\]\(\)#\+-\.!])", "\\$1");
+                return nameMd;
+            }
+            set
+            {
+                _nickname = value;
+            }
+        }
+        public string Nickname
+        {
+            get
+            {
+                return _nickname;
+            }
+            set
+            {
+                _nickname = value;
+            }
+        }
         public DateTime UnmuteTime { get; set; } = DateTime.Now;
         public bool IsBot { get; set; } = false;
         public int MessagesCount { get; set; } = 0;
@@ -44,7 +69,7 @@
             {
                 BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User
                 {
-                    Nickname = TgUser.Username != null ? TgUser.Username.Replace("_", "") : TgUser.FirstName.Replace("_", ""),
+                    Nickname = TgUser.Username != null ? TgUser.Username : TgUser.FirstName,
                     TelegramUserId = TgUser.Id,
                     IsBot = TgUser.IsBot,
                     Chat = chat
@@ -59,8 +84,8 @@
         {
             //TODO переделать с использованиеи StringBuilder
             string result =
-                $"📈 Информация о {Nickname}\n"
-                + $"👥 Ник : [{Nickname.Replace("_", "")}](tg://user?id={TelegramUserId})" + "\n"
+                $"📈 Информация о {NicknameMd}\n"
+                + $"👥 Ник : [{NicknameMd}](tg://user?id={TelegramUserId})" + "\n"
                 + $"👑 Ранг: {UserRights.ToString()}\n"
                 + $"🚫 Количество предупреждений {WarnsCount}\n"
                 + $"🖊 Разрешено писать: {(IsMuted ? "Нет" : "Да")}\n";
@@ -70,7 +95,7 @@
             }
             result = result + $"✉️ Количество сообщений: {MessagesCount}\n"
                 + $"🎧 Количество голосовых сообщений: {VoiceMessagesCount}\n"
-                + $"🕊 В браке: {(Marriage?.Agreed == false ? "нет" : $"c [{Marriage?.User.Nickname}](tg://user?id={Marriage?.User.TelegramUserId})")}\n"
+                + $"🕊 В браке: {(Marriage?.Agreed == true ? $"c [{Marriage?.User.NicknameMd}](tg://user?id={Marriage?.User.TelegramUserId})" : "нет")}\n"
                 + $"😀 Количество стикеров: {StickerMessagesCount}";
             return result;
         }

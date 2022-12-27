@@ -73,14 +73,14 @@ namespace TgAdmBot.Database
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Владелец:");
-            sb.AppendLine($"[{owner.Nickname}](tg://user?id={owner.TelegramUserId})");
+            sb.AppendLine($"[{owner.NicknameMd}](tg://user?id={owner.TelegramUserId})");
             if (admins.Count > 0)
             {
                 sb.AppendLine("\nАдминистраторы:");
                 int index = 1;
                 foreach (User user in admins)
                 {
-                    sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
+                    sb.AppendLine($"{index}. [{user.NicknameMd}](tg://user?id={user.TelegramUserId})");
                     index += 1;
                 }
             }
@@ -95,7 +95,7 @@ namespace TgAdmBot.Database
                 int index = 1;
                 foreach (User user in moders)
                 {
-                    sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
+                    sb.AppendLine($"{index}. [{user.NicknameMd}](tg://user?id={user.TelegramUserId})");
                     index += 1;
                 }
             }
@@ -110,7 +110,7 @@ namespace TgAdmBot.Database
                 int index = 1;
                 foreach (User user in helpers)
                 {
-                    sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
+                    sb.AppendLine($"{index}. [{user.NicknameMd}](tg://user?id={user.TelegramUserId})");
                     index += 1;
                 }
             }
@@ -127,7 +127,7 @@ namespace TgAdmBot.Database
             int index = 1;
             foreach (User user in Users)
             {
-                sb.AppendLine($"{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})");
+                sb.AppendLine($"{index}. [{user.NicknameMd}](tg://user?id={user.TelegramUserId})");
                 index += 1;
             }
             return sb.ToString();
@@ -156,7 +156,7 @@ namespace TgAdmBot.Database
                 int index = 1;
                 foreach (Database.User user in users)
                 {
-                    result = $"{result}{index}. [{user.Nickname}](tg://user?id={user.TelegramUserId})\n";
+                    result = $"{result}{index}. [{user.NicknameMd}](tg://user?id={user.TelegramUserId})\n";
                     index += 1;
                 }
                 return result;
@@ -179,7 +179,7 @@ namespace TgAdmBot.Database
             {
                 for (int index = 0; index < mutedUsers.Count; index++)
                 {
-                    mutedUsersText = $"{mutedUsersText}{index + 1}. [{mutedUsers[index].Nickname}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
+                    mutedUsersText = $"{mutedUsersText}{index + 1}. [{mutedUsers[index].NicknameMd}](tg://user?id={mutedUsers[index].TelegramUserId}\n";
                 }
             }
 
@@ -267,7 +267,7 @@ namespace TgAdmBot.Database
             foreach (Database.User user in MarriedUser)
             {
                  //MarriedUser.Remove(user.Marriage.User);
-                //result = result + $"❤️{user.Nickname.Replace("_", "")}](tg://{user.TelegramUserId} и {user.Marriage.User.Nickname.Replace("_", "")}](tg://{user.Marriage.User.TelegramUserId} в браке {(DateTime.Now - user.Marriage.DateOfConclusion)} дней\n";
+                //result = result + $"❤️{user.NicknameMd}](tg://{user.TelegramUserId} и {user.Marriage.User.NicknameMd}](tg://{user.Marriage.User.TelegramUserId} в браке {(DateTime.Now - user.Marriage.DateOfConclusion)} дней\n";
             }
             return result;
         }
