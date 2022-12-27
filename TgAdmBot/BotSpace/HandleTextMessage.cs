@@ -34,6 +34,9 @@ namespace TgAdmBot.BotSpace
                 case "/marry":
                     if (replUser != null)
                     {
+                        if (replUser.Marriage?.Agreed==true)
+                            replUser.Marriage.Agreed = false;
+                        
                         Marriage marriage = new Marriage(replUser);
                         user.Marriage = marriage;
                         BotDatabase.db.SaveChanges();
@@ -46,7 +49,7 @@ namespace TgAdmBot.BotSpace
                                 BotDatabase.db.SaveChanges();
                                 //List<Database.User> MarriedUser = chat.Users.Where(user => user.Marriage?.Agreed == true).ToList();
                                 //TODO отправка свидетельств
-                                botClient.SendTextMessageAsync(message.Chat, $"Желаю Вам, [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{replUser.NicknameMd()}](tg://user?id={replUser.TelegramUserId}) счастливого брака\\!", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2).Result;
+                                botClient.SendTextMessageAsync(message.Chat, $"Желаю Вам, [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{replUser.NicknameMd()}](tg://user?id={replUser.TelegramUserId}) счастливого брака\\!", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
                             }
                             else
                             {
