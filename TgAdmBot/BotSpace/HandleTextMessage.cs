@@ -42,13 +42,13 @@ namespace TgAdmBot.BotSpace
                     }
                 case "/marriages":
                     {
-                        botClient.SendTextMessageAsync(message.Chat, chat.GetMarriages(), Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                        botClient.SendTextMessageAsync(message.Chat, chat.GetMarriages(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
                     }
                 case "/marry":
-                    if (replUser.Marriage == null)
+                        if (replUser != null)
                     {
-                        if (replUser.Marriage == null)
+                        if (replUser.Marriage == null || replUser.Marriage?.User == user)
                         {
                             if (user.Marriage == null)
                             {
@@ -71,7 +71,7 @@ namespace TgAdmBot.BotSpace
                                     }
                                     else
                                     {
-                                        botClient.SendTextMessageAsync(message.Chat, $"Прости, солнце, я понимаю, что ты у мамы самый лучший, но провести бракосочетание в одиночку не получится.", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                                        botClient.SendTextMessageAsync(message.Chat, $"Прости, солнце, я понимаю, что ты у мамы самый лучший, но провести бракосочетание в одиночку не получится.");
                                     }
 
                                 }
@@ -82,18 +82,18 @@ namespace TgAdmBot.BotSpace
                             }
                             else
                             {
-                                botClient.SendTextMessageAsync(message.Chat, $"Супружескую неверность я не одобряю(", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                                botClient.SendTextMessageAsync(message.Chat, $"Супружескую неверность я не одобряю(");
 
                             }
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, $"Сердце твоего избранника уже занято(", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                            botClient.SendTextMessageAsync(message.Chat, $"Сердце твоего избранника уже занято(");
                         }
                     }
                     else
                     {
-                        botClient.SendTextMessageAsync(message.Chat, $"Нет, это так не работает, прежде чем заключать брак необходимо кого-нибудь себе найти", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                        botClient.SendTextMessageAsync(message.Chat, $"Нет, это так не работает, прежде чем заключать брак необходимо кого-нибудь себе найти");
 
                     }
                     break;

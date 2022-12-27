@@ -268,7 +268,7 @@ namespace TgAdmBot.Database
             {
                 foreach (Database.User user in MarriedUser)
                 {
-                    result = result + $"💖 [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{user.Marriage.User.NicknameMd()}](tg://user?id={user.Marriage.User.TelegramUserId})\n в браке уже {DateTime.Now - user.Marriage.DateOfConclusion}";
+                    result = result + $"💖 [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{user.Marriage.User.NicknameMd()}](tg://user?id={user.Marriage.User.TelegramUserId}) в браке уже {(DateTime.Now - user.Marriage.DateOfConclusion).Days} дней";
                     if (MarriedUser.Count > 2)
                     {
                         MarriedUser.Remove(MarriedUser.Single(u => u.UserId == user.Marriage.User.UserId));
