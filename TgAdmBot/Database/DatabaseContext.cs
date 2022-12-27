@@ -13,7 +13,7 @@ namespace TgAdmBot.Database
 
                 //Для автосброса БД в отладочной сборке
 #if DEBUG
-                //db.Database.EnsureDeleted();//TODO ознакомиться (!)
+                db.Database.EnsureDeleted();//TODO ознакомиться (!)
 #endif
 
                 db.Database.EnsureCreated();
@@ -32,6 +32,7 @@ namespace TgAdmBot.Database
         public DbSet<User> Users { get; set; }
         public DbSet<Chat> Chats { get; set; }
         public DbSet<VoiceMessage> VoiceMessages { get; set; }
+        public DbSet<Marriage> Marriages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {

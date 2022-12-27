@@ -17,7 +17,7 @@
         public DateTime LastActivity { get; set; } = DateTime.Now;
         public UserRights UserRights { get; set; } = UserRights.normal;
         public Chat Chat { get; set; }
-        public string? Nickname { get; set; }
+        public string Nickname { get; set; }
         public DateTime UnmuteTime { get; set; } = DateTime.Now;
         public bool IsBot { get; set; } = false;
         public int MessagesCount { get; set; } = 0;
@@ -34,7 +34,7 @@
             this.Chat = chat;
             this.IsBot = isBot;
             this.TelegramUserId = telegramId;
-            this.Nickname = firstName.Replace("_", "");
+            this.Nickname = firstName;
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
         {
@@ -70,6 +70,7 @@
             }
             result = result + $"✉️ Количество сообщений: {MessagesCount}\n"
                 + $"🎧 Количество голосовых сообщений: {VoiceMessagesCount}\n"
+                + $"🕊 В браке: {(Marriage?.Agreed == false ? "нет" : $"c [{Marriage?.User.Nickname}](tg://user?id={Marriage?.User.TelegramUserId})")}\n"
                 + $"😀 Количество стикеров: {StickerMessagesCount}";
             return result;
         }
