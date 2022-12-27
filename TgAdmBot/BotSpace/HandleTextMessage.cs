@@ -26,6 +26,20 @@ namespace TgAdmBot.BotSpace
             //List<Database.User> MarriedUser = chat.Users.Where(user => user.Marriage?.Agreed == true).ToList();
             switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
+                case "/divorce":
+                    if (user.Marriage != null)
+                    {
+                        user.Marriage.User.Marriage = null;
+                        user.Marriage = null;
+                        BotDatabase.db.SaveChanges();
+                        botClient.SendTextMessageAsync(message.Chat, "Брак расторгнут 💔", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                        break;
+                    }
+                    else
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, "Прежде чем разводиться надо заключить брак", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                        break;
+                    }
                 case "/marriages":
                     {
                         botClient.SendTextMessageAsync(message.Chat, chat.GetMarriages(), Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
@@ -364,8 +378,7 @@ namespace TgAdmBot.BotSpace
                     }
                     break;
                 case "/stat":
-                    if (user.UserRights < UserRights.helper)
-                    {
+
                         if (replUser != null)
                         {
                             if (user.UserRights < replUser.UserRights)
@@ -385,7 +398,6 @@ namespace TgAdmBot.BotSpace
                             botClient.SendTextMessageAsync(message.Chat, user.GetInfo(), Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
                             break;
                         }
-                    }
                     break;
                 case "/setwarninglimitaction":
                     botClient.SendTextMessageAsync(message.Chat, chat.SetWarningLimitAction(message.From.Id, message.Text));
