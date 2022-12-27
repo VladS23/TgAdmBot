@@ -263,18 +263,25 @@ namespace TgAdmBot.Database
         public string GetMarriages()
         {
             List<Database.User> MarriedUser = Users.Where(user => user.Marriage?.Agreed == true).ToList();
-            string result = $"Занятые котики:\n";
-            foreach (Database.User user in MarriedUser)
+            string result = $"Браки:\n";
+            if (MarriedUser.Count > 0)
             {
-                result = result + $"💖 [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{user.Marriage.User.NicknameMd()}](tg://user?id={user.Marriage.User.TelegramUserId})\n";
-                if (MarriedUser.Count>2)
+                foreach (Database.User user in MarriedUser)
                 {
-                    MarriedUser.Remove(MarriedUser.Single(u => u.UserId == user.Marriage.User.UserId));
+                    result = result + $"💖 [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{user.Marriage.User.NicknameMd()}](tg://user?id={user.Marriage.User.TelegramUserId}) в браке уже {(DateTime.Now - user.Marriage.DateOfConclusion).Days} дней";
+                    if (MarriedUser.Count > 2)
+                    {
+                        MarriedUser.Remove(MarriedUser.Single(u => u.UserId == user.Marriage.User.UserId));
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
-                {
-                    break;
-                }
+            }
+            else
+            {
+                result = "Пока браков нет";
             }
             return result;
         }
