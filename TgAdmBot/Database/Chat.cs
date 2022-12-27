@@ -265,8 +265,8 @@ namespace TgAdmBot.Database
             string result = $"Занятые котики:\n";
             foreach (Database.User user in MarriedUser)
             {
-                //MarriedUser.Remove(user.Marriage.User);
-                //result = result + $"❤️{user.NicknameMd()}](tg://{user.TelegramUserId} и {user.Marriage.User.NicknameMd()}](tg://{user.Marriage.User.TelegramUserId} в браке {(DateTime.Now - user.Marriage.DateOfConclusion)} дней\n";
+                MarriedUser.Remove(user.Marriage.User);
+                result = result + $"❤️[{user.NicknameMd()}](tg://{user.TelegramUserId} и [{user.Marriage.User.NicknameMd()}](tg://{user.Marriage.User.TelegramUserId} в браке {(DateTime.Now - user.Marriage.DateOfConclusion)} дней\n";
             }
             return result;
         }
