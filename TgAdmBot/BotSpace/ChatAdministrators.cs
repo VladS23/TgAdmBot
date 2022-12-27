@@ -8,7 +8,7 @@
 
     public class Result
     {
-        public User user { get; set; }
+        public Telegram.Bot.Types.User user { get; set; }
         public string status { get; set; }
         public bool can_be_edited { get; set; }
         public bool can_manage_chat { get; set; }
