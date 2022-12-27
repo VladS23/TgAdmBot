@@ -46,34 +46,49 @@ namespace TgAdmBot.BotSpace
                         break;
                     }
                 case "/marry":
-                    if (replUser != null)
+                    if (replUser.Marriage == null)
                     {
-                        if (replUser.Marriage?.Agreed==true)
-                            replUser.Marriage.Agreed = false;
-                        
-                        Marriage marriage = new Marriage(replUser);
-                        user.Marriage = marriage;
-                        BotDatabase.db.SaveChanges();
-                        if (replUser.Marriage?.User == user)
+                        if (replUser.Marriage == null)
                         {
-                            if (replUser.Marriage.User != user.Marriage.User)
+                            if (user.Marriage == null)
                             {
-                                replUser.Marriage.Agreed = true;
-                                user.Marriage.Agreed = true;
+                                if (replUser.Marriage?.Agreed == true)
+                                    replUser.Marriage.Agreed = false;
+
+                                Marriage marriage = new Marriage(replUser);
+                                user.Marriage = marriage;
                                 BotDatabase.db.SaveChanges();
-                                //List<Database.User> MarriedUser = chat.Users.Where(user => user.Marriage?.Agreed == true).ToList();
-                                //TODO отправка свидетельств
-                                botClient.SendTextMessageAsync(message.Chat, $"Желаю Вам, [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{replUser.NicknameMd()}](tg://user?id={replUser.TelegramUserId}) счастливого брака\\!", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                                if (replUser.Marriage?.User == user)
+                                {
+                                    if (replUser.Marriage.User != user.Marriage.User)
+                                    {
+                                        replUser.Marriage.Agreed = true;
+                                        user.Marriage.Agreed = true;
+                                        BotDatabase.db.SaveChanges();
+                                        //List<Database.User> MarriedUser = chat.Users.Where(user => user.Marriage?.Agreed == true).ToList();
+                                        //TODO отправка свидетельств
+                                        botClient.SendTextMessageAsync(message.Chat, $"Желаю Вам, [{user.NicknameMd()}](tg://user?id={user.TelegramUserId}) и [{replUser.NicknameMd()}](tg://user?id={replUser.TelegramUserId}) счастливого брака\\!", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                                    }
+                                    else
+                                    {
+                                        botClient.SendTextMessageAsync(message.Chat, $"Прости, солнце, я понимаю, что ты у мамы самый лучший, но провести бракосочетание в одиночку не получится.", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                                    }
+
+                                }
+                                else
+                                {
+                                    botClient.SendTextMessageAsync(message.Chat, $"Теперь [{replUser.NicknameMd()}](tg://{replUser.TelegramUserId}) должен ответить твое сообщение /marry", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                                }
                             }
                             else
                             {
-                                botClient.SendTextMessageAsync(message.Chat, $"Прости, солнце, я понимаю, что ты у мамы самый лучший, но провести бракосочетание в одиночку не получится.", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
-                            }
+                                botClient.SendTextMessageAsync(message.Chat, $"Супружескую неверность я не одобряю(", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
 
+                            }
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, $"Теперь [{replUser.NicknameMd()}](tg://{replUser.TelegramUserId}) должен ответить твое сообщение /marry", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                            botClient.SendTextMessageAsync(message.Chat, $"Сердце твоего избранника уже занято(", Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
                         }
                     }
                     else
