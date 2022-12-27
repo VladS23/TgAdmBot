@@ -20,6 +20,7 @@ namespace TgAdmBot.Database
         public UserRights UserRights { get; set; } = UserRights.normal;
         public Chat Chat { get; set; }
         public string Nickname { get; set; }
+        public string? TgUsername { get; private set; }
         public DateTime UnmuteTime { get; set; } = DateTime.Now;
         public bool IsBot { get; set; } = false;
         public int MessagesCount { get; set; } = 0;
@@ -49,15 +50,28 @@ namespace TgAdmBot.Database
             user = BotDatabase.db.Users.SingleOrDefault(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
             if (user == null)
             {
-                BotDatabase.db.Chats.Single(c => c.ChatId == chat.ChatId).Users.Add(new Database.User
+                User newUser = new Database.User
                 {
                     Nickname = TgUser.Username != null ? TgUser.Username : TgUser.FirstName,
                     TelegramUserId = TgUser.Id,
                     IsBot = TgUser.IsBot,
-                    Chat = chat
-                });
+                    Chat = chat,
+                    TgUsername = TgUser.Username,
+                };
+                chat.Users.Add(newUser) ;
                 BotDatabase.db.SaveChanges();
                 user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
+                user.TgUsername= TgUser.Username;
+                BotDatabase.db.SaveChanges();
+                user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
+            }
+            else
+            {
+                if (user.TgUsername!=TgUser.Username)
+                {
+                    user.TgUsername = TgUser.Username;
+                    BotDatabase.db.SaveChanges();
+                }
             }
 
             return user;

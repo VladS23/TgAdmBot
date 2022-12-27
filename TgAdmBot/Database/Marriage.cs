@@ -5,7 +5,7 @@
         public int MarriageId { get; set; }
         public DateTime DateOfConclusion { get; set; } = DateTime.Now;
         public int UserId { get; }
-        public User User { get; }
+        public User? User { get; }
         public bool Agreed { get; set; } = false;
 
         public Marriage() { }

@@ -37,13 +37,12 @@ namespace TgAdmBot.Database
         {
             Database.Chat chat;
 
-            if (BotDatabase.db.Chats.FirstOrDefault(chat => chat.TelegramChatId == message.Chat.Id) == null)
+            if (BotDatabase.db.Chats.Where(chat => chat.TelegramChatId == message.Chat.Id).ToList().Count==0)
             {
                 BotDatabase.db.Add(new Database.Chat { TelegramChatId = message.Chat.Id });
                 BotDatabase.db.SaveChanges();
                 chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
                 chat.SetDefaultAdmins();
-                BotDatabase.db.SaveChanges();
             }
             chat = BotDatabase.db.Chats.Single(chat => chat.TelegramChatId == message.Chat.Id);
             return chat;
@@ -235,16 +234,18 @@ namespace TgAdmBot.Database
                     {
                         if (admin.status == "creator")
                         {
-                            creatorId = admin.user.id;
-                            chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.creator });
+                            User user = User.GetOrCreate(chat, admin.user);
+                            user.UserRights = UserRights.creator;
                         }
                         else if (admin.status == "administrator")
                         {
-                            chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.administrator });
+                            User user = User.GetOrCreate(chat, admin.user);
+                            user.UserRights = UserRights.administrator;
                         }
                         else
                         {
-                            chat.Users.Add(new Database.User(admin.user.first_name, admin.user.id, admin.user.is_bot, this) { UserRights = UserRights.normal });
+                            User user = User.GetOrCreate(chat, admin.user);
+                            user.UserRights = UserRights.normal;
                         }
                     }
                     BotDatabase.db.SaveChanges();

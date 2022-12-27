@@ -14,6 +14,18 @@ namespace TgAdmBot.BotSpace
             {
                 replUser = Database.User.GetOrCreate(chat, message.ReplyToMessage.From);
             }
+            else if (replUser==null&&message.ReplyToMessage==null&&message.Entities.Count()>0&&message.Entities.FirstOrDefault(e=>e.Type==Telegram.Bot.Types.Enums.MessageEntityType.Mention)!=null)
+            {
+                MessageEntity entity = message.Entities.First(e => e.Type == Telegram.Bot.Types.Enums.MessageEntityType.Mention);
+                //ChatMember member = await botClient.GetChatMemberAsync(chat.TelegramChatId, );
+                string mention = message.Text.Substring(entity.Offset, entity.Length).Substring(1);
+                List<Database.User> userMentioned = chat.Users.Where(u => u.TgUsername.ToLower() == mention.ToLower()).ToList();
+                if (userMentioned.Count>0)
+                {
+                    ChatMember member = await botClient.GetChatMemberAsync(chat.TelegramChatId, userMentioned[0].TelegramUserId);
+                    replUser = Database.User.GetOrCreate(chat, member.User);
+                }
+            }
 
 
 
