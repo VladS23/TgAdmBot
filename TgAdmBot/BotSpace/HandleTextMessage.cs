@@ -34,6 +34,9 @@ namespace TgAdmBot.BotSpace
                 case "/marry":
                     if (replUser != null)
                     {
+                        if (replUser.Marriage?.Agreed==true)
+                            replUser.Marriage.Agreed = false;
+                        
                         Marriage marriage = new Marriage(replUser);
                         user.Marriage = marriage;
                         BotDatabase.db.SaveChanges();
