@@ -41,7 +41,7 @@ namespace TgAdmBot.Database
         }
         public string NicknameMd()
         {
-            string nameMd = Regex.Replace(Nickname, @"([|\\*_`{}\[\]\(\)#\+-\.!])", "\\$1");
+            string nameMd = Regex.Replace(Nickname, @"([|\\*_`{}\[\]\(\)#\+-\.!])", "");
             return nameMd;
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
