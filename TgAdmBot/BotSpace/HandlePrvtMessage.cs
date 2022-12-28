@@ -75,7 +75,7 @@ namespace TgAdmBot.BotSpace
                 InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                     new InlineKeyboardButton("Показать текст") { CallbackData = newPrivateMsg.Callback }
                     );
-                botClient.SendTextMessageAsync(chat.TelegramChatId, $"Скрытое сообщение от [{user.Nickname}](tg://user?id={user.TelegramUserId})\n{(newPrivateMsg.Mode == PrivateMessageModes.allow ? "Доступно для:" : "Скрыто от:")}\n{mentionsOfUsers}", replyMarkup: markup, parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                botClient.SendTextMessageAsync(chat.TelegramChatId, $"Скрытое сообщение от [{user.Nickname}](tg://user?id={user.TelegramUserId}){(newPrivateMsg.Mode == PrivateMessageModes.allow ? "Доступно для:" : "Скрыто от:")}\n{mentionsOfUsers}", replyMarkup: markup, parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
 
             }
             else
