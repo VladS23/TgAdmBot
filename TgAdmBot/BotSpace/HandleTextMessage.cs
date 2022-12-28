@@ -419,7 +419,7 @@ namespace TgAdmBot.BotSpace
 
                     if (replUser != null)
                     {
-                        if (user.UserRights < replUser.UserRights)
+                        if (user.UserRights <= replUser.UserRights)
                         {
                             botClient.SendTextMessageAsync(message.Chat, replUser.GetInfo(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                             break;
