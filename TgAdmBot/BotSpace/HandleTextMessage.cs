@@ -1,6 +1,8 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using TgAdmBot.Database;
+using TgAdmBot.Logger;
 
 namespace TgAdmBot.BotSpace
 {
@@ -10,22 +12,28 @@ namespace TgAdmBot.BotSpace
         private async Task HandleTextMessage(Telegram.Bot.Types.Message message, Database.User user, Database.Chat chat)
         {
             Database.User? replUser = chat.Users.SingleOrDefault(u => u.TelegramUserId == message.ReplyToMessage?.From?.Id);
-            if (replUser == null && message.ReplyToMessage != null)
+            try
             {
-                replUser = Database.User.GetOrCreate(chat, message.ReplyToMessage.From);
-            }
-            else if (replUser==null&&message.ReplyToMessage==null&&message.Entities.Count()>0&&message.Entities.FirstOrDefault(e=>e.Type==Telegram.Bot.Types.Enums.MessageEntityType.Mention)!=null)
-            {
-                MessageEntity entity = message.Entities.First(e => e.Type == Telegram.Bot.Types.Enums.MessageEntityType.Mention);
-                //ChatMember member = await botClient.GetChatMemberAsync(chat.TelegramChatId, );
-                string mention = message.Text.Substring(entity.Offset, entity.Length).Substring(1);
-                List<Database.User> userMentioned = chat.Users.Where(u => u.TgUsername.ToLower() == mention.ToLower()).ToList();
-                if (userMentioned.Count>0)
+                if (replUser == null && message.ReplyToMessage != null)
                 {
-                    ChatMember member = await botClient.GetChatMemberAsync(chat.TelegramChatId, userMentioned[0].TelegramUserId);
-                    replUser = Database.User.GetOrCreate(chat, member.User);
+                    replUser = Database.User.GetOrCreate(chat, message.ReplyToMessage.From);
                 }
+                else if (replUser == null && message.ReplyToMessage == null && message.Entities?.Count() > 0 && message.Entities?.FirstOrDefault(e => e.Type == Telegram.Bot.Types.Enums.MessageEntityType.Mention) != null)
+                {
+                    MessageEntity entity = message.Entities.First(e => e.Type == Telegram.Bot.Types.Enums.MessageEntityType.Mention);
+                    //ChatMember member = await botClient.GetChatMemberAsync(chat.TelegramChatId, );
+                    string mention = message.Text.Substring(entity.Offset, entity.Length).Substring(1);
+                    List<Database.User> userMentioned = chat.Users.Where(u => u.TgUsername?.ToLower() == mention.ToLower()).ToList();
+                    if (userMentioned.Count > 0)
+                    {
+                        ChatMember member = await botClient.GetChatMemberAsync(chat.TelegramChatId, userMentioned[0].TelegramUserId);
+                        replUser = Database.User.GetOrCreate(chat, member.User);
+                    }
+                }
+
             }
+            catch  (Exception ex) { new Log($"{ex.Message}\n{ex.StackTrace}", LogType.error); }   
+            
 
 
 
@@ -52,13 +60,62 @@ namespace TgAdmBot.BotSpace
                         botClient.SendTextMessageAsync(message.Chat, "Прежде чем разводиться надо заключить брак");
                         break;
                     }
+                case "/prvt"://1 - allow; 2-disallow     /prvt 1 @nsdfk @jdkdk @Iiiiok
+                    string msgText = message.Text;
+                    string modeStr = message.Text.Substring(6, 1);
+                    string[] users = message.Text.Replace("@", "").Substring(8).Split();
+                    PrivateMessageModes msgMode = PrivateMessageModes.disallow;
+
+                    //Удаление сообщения после сохранения нужной инфы в RAM
+                    botClient.DeleteMessageAsync(chat.TelegramChatId, message.MessageId);
+
+                    //Определение с режимом
+                    if (modeStr == "1")//allow
+                    {
+                        msgMode = PrivateMessageModes.allow;
+                    }
+                    else if (modeStr == "2")//disallow
+                    {
+                        msgMode = PrivateMessageModes.disallow;
+                    }
+                    else
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, "Режим указан неверно");
+                        break;
+                    }
+
+                    //Формирование сообщения
+                    List<Database.User> msgUsers = new List<Database.User>();
+                    int mentionsLen = 8;
+                    List<MessageEntity> entities = message.Entities.Where(u => u.Type == Telegram.Bot.Types.Enums.MessageEntityType.Mention).ToList();
+                    for (int i = 0; i < entities.Count; i++)
+                    {
+                        MessageEntity entity = entities[i];
+                        if (i!=0&&
+                            Math.Abs(entities[i - 1].Offset + entities[i - 1].Length - entities[i].Offset)>1)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            msgUsers.Add(chat.Users.Single(u => u.TgUsername == users[i]));
+                            mentionsLen += 1 + entity.Length;
+                        }
+                    }
+                    PrivateMessage newPrivateMsg = new PrivateMessage(msgMode, msgUsers, $"/prvt!{Guid.NewGuid()}", chat.TelegramChatId, msgText.Substring(mentionsLen));
+                    BotDatabase.db.PrivateMessages.Add(newPrivateMsg);
+                    InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
+                        new InlineKeyboardButton("Показать текст") { CallbackData = newPrivateMsg.Callback }
+                        );
+                    botClient.SendTextMessageAsync(chat.TelegramChatId, $"Скрытое сообщение\n{(newPrivateMsg.Mode==PrivateMessageModes.allow?"Доступно для:":"Скрыто от:")}\n{msgText.Substring(0,mentionsLen).Substring(8)}", replyMarkup: markup);
+                    break;
                 case "/marriages":
                     {
                         botClient.SendTextMessageAsync(message.Chat, chat.GetMarriages(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
                         break;
                     }
                 case "/marry":
-                        if (replUser != null)
+                    if (replUser != null)
                     {
                         if (replUser.Marriage == null || replUser.Marriage?.User == user)
                         {
@@ -406,25 +463,25 @@ namespace TgAdmBot.BotSpace
                     break;
                 case "/stat":
 
-                        if (replUser != null)
+                    if (replUser != null)
+                    {
+                        if (user.UserRights < replUser.UserRights)
                         {
-                            if (user.UserRights < replUser.UserRights)
-                            {
-                                botClient.SendTextMessageAsync(message.Chat, replUser.GetInfo(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
-                                break;
-                            }
-                            else
-                            {
-                                botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
-                                break;
-                            }
-
+                            botClient.SendTextMessageAsync(message.Chat, replUser.GetInfo(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            break;
                         }
                         else
                         {
-                            botClient.SendTextMessageAsync(message.Chat, user.GetInfo(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                            botClient.SendTextMessageAsync(message.Chat, BotPhrases.NotEnoughtRights);
                             break;
                         }
+
+                    }
+                    else
+                    {
+                        botClient.SendTextMessageAsync(message.Chat, user.GetInfo(), Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        break;
+                    }
                     break;
                 case "/setwarninglimitaction":
                     botClient.SendTextMessageAsync(message.Chat, chat.SetWarningLimitAction(message.From.Id, message.Text));

@@ -33,6 +33,7 @@ namespace TgAdmBot.Database
         public DbSet<Chat> Chats { get; set; }
         public DbSet<VoiceMessage> VoiceMessages { get; set; }
         public DbSet<Marriage> Marriages { get; set; }
+        public DbSet<PrivateMessage> PrivateMessages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
