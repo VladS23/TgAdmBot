@@ -19,7 +19,7 @@ namespace TgAdmBot.BotSpace
                 MessageEntity entity = message.Entities.First(e => e.Type == Telegram.Bot.Types.Enums.MessageEntityType.Mention);
                 //ChatMember member = await botClient.GetChatMemberAsync(chat.TelegramChatId, );
                 string mention = message.Text.Substring(entity.Offset, entity.Length).Substring(1);
-                List<Database.User> userMentioned = chat.Users.Where(u => u.TgUsername.ToLower() == mention.ToLower()).ToList();
+                List<Database.User> userMentioned = chat.Users.Where(u => u.TgUsername?.ToLower() == mention.ToLower()).ToList();
                 if (userMentioned.Count>0)
                 {
                     ChatMember member = await botClient.GetChatMemberAsync(chat.TelegramChatId, userMentioned[0].TelegramUserId);
