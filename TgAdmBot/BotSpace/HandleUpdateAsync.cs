@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgAdmBot.Database;
 using TgAdmBot.Logger;
@@ -59,10 +60,9 @@ namespace TgAdmBot.BotSpace
                         user.UpdateStatistic(message);
                     }
                 }
-                else if (update.Type == UpdateType.InlineQuery)
+                else if (update.Type == UpdateType.CallbackQuery)
                 {
-                    Telegram.Bot.Types.InlineQuery inlineQuery = update.InlineQuery!;
-                    new Log(inlineQuery.Query);
+                    this.HandleCallbackAsync(update);
                 }
             }
             catch (Exception e)
