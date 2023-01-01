@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
 {
@@ -40,9 +41,8 @@ namespace TgAdmBot.Database
             this.Nickname = firstName;
         }
         public string NicknameMd()
-        {
-            string nameMd = Regex.Replace(Nickname, "([|\\*_`{}[]()#+-.!])", "/$1");
-            return nameMd;
+        {        
+            return Bot.EscapeMarkdown(Nickname);
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
         {
