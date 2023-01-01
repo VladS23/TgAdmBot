@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <None Update=".env">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Database\.env">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

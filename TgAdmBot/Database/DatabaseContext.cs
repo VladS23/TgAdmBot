@@ -27,8 +27,24 @@ namespace TgAdmBot.Database
     {
         public DatabaseContext() : base()
         {
-
+            this.Database.EnsureCreated();
+            this.SaveChangesFailed += SaveFailed;
         }
+
+        public void SaveFailed(object obj, SaveChangesFailedEventArgs failedEventArgs)
+        {
+            try
+            {
+                this.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+
+
         public DbSet<User> Users { get; set; }
         public DbSet<Chat> Chats { get; set; }
         public DbSet<VoiceMessage> VoiceMessages { get; set; }

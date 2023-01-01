@@ -11,12 +11,12 @@ namespace TgAdmBot.VoskRecognition
     {
         public static VoskRecognizer voskRecognizer = new VoskRecognizer(new Model("vosk-model"), 48000.0f);
 
-        private static Queue<VoiceRecognitionObject> VoiceRecognitionObjects = new Queue<VoiceRecognitionObject>();
+        private static Queue<DatabaseContext> VoiceRecognitionObjects = new Queue<DatabaseContext>();
         private static Thread voiceRecognitionThread = new Thread(StartVoiceRecognition);
 
         private static Queue<VideoNoteRecognitionObject> VideoNoteRecognitionObjects = new Queue<VideoNoteRecognitionObject>();
         private static Thread videoNoteRecognitionThread = new Thread(StartVideoNoteRecognition);
-        public static void AddVoiceMessageToQueue(VoiceRecognitionObject recognitionObject)
+        public static void AddVoiceMessageToQueue(DatabaseContext recognitionObject)
         {
             VoiceRecognitionObjects.Enqueue(recognitionObject);
             if (VoiceRecognitionObjects.Count < 2
@@ -42,7 +42,7 @@ namespace TgAdmBot.VoskRecognition
             }
         }
 
-        private static void RecognizeFileSpeech(string fileLocation, Database.Chat chat, int messageId, VoiceRecognitionObject recognitionObject)
+        private static void RecognizeFileSpeech(string fileLocation, Database.Chat chat, int messageId, DatabaseContext recognitionObject)
         {
             using (Stream source = System.IO.File.OpenRead(fileLocation))
             {
@@ -112,7 +112,7 @@ namespace TgAdmBot.VoskRecognition
         {
             while (VoiceRecognitionObjects.Count > 0)
             {
-                VoiceRecognitionObject recognitionObject = VoiceRecognitionObjects.Peek();
+                DatabaseContext recognitionObject = VoiceRecognitionObjects.Peek();
 
                 string fileName = $"{recognitionObject.voiceMessage.From.Id}_{recognitionObject.voiceMessage.Chat.Id}_{recognitionObject.voiceMessage.MessageId}";
                 if (!Directory.Exists("voicemessages"))

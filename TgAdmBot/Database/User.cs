@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using TgAdmBot.BotSpace;
+﻿using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
 {
@@ -41,7 +40,7 @@ namespace TgAdmBot.Database
             this.Nickname = firstName;
         }
         public string NicknameMd()
-        {        
+        {
             return Bot.EscapeMarkdown(Nickname);
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)
@@ -58,16 +57,16 @@ namespace TgAdmBot.Database
                     Chat = chat,
                     TgUsername = TgUser.Username,
                 };
-                chat.Users.Add(newUser) ;
+                chat.Users.Add(newUser);
                 BotDatabase.db.SaveChanges();
                 user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
-                user.TgUsername= TgUser.Username;
+                user.TgUsername = TgUser.Username;
                 BotDatabase.db.SaveChanges();
                 user = BotDatabase.db.Users.Single(u => u.Chat.ChatId == chat.ChatId && u.TelegramUserId == TgUser.Id);
             }
             else
             {
-                if (user.TgUsername!=TgUser.Username)
+                if (user.TgUsername != TgUser.Username)
                 {
                     user.TgUsername = TgUser.Username;
                     BotDatabase.db.SaveChanges();

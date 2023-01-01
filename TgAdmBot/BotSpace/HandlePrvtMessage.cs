@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot.Types.ReplyMarkups;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot;
+using Telegram.Bot.Types.ReplyMarkups;
 using TgAdmBot.Database;
 
 namespace TgAdmBot.BotSpace
@@ -99,7 +94,7 @@ namespace TgAdmBot.BotSpace
                 string[] wordsArray = msgText.Split(" ");
                 if (wordsArray.Length > 4)
                 {
-                    users = message.Text.Replace("@", "").Substring(9+wordsArray[2].Length).Split(" ");
+                    users = message.Text.Replace("@", "").Substring(9 + wordsArray[2].Length).Split(" ");
                     int mentionsLen = 8 + wordsArray[2].Length;
                     Database.Chat? selectedChat = BotDatabase.db.Chats.SingleOrDefault(ch => ch.TelegramChatId == Convert.ToInt64(wordsArray[2]));
                     if (selectedChat != null)
@@ -116,14 +111,14 @@ namespace TgAdmBot.BotSpace
                             else
                             {
                                 Database.User? currentUser = selectedChat.Users.SingleOrDefault(u => u.TgUsername == users[i]);
-                                if (currentUser!=null)
+                                if (currentUser != null)
                                 {
                                     msgUsers.Add(currentUser);
                                 }
                                 mentionsLen += 1 + entity.Length;
                             }
                         }
-                        if (!msgUsers.Contains(user)&&msgMode==PrivateMessageModes.allow)
+                        if (!msgUsers.Contains(user) && msgMode == PrivateMessageModes.allow)
                         {
                             msgUsers.Add(user);
                         }
@@ -144,7 +139,7 @@ namespace TgAdmBot.BotSpace
                         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                             new InlineKeyboardButton("Показать текст") { CallbackData = newPrivateMsg.Callback }
                             );
-                        botClient.SendTextMessageAsync(selectedChat.TelegramChatId, $"Скрытое сообщение от [{user.Nickname}](tg://user?id={user.TelegramUserId})\n{(newPrivateMsg.Mode == PrivateMessageModes.allow ? "Доступно для:" : "Скрыто от:")}\n{mentionsOfUsers}", replyMarkup: markup, parseMode:Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                        botClient.SendTextMessageAsync(selectedChat.TelegramChatId, $"Скрытое сообщение от [{user.Nickname}](tg://user?id={user.TelegramUserId})\n{(newPrivateMsg.Mode == PrivateMessageModes.allow ? "Доступно для:" : "Скрыто от:")}\n{mentionsOfUsers}", replyMarkup: markup, parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
                     }
                     else
                     {

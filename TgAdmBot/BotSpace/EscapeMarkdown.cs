@@ -1,8 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using Telegram.Bot;
-using Telegram.Bot.Polling;
-using TgAdmBot.Database;
-using TgAdmBot.Logger;
 
 namespace TgAdmBot.BotSpace
 {

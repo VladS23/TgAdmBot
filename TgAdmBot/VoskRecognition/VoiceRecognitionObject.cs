@@ -1,6 +1,6 @@
 ﻿namespace TgAdmBot.VoskRecognition
 {
-    internal class VoiceRecognitionObject
+    internal class DatabaseContext
     {
         public Database.Chat chat;
         public Telegram.Bot.Types.Message voiceMessage;
