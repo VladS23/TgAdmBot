@@ -5,9 +5,12 @@
         private static Queue<Log> logsQueue = new Queue<Log>();
         private static Thread loggerThread;
         private static string logsDirectory = "logs";
-        private static string errorLogsPath = Path.Combine(Directory.GetCurrentDirectory(), logsDirectory, "error.log");
-        private static string infoLogsPath = Path.Combine(Directory.GetCurrentDirectory(), logsDirectory, "info.log");
-        private static string outputLogsPath = Path.Combine(Directory.GetCurrentDirectory(), logsDirectory, "output.log");
+        private static DirectoryInfo di = new DirectoryInfo(Directory.GetCurrentDirectory());
+        private static DirectoryInfo root = di.Parent;
+        private static string LogsPath = root != null ? Path.Combine(root.ToString(), logsDirectory) : Path.Combine(Directory.GetCurrentDirectory(), logsDirectory);
+        private static string errorLogsPath = Path.Combine(LogsPath, "error.log");
+        private static string infoLogsPath = Path.Combine(LogsPath, "info.log");
+        private static string outputLogsPath = Path.Combine(LogsPath, "output.log");
 
 
         public static void AddLog(Log logObject)
@@ -22,9 +25,9 @@
 
         public static void PrepareLogsFolders()
         {
-            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), logsDirectory)))
+            if (!Directory.Exists(LogsPath))
             {
-                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), logsDirectory));
+                Directory.CreateDirectory(LogsPath);
             }
             File.OpenWrite(errorLogsPath).Close();
             File.OpenWrite(infoLogsPath).Close();

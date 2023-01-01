@@ -41,8 +41,7 @@ namespace TgAdmBot.Database
             this.Nickname = firstName;
         }
         public string NicknameMd()
-        {
-            
+        {        
             return Bot.EscapeMarkdown(Nickname);
         }
         public static User GetOrCreate(Database.Chat chat, Telegram.Bot.Types.User TgUser)

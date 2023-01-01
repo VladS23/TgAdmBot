@@ -7,8 +7,9 @@ namespace TgAdmBot
         public Dictionary<string, string> env = new Dictionary<string, string>();
         public Config()
         {
-            var root = Directory.GetCurrentDirectory();
-            var dotenv = Path.Combine(root, ".env");
+            var di = new DirectoryInfo(Directory.GetCurrentDirectory());
+            var root = di.Parent;
+            var dotenv = root!=null ? Path.Combine(root.ToString(), ".env"): Path.Combine(Directory.GetCurrentDirectory(), ".env");
             new Log(dotenv);
             this.Load(dotenv);
         }

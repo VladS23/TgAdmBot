@@ -37,7 +37,10 @@ namespace TgAdmBot.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite($"Data Source={Program.dbFileName}");
+            var di = new DirectoryInfo(Directory.GetCurrentDirectory());
+            var root = di.Parent;
+            var dbPath = root != null ? root.ToString() : Directory.GetCurrentDirectory();
+            options.UseSqlite($"Data Source={Path.Combine(dbPath, Program.dbFileName)}");
         }
 
     }
