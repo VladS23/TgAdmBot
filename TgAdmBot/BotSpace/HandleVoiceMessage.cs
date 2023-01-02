@@ -14,10 +14,10 @@ namespace TgAdmBot.BotSpace
             }
             else
             {
-                BotDatabase.db.VoiceMessages.Add(new VoiceMessage { Chat = chat, MessageId = message.MessageId, fileId = message.Voice.FileId, fileUniqueId = message.Voice.FileUniqueId });
+                BotDatabase.db.Add(new VoiceMessage { Chat = chat, MessageId = message.MessageId, fileId = message.Voice.FileId, fileUniqueId = message.Voice.FileUniqueId });
                 BotDatabase.db.SaveChanges();
                 //Поток обработки аудио
-                SpeechRecognizer.AddVoiceMessageToQueue(new VoiceRecognitionObject { chat = chat, voiceMessage = message });
+                SpeechRecognizer.AddVoiceMessageToQueue(new VoskRecognition.VoiceRecognitionObject { chat = chat, voiceMessage = message });
             }
 
             user.UpdateStatistic(message);

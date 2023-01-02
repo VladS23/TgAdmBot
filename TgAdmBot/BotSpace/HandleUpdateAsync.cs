@@ -62,7 +62,10 @@ namespace TgAdmBot.BotSpace
                 }
                 else if (update.Type == UpdateType.CallbackQuery)
                 {
-                    this.HandleCallbackAsync(update);
+                    Database.Chat chat = Database.Chat.GetOrCreate(update.CallbackQuery.Message);
+
+                    Database.User user = Database.User.GetOrCreate(chat, update.CallbackQuery.From);
+                    this.HandleCallbackAsync(update, user, chat);
                 }
             }
             catch (Exception e)

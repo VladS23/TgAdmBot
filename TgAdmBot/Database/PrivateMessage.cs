@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TgAdmBot.Database
+﻿namespace TgAdmBot.Database
 {
     public enum PrivateMessageModes
     {
@@ -23,9 +17,9 @@ namespace TgAdmBot.Database
         {
 
         }
-        public PrivateMessage(PrivateMessageModes mode, List<User> users, string callback,long chatId,string text)
+        public PrivateMessage(PrivateMessageModes mode, List<User> users, string callback, long chatId, string text)
         {
-            Text= text;
+            Text = text;
             Users = users;
             Callback = callback;
             ChatId = chatId;

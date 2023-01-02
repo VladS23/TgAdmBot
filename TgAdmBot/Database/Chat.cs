@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.RegularExpressions;
 using TgAdmBot.BotSpace;
 
 namespace TgAdmBot.Database
@@ -37,7 +36,7 @@ namespace TgAdmBot.Database
         {
             Database.Chat chat;
 
-            if (BotDatabase.db.Chats.Where(chat => chat.TelegramChatId == message.Chat.Id).ToList().Count==0)
+            if (BotDatabase.db.Chats.Where(chat => chat.TelegramChatId == message.Chat.Id).ToList().Count == 0)
             {
                 BotDatabase.db.Add(new Database.Chat { TelegramChatId = message.Chat.Id });
                 BotDatabase.db.SaveChanges();
@@ -226,8 +225,6 @@ namespace TgAdmBot.Database
                 ChatAdministrators admins = Newtonsoft.Json.JsonConvert.DeserializeObject<ChatAdministrators>(json);
                 if (admins.result != null)
                 {
-                    //Find the creator
-                    long creatorId = 0;
                     Database.Chat chat = BotDatabase.db.Chats.Single(s => s.TelegramChatId == this.TelegramChatId);
                     chat.Users.Clear();
                     foreach (var admin in admins.result)

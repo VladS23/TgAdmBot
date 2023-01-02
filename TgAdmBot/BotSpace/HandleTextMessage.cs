@@ -46,6 +46,29 @@ namespace TgAdmBot.BotSpace
             //List<Database.User> MarriedUser = chat.Users.Where(user => user.Marriage?.Agreed == true).ToList();
             switch (message.Text.Replace($"@{botClient.GetMeAsync().Result.Username!}", "").ToLower().Split()[0])
             {
+                case "/balance":
+                    botClient.SendTextMessageAsync(message.Chat, $"На Вашем балансе: {user.Balance} рублей");
+                    break;
+                case "/pay":
+                    Billing billing = Billing.CreateBilling(10, BillingType.VipAccess, user.TelegramUserId);
+                    InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
+                    new InlineKeyboardButton[][]
+                    {
+                        new InlineKeyboardButton[]
+                        {
+                            new InlineKeyboardButton("Оплатить"){ Url=billing.PayFormLink}
+                        },
+                        new InlineKeyboardButton[]
+                        {
+                            new InlineKeyboardButton("Проверить оплату"){ CallbackData=billing.callback}
+                        }
+                    }
+                    );
+                    botClient.SendTextMessageAsync(message.Chat, $"Информация об оплате:\n" +
+                        $"Сумма: {billing.amount}Р\n",
+                        replyMarkup:markup
+                        );
+                    break;
                 case "/divorce":
                     if (user.Marriage != null)
                     {

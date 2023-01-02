@@ -1,5 +1,6 @@
 ﻿using Telegram.Bot;
 using TgAdmBot.Logger;
+using TgAdmBot.Payments;
 using TgAdmBot.VoskRecognition;
 
 namespace TgAdmBot
@@ -9,10 +10,11 @@ namespace TgAdmBot
         public static string botToken = new Config().env.GetValueOrDefault("BotToken")!;
         public static string ownerId = new Config().env.GetValueOrDefault("OwnerId")!;
         public static string dbFileName = new Config().env.GetValueOrDefault("DatabaseFileName")!;
+        public static string qiwiPublic = new Config().env.GetValueOrDefault("KiwiPublic")!;
+        public static string qiwiPrivate = $"{new Config().env.GetValueOrDefault("KiwiPrivate")!}=";
 
         private static void Main(string[] args)
         {
-            ObsceneChecker.WordsChecker.CheckStringToObsceneWords("Ахуеть");
             Logger.Logger.PrepareLogsFolders();
             new Log("Starting app...", LogType.info);
             Vosk.Vosk.SetLogLevel(0);
