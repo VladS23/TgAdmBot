@@ -11,11 +11,6 @@ namespace TgAdmBot.Database
             {
                 db = new DatabaseContext();
 
-                //Для автосброса БД в отладочной сборке
-#if DEBUG
-                db.Database.EnsureDeleted();//TODO ознакомиться (!)
-#endif
-
                 db.Database.EnsureCreated();
                 db.Chats.Load();
                 db.Users.Load();
@@ -33,14 +28,7 @@ namespace TgAdmBot.Database
 
         public void SaveFailed(object obj, SaveChangesFailedEventArgs failedEventArgs)
         {
-            try
-            {
-                this.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-
-            }
+            Console.WriteLine(failedEventArgs);
         }
 
 
@@ -50,6 +38,7 @@ namespace TgAdmBot.Database
         public DbSet<VoiceMessage> VoiceMessages { get; set; }
         public DbSet<Marriage> Marriages { get; set; }
         public DbSet<PrivateMessage> PrivateMessages { get; set; }
+        public DbSet<Billing> Billings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {

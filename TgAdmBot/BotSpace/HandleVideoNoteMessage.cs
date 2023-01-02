@@ -15,7 +15,7 @@ namespace TgAdmBot.BotSpace
             }
             else
             {
-                BotDatabase.db.VoiceMessages.Add(new VoiceMessage { Chat = chat, MessageId = message.MessageId, fileId = message.VideoNote.FileId, fileUniqueId = message.VideoNote.FileUniqueId });
+                BotDatabase.db.Add(new VoiceMessage { Chat = chat, MessageId = message.MessageId, fileId = message.VideoNote.FileId, fileUniqueId = message.VideoNote.FileUniqueId });
                 BotDatabase.db.SaveChanges();
                 SpeechRecognizer.AddVideoNoteMessageToQueue(new VideoNoteRecognitionObject { chat = chat, videoNoteMessage = message });
             }

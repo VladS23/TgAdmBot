@@ -28,6 +28,7 @@ namespace TgAdmBot.Database
         public int StickerMessagesCount { get; set; } = 0;
         public string LastMessage { get; set; } = "/start";
         public Marriage? Marriage { get; set; } = null;
+        public decimal Balance { get; set; } = 0m;
 
         public User()
         {

@@ -66,7 +66,7 @@ namespace TgAdmBot.BotSpace
                     }
                 }
                 PrivateMessage newPrivateMsg = new PrivateMessage(msgMode, msgUsers, $"/prvt!{Guid.NewGuid()}", chat.TelegramChatId, msgText.Substring(mentionsLen));
-                BotDatabase.db.PrivateMessages.Add(newPrivateMsg);
+                BotDatabase.db.Add(newPrivateMsg);
                 InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                     new InlineKeyboardButton("Показать текст") { CallbackData = newPrivateMsg.Callback }
                     );
@@ -135,7 +135,7 @@ namespace TgAdmBot.BotSpace
                             }
                         }
                         PrivateMessage newPrivateMsg = new PrivateMessage(msgMode, msgUsers, $"/prvt!{Guid.NewGuid()}", chat.TelegramChatId, msgText.Substring(mentionsLen));
-                        BotDatabase.db.PrivateMessages.Add(newPrivateMsg);
+                        BotDatabase.db.Add(newPrivateMsg);
                         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                             new InlineKeyboardButton("Показать текст") { CallbackData = newPrivateMsg.Callback }
                             );

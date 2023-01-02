@@ -36,30 +36,40 @@
 
         private static void WriteLogs()
         {
-            using StreamWriter outputLogs = File.AppendText(outputLogsPath);
-            using StreamWriter infoLogs = File.AppendText(infoLogsPath);
-            using StreamWriter errorLogs = File.AppendText(errorLogsPath);
-            while (logsQueue.Count > 0)
+            try
             {
-                Log logObject = logsQueue.Peek();
-                switch (logObject.type)
+                StreamWriter outputLogs = File.AppendText(outputLogsPath);
+                StreamWriter infoLogs = File.AppendText(infoLogsPath);
+                StreamWriter errorLogs = File.AppendText(errorLogsPath);
+                while (logsQueue.Count > 0)
                 {
-                    case LogType.output:
-                        outputLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
-                        break;
-                    case LogType.info:
-                        infoLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
-                        break;
-                    case LogType.error:
-                        errorLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
-                        break;
-                    default:
-                        errorLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\nNO LOG TYPE PROVIDED\n<|COLUMNDELIMITER|>{logObject.text}\n{new String('=', 30)}<|ROWDELIMITER|>");
-                        break;
+                    Log logObject = logsQueue.Peek();
+                    switch (logObject.type)
+                    {
+                        case LogType.output:
+                            outputLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
+                            break;
+                        case LogType.info:
+                            infoLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
+                            break;
+                        case LogType.error:
+                            errorLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
+                            break;
+                        default:
+                            errorLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\nNO LOG TYPE PROVIDED\n<|COLUMNDELIMITER|>{logObject.text}\n{new String('=', 30)}<|ROWDELIMITER|>");
+                            break;
+                    }
+                    logsQueue.Dequeue();
                 }
-                logsQueue.Dequeue();
+                outputLogs.Close();
+                infoLogs.Close();
+                errorLogs.Close();
             }
-
+            catch (Exception ex)
+            {
+                //throw ex;
+            }
+            
         }
     }
 }
