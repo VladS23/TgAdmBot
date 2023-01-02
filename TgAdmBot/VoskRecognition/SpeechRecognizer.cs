@@ -77,34 +77,46 @@ namespace TgAdmBot.VoskRecognition
 
         private static void RecognizeFileSpeech(string fileLocation, Database.Chat chat, int messageId, VideoNoteRecognitionObject recognitionObject)
         {
-            using (Stream source = System.IO.File.OpenRead(fileLocation))
-            {
-                byte[] buffer = new byte[source.Length];
-                int bytesRead;
-                while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    voskRecognizer.AcceptWaveform(buffer, bytesRead);
-                }
-            }
-            FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
-            new Log($"RecognizeFileSpeech(video_note)\n{result.text}");
-
-            void WriteToDb()
-            {
-                VoiceMessage voice = BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == messageId && vm.fileUniqueId == recognitionObject.videoNoteMessage.VideoNote.FileUniqueId);
-                voice.recognizedText = result.text;
-                BotDatabase.db.SaveChanges();
-            }
 
             try
             {
-                WriteToDb();
+                using (Stream source = System.IO.File.OpenRead(fileLocation))
+                {
+                    byte[] buffer = new byte[source.Length];
+                    int bytesRead;
+                    while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        voskRecognizer.AcceptWaveform(buffer, bytesRead);
+                    }
+                }
+                FinalResult result = Newtonsoft.Json.JsonConvert.DeserializeObject<FinalResult>(voskRecognizer.FinalResult());
+                new Log($"RecognizeFileSpeech(video_note)\n{result.text}");
+
+                void WriteToDb()
+                {
+                    VoiceMessage voice = BotDatabase.db.VoiceMessages.Single(vm => vm.Chat.ChatId == chat.ChatId && vm.MessageId == messageId && vm.fileUniqueId == recognitionObject.videoNoteMessage.VideoNote.FileUniqueId);
+                    voice.recognizedText = result.text;
+                    BotDatabase.db.SaveChanges();
+                }
+                try
+                {
+
+                    WriteToDb();
+                }
+                catch (System.InvalidOperationException)
+                {
+                    Thread.Sleep(200);
+                    WriteToDb();
+                }
             }
-            catch (System.InvalidOperationException)
+            catch (Exception ex)
             {
-                Thread.Sleep(200);
-                WriteToDb();
+                new Log(ex.ToString(), LogType.error);
             }
+
+
+
+
 
         }
 

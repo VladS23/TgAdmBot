@@ -1,4 +1,7 @@
-﻿namespace TgAdmBot.Logger
+﻿using Telegram.Bot;
+using TgAdmBot.BotSpace;
+
+namespace TgAdmBot.Logger
 {
     internal class Logger
     {
@@ -54,6 +57,7 @@
                             break;
                         case LogType.error:
                             errorLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\n{logObject.text}\n<|COLUMNDELIMITER|>{new String('=', 30)}<|ROWDELIMITER|>");
+                            Bot.currentObject.SendTextMessageAsync(Convert.ToInt64(Program.ownerId),"New error log! Check hosting pls!");
                             break;
                         default:
                             errorLogs.Write($"<|COLUMNDELIMITER|>\n{logObject.time.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK")}\n<|COLUMNDELIMITER|>\nNO LOG TYPE PROVIDED\n<|COLUMNDELIMITER|>{logObject.text}\n{new String('=', 30)}<|ROWDELIMITER|>");
